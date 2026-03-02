@@ -8,16 +8,15 @@
       name="description"
       content="Workbench Budgeting — a simple, powerful app to track your spending and take control of your finances."
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
 
     <!-- ── Hero ── -->
     <header>
-      <div class="logo">Workbench <span>Budgeting</span></div>
+      <div class="logo">Do you know the future<span> you're building?</span></div>
       <p class="tagline">
-        A simple, powerful tool to track your spending and take control of your
-        finances — built for people who want clarity, not complexity.
+        Workbench Budgeting provides the tools and space to build that understanding.
       </p>
     </header>
 
@@ -25,38 +24,51 @@
     <section class="features" aria-label="Features">
       <div class="feature-card">
         <div class="icon">📊</div>
-        <h3>Clear Spending Insights</h3>
+        <h3>Scenario Planning</h3>
         <p>
-          Visualize where your money goes each month with clean, easy-to-read
-          charts and category breakdowns.
+          Screenshot
         </p>
       </div>
 
       <div class="feature-card">
         <div class="icon">📝</div>
-        <h3>Flexible Budgets</h3>
+        <h3>Advanced Accounting Tools</h3>
         <p>
-          Set monthly budgets for any category and instantly see how much you
-          have left to spend.
+          Mark transactions as transfers between accounts. Spread out payments over time. Split transactions into multiple accounts.
         </p>
       </div>
 
       <div class="feature-card">
         <div class="icon">🔒</div>
-        <h3>Private &amp; Offline</h3>
+        <h3>Don't trust a random app with your financial data?</h3>
         <p>
-          Your financial data stays on your device. No accounts, no cloud
-          sync — just you and your numbers.
+          You don't have to because your financial data never leaves your device.
         </p>
       </div>
+
+      <div class="feature-card">
+        <div class="icon">🔒</div>
+        <h3>Consolidate all accounts into one place</h3>
+        <p>
+          screenshot
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">🔒</div>
+        <h3>Compare budgets to actual spending</h3>
+        <p>
+          screenshot
+        </p>
+      </div>
+
     </section>
 
     <!-- ── Preview ── -->
     <section class="preview" aria-label="App preview">
-      <h2>Your budget, your way</h2>
+      <h2>How the pros plan</h2>
       <p>
-        Workbench Budgeting gives you a clean workspace to plan, record, and
-        review your spending at any time — without the subscription fees.
+        Professional planning software, built for the everyday person, for a fraction of the cost
       </p>
     </section>
 
