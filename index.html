@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workbench Budgeting</title>
+    <meta
+      name="description"
+      content="Workbench Budgeting — a simple, powerful app to track your spending and take control of your finances."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- ── Hero ── -->
+    <header>
+      <div class="logo">Workbench <span>Budgeting</span></div>
+      <p class="tagline">
+        A simple, powerful tool to track your spending and take control of your
+        finances — built for people who want clarity, not complexity.
+      </p>
+    </header>
+
+    <!-- ── Features ── -->
+    <section class="features" aria-label="Features">
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Clear Spending Insights</h3>
+        <p>
+          Visualize where your money goes each month with clean, easy-to-read
+          charts and category breakdowns.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">📝</div>
+        <h3>Flexible Budgets</h3>
+        <p>
+          Set monthly budgets for any category and instantly see how much you
+          have left to spend.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">🔒</div>
+        <h3>Private &amp; Offline</h3>
+        <p>
+          Your financial data stays on your device. No accounts, no cloud
+          sync — just you and your numbers.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── Preview ── -->
+    <section class="preview" aria-label="App preview">
+      <h2>Your budget, your way</h2>
+      <p>
+        Workbench Budgeting gives you a clean workspace to plan, record, and
+        review your spending at any time — without the subscription fees.
+      </p>
+    </section>
+
+    <!-- ── Download ── -->
+    <section class="download" id="download" aria-label="Download">
+      <h2>Download the App</h2>
+      <p>
+        Get started with Workbench Budgeting today. Free to download and use.
+      </p>
+      <!-- TODO: replace href with the actual download URL for the app -->
+      <a
+        href="#"
+        class="download-btn"
+        aria-label="Download Workbench Budgeting"
+      >
+        ⬇ Download Now
+      </a>
+      <p class="note">Available for desktop. More platforms coming soon.</p>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer>
+      <p>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</p>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+  </body>
+</html>
