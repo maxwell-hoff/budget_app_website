@@ -45,33 +45,73 @@ body {
   min-height: 100vh;
 }
 
-/* ── Title Bar (Desktop-style header) ── */
+/* ── Header (Modern minimal) ── */
 header {
-  background: linear-gradient(180deg, rgba(0, 0, 128, 0.95) 0%, rgba(16, 132, 208, 0.95) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #fff;
-  padding: 20px 24px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.3), 0 4px 24px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+  margin: 24px auto 0;
+  padding: 32px 28px 36px;
+  background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 45%, #14b8a6 100%);
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10%;
+  background:
+    radial-gradient(circle at 18% 25%, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 42%),
+    radial-gradient(circle at 82% 80%, rgba(45, 212, 191, 0.28) 0%, rgba(45, 212, 191, 0) 38%);
+  pointer-events: none;
+}
+
+header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.2) 0.45px, transparent 0.45px),
+    radial-gradient(rgba(0, 0, 0, 0.12) 0.45px, transparent 0.45px);
+  background-size: 3px 3px, 4px 4px;
+  background-position: 0 0, 1px 2px;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+header > * {
+  position: relative;
+  z-index: 1;
 }
 
 header .logo {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 header .logo span {
-  color: #c0c0c0;
-  font-weight: normal;
+  color: #c7f9ff;
+  font-weight: 500;
 }
 
 header p.tagline {
-  font-size: 11px;
-  margin-top: 6px;
-  color: #c0c0c0;
+  font-size: 0.95rem;
+  margin-top: 12px;
+  color: rgba(247, 250, 255, 0.88);
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
 }
 
 /* ── Main content area (window chrome) ── */
@@ -287,8 +327,17 @@ footer {
     font-size: 12px;
   }
 
+  header {
+    margin: 16px 12px 0;
+    padding: 24px 20px 28px;
+  }
+
   header .logo {
-    font-size: 1rem;
+    font-size: 1.2rem;
+  }
+
+  header p.tagline {
+    font-size: 0.9rem;
   }
 
   .features,
