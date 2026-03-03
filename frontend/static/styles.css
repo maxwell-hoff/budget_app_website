@@ -105,18 +105,13 @@ body::before {
 }
 
 .hero-content {
-  --mouse-x: 50%;
-  --mouse-y: 35%;
-  --ripple-x: 50%;
-  --ripple-y: 35%;
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   padding: clamp(1.3rem, 3vw, 2.2rem);
   background:
-    radial-gradient(circle at var(--ripple-x) var(--ripple-y), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08) 16%, transparent 35%),
-    radial-gradient(circle at var(--ripple-x) var(--ripple-y), transparent 0, rgba(255, 255, 255, 0.12) 13%, transparent 22%),
-    radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.2), transparent 34%),
-    radial-gradient(circle at calc(var(--mouse-x) - 22%) calc(var(--mouse-y) + 20%), rgba(0, 0, 0, 0.22), transparent 42%),
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 30% 70%, rgba(0, 0, 0, 0.2), transparent 48%),
     linear-gradient(115deg, #1e1e1e, #2f2f2f 42%, #474747);
 }
 
@@ -128,6 +123,45 @@ body::before {
   background-size: 3px 3px;
   opacity: 0.3;
   z-index: -1;
+}
+
+.hero-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-ripple-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-ripple {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%) scale(0.2);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0) 72%);
+  animation: hero-ripple-wave 1150ms ease-out forwards;
+}
+
+@keyframes hero-ripple-wave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.7;
+  }
+
+  65% {
+    opacity: 0.25;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(16);
+    opacity: 0;
+  }
 }
 
 .kicker {

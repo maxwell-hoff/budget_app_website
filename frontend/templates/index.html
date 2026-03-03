@@ -127,59 +127,45 @@
 
       if (hero && !reducedMotionQuery.matches) {
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-        const setHeroCoords = (property, value) => {
-          hero.style.setProperty(property, `${clamp(value, 0, 100).toFixed(2)}%`);
+        const rippleLayer = document.createElement("div");
+        rippleLayer.className = "hero-ripple-layer";
+        hero.prepend(rippleLayer);
+
+        const emitRipple = (xPercent, yPercent) => {
+          const ripple = document.createElement("span");
+          ripple.className = "hero-ripple";
+          ripple.style.left = `${clamp(xPercent, 0, 100).toFixed(2)}%`;
+          ripple.style.top = `${clamp(yPercent, 0, 100).toFixed(2)}%`;
+          rippleLayer.append(ripple);
+          ripple.addEventListener("animationend", () => {
+            ripple.remove();
+          });
         };
 
-        const defaultX = 50;
-        const defaultY = 35;
-        let targetX = defaultX;
-        let targetY = defaultY;
-        let currentX = defaultX;
-        let currentY = defaultY;
-        let hovering = false;
+        let lastRippleAt = 0;
+        const rippleIntervalMs = 130;
 
         hero.addEventListener("mousemove", (event) => {
+          const now = performance.now();
+          if (now - lastRippleAt < rippleIntervalMs) {
+            return;
+          }
+
           const rect = hero.getBoundingClientRect();
           const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
           const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
-          targetX = clamp(xPercent, 0, 100);
-          targetY = clamp(yPercent, 0, 100);
+          emitRipple(xPercent, yPercent);
+          lastRippleAt = now;
         });
 
-        hero.addEventListener("mouseenter", () => {
-          hovering = true;
+        hero.addEventListener("mouseenter", (event) => {
+          const rect = hero.getBoundingClientRect();
+          const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+          const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+          emitRipple(xPercent, yPercent);
         });
 
-        hero.addEventListener("mouseleave", () => {
-          hovering = false;
-          targetX = defaultX;
-          targetY = defaultY;
-        });
-
-        const animateHeroRipple = (timestamp) => {
-          const time = timestamp / 1000;
-
-          // Smoothly steer toward target, then layer an ambient orbiting ripple.
-          currentX += (targetX - currentX) * 0.08;
-          currentY += (targetY - currentY) * 0.08;
-
-          const rippleSpeed = hovering ? 2.4 : 1.4;
-          const rippleRangeX = hovering ? 6 : 3.5;
-          const rippleRangeY = hovering ? 5 : 3;
-
-          const rippleX = currentX + Math.sin(time * rippleSpeed) * rippleRangeX + Math.sin(time * 0.7) * 1.2;
-          const rippleY = currentY + Math.cos(time * rippleSpeed * 0.85) * rippleRangeY;
-
-          setHeroCoords("--mouse-x", currentX);
-          setHeroCoords("--mouse-y", currentY);
-          setHeroCoords("--ripple-x", rippleX);
-          setHeroCoords("--ripple-y", rippleY);
-
-          window.requestAnimationFrame(animateHeroRipple);
-        };
-
-        window.requestAnimationFrame(animateHeroRipple);
+        emitRipple(50, 35);
       }
     </script>
 
