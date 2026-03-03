@@ -123,49 +123,75 @@
       document.getElementById("year").textContent = new Date().getFullYear();
 
       const hero = document.querySelector(".hero-content");
-      const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-      if (hero && !reducedMotionQuery.matches) {
+      if (hero) {
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-        const rippleLayer = document.createElement("div");
-        rippleLayer.className = "hero-ripple-layer";
-        hero.prepend(rippleLayer);
+        const cols = 56;
+        const rows = 26;
+        hero.style.setProperty("--tile-cols", cols);
+        hero.style.setProperty("--tile-rows", rows);
 
-        const emitRipple = (xPercent, yPercent) => {
-          const ripple = document.createElement("span");
-          ripple.className = "hero-ripple";
-          ripple.style.left = `${clamp(xPercent, 0, 100).toFixed(2)}%`;
-          ripple.style.top = `${clamp(yPercent, 0, 100).toFixed(2)}%`;
-          rippleLayer.append(ripple);
-          ripple.addEventListener("animationend", () => {
-            ripple.remove();
-          });
+        const tileLayer = document.createElement("div");
+        tileLayer.className = "hero-tile-layer";
+        hero.prepend(tileLayer);
+
+        const tiles = [];
+        for (let i = 0; i < cols * rows; i += 1) {
+          const tile = document.createElement("span");
+          tile.className = "hero-tile";
+          tile.style.setProperty("--paint", "0");
+          tileLayer.append(tile);
+          tiles.push(tile);
+        }
+
+        const paintAt = (col, row, strength) => {
+          if (col < 0 || col >= cols || row < 0 || row >= rows) {
+            return;
+          }
+
+          const tile = tiles[row * cols + col];
+          const currentPaint = parseFloat(tile.style.getPropertyValue("--paint")) || 0;
+          const nextPaint = clamp(currentPaint + strength, 0, 0.8);
+          tile.style.setProperty("--paint", nextPaint.toFixed(2));
         };
 
-        let lastRippleAt = 0;
-        const rippleIntervalMs = 130;
+        let lastPaintAt = 0;
+        const paintIntervalMs = 90;
+        const brushRadius = 9;
+        const brushStrength = 0.09;
 
-        hero.addEventListener("mousemove", (event) => {
+        const paintFromEvent = (event) => {
           const now = performance.now();
-          if (now - lastRippleAt < rippleIntervalMs) {
+          if (now - lastPaintAt < paintIntervalMs) {
             return;
           }
 
           const rect = hero.getBoundingClientRect();
           const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
           const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
-          emitRipple(xPercent, yPercent);
-          lastRippleAt = now;
-        });
+          const col = Math.floor((clamp(xPercent, 0, 99.9) / 100) * cols);
+          const row = Math.floor((clamp(yPercent, 0, 99.9) / 100) * rows);
 
-        hero.addEventListener("mouseenter", (event) => {
-          const rect = hero.getBoundingClientRect();
-          const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
-          const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
-          emitRipple(xPercent, yPercent);
-        });
+          // Soft circular brush for smoother, less blocky transitions.
+          for (let dy = -brushRadius; dy <= brushRadius; dy += 1) {
+            for (let dx = -brushRadius; dx <= brushRadius; dx += 1) {
+              const distance = Math.hypot(dx, dy);
+              if (distance > brushRadius) {
+                continue;
+              }
 
-        emitRipple(50, 35);
+              const falloff = 1 - distance / brushRadius;
+              const strength = brushStrength * (falloff * falloff);
+              if (strength > 0) {
+                paintAt(col + dx, row + dy, strength);
+              }
+            }
+          }
+
+          lastPaintAt = now;
+        };
+
+        hero.addEventListener("mousemove", paintFromEvent);
+        hero.addEventListener("mouseenter", paintFromEvent);
       }
     </script>
 
