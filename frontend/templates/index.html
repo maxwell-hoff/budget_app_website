@@ -14,112 +14,110 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
-
-    <!-- ── Hero ── -->
-    <header>
-      <div class="logo">Do you know the future<span> you're building?</span></div>
-      <p class="tagline">
-        Workbench Budgeting provides the tools and space to build that understanding.
-      </p>
-    </header>
-
-    <!-- ── Features ── -->
-    <section class="features" aria-label="Features">
-      
-      <div class="feature-card">
-        <h3>Scenario Planning</h3>
-        <div class="sub-features">
-          <div class="sub-feature">
-            <p>Save different paths as scenarios.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
-            <p>Easily comapre scenarios.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
+    <div class="site-wrap">
+      <header class="hero-window">
+        <div class="window-bar" aria-hidden="true">
+          <span>workbench_budgeting.exe</span>
+        </div>
+        <div class="hero-content">
+          <p class="kicker">RETRO-POWERED PERSONAL FINANCE</p>
+          <h1 class="logo">Do you know the future<span> you're building?</span></h1>
+          <p class="tagline">
+            Workbench Budgeting gives you a command center for planning, tracking, and improving your money decisions.
+          </p>
+          <div class="hero-actions">
+            <a href="#download" class="download-btn primary-cta" aria-label="Jump to download section">Start now</a>
+            <a href="#features" class="download-btn secondary-cta" aria-label="Jump to features section">Explore features</a>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div class="feature-card">
-        <h3>Advanced Accounting Tools</h3>
-        <div class="sub-features">
-          <div class="sub-feature">
-            <p>Mark transactions as transfers between accounts.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
-          </div>
-          <div class="sub-feature">
-            <p>Spread out payments over time.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
-          </div>
-          <div class="sub-feature">
-            <p>Split transactions into multiple accounts.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
-          </div>
-        </div>
-      </div>
+      <section class="preview" aria-label="Value statement">
+        <h2>90s confidence, 2026 polish</h2>
+        <p>
+          Premium planning tools that often cost $200/month, redesigned for everyday people at just $5/month.
+        </p>
+      </section>
 
-      <div class="feature-card">
-        <h3>Compare budgets to actual spending</h3>
-        <div class="sub-features">
-          <div class="sub-feature">
-            <p>Understand the root causes of overspending.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
+      <section class="features" id="features" aria-label="Features">
+        <div class="feature-card">
+          <h3>Scenario Planning</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Save different paths as scenarios.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Easily compare scenarios side-by-side.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="feature-card">
-        <h3>Don't trust a random app with your financial data?</h3>
-        <div class="sub-features">
-          <div class="sub-feature">
-            <p>You don't have to because your financial data never leaves your device.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
+        <div class="feature-card">
+          <h3>Advanced Accounting Tools</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Mark transactions as transfers between accounts.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Spread out payments over time.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Split transactions across multiple accounts.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="feature-card">
-        <h3>Consolidate all accounts into one place</h3>
-        <div class="sub-features">
-          <div class="sub-feature">
-            <p>View consolidated balances from many financial institutions.</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
-
-            <p>Create spouse profiles</p>
-            <div class="sub-feature-screenshot" aria-hidden="true"><!-- Add screenshot img here --></div>
+        <div class="feature-card">
+          <h3>Budget vs. Actual Insights</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Understand the root causes of overspending.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-    </section>
+        <div class="feature-card">
+          <h3>Privacy-First by Default</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Your financial data stays on your device, not on someone else's server.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
 
-    <!-- ── Preview ── -->
-    <section class="preview" aria-label="App preview">
-      <h2>Plan like the pros</h2>
-      <p>
-        Features that typically cost $200 a month, built for the everyday person, for $5 a month.
-      </p>
-    </section>
+        <div class="feature-card">
+          <h3>All Accounts in One Place</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>View consolidated balances from many institutions.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Create spouse profiles and plan together.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <!-- ── Download ── -->
-    <section class="download" id="download" aria-label="Download">
-      <h2>Download the App</h2>
-      <p>
-        Get started with Workbench Budgeting today. Free to download and use. Demo data included.
-      </p>
-      <!-- TODO: replace href with the actual download URL for the app -->
-      <a
-        href="#"
-        class="download-btn"
-        aria-label="Download Workbench Budgeting"
-      >
-        ⬇ Download Now
-      </a>
-      <p class="note">Available for desktop. More platforms coming soon.</p>
-    </section>
+      <section class="download" id="download" aria-label="Download">
+        <h2>Download the App</h2>
+        <p>Get started with Workbench Budgeting today. Free to download and use, with demo data included.</p>
+        <a href="#" class="download-btn" aria-label="Download Workbench Budgeting">Download Now</a>
+        <p class="note">Available for desktop. More platforms coming soon.</p>
+      </section>
 
-    <!-- ── Footer ── -->
-    <footer>
-      <p>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</p>
-    </footer>
+      <footer>
+        <p>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</p>
+      </footer>
+    </div>
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
