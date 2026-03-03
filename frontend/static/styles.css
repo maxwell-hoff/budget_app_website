@@ -1,213 +1,299 @@
+/* ═══════════════════════════════════════════════════════════════
+   RETRO 90s + MODERN 2026
+   Windows 95 inspired with contemporary polish
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s var(--ease-out-expo);
+  --transition-smooth: 0.35s var(--ease-out-expo);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1a1a1a;
-  background-color: #f9f9f6;
-  line-height: 1.6;
+html {
+  scroll-behavior: smooth;
 }
 
-/* ── Header / Hero ── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .features:hover,
+  .preview:hover,
+  .download:hover {
+    transform: none;
+  }
+
+  .download-btn:hover {
+    transform: none;
+  }
+}
+
+body {
+  font-family: "MS Sans Serif", "Chicago", "Tahoma", "Segoe UI", sans-serif;
+  font-size: 13px;
+  color: #000;
+  background: linear-gradient(135deg, #008080 0%, #006666 50%, #004d4d 100%);
+  background-attachment: fixed;
+  line-height: 1.4;
+  min-height: 100vh;
+}
+
+/* ── Title Bar (Desktop-style header) ── */
 header {
-  background-color: #2c5f2e;
+  background: linear-gradient(180deg, rgba(0, 0, 128, 0.95) 0%, rgba(16, 132, 208, 0.95) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #fff;
-  padding: 80px 24px 60px;
-  text-align: center;
+  padding: 20px 24px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.3), 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 header .logo {
-  font-size: 2.8rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  margin-bottom: 16px;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 header .logo span {
-  color: #a8d5a2;
+  color: #c0c0c0;
+  font-weight: normal;
 }
 
 header p.tagline {
-  font-size: 1.25rem;
-  max-width: 540px;
-  margin: 0 auto;
-  opacity: 0.9;
+  font-size: 11px;
+  margin-top: 6px;
+  color: #c0c0c0;
 }
 
-/* ── Features ── */
+/* ── Main content area (window chrome) ── */
+.features,
+.preview,
+.download {
+  max-width: 800px;
+  margin: 16px auto;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #000 #000 #fff;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.features:hover,
+.preview:hover,
+.download:hover {
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Window title bars ── */
+.features::before,
+.preview::before,
+.download::before {
+  display: block;
+  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-bottom: 1px solid #000;
+}
+
+.features::before {
+  content: "Features - Workbench Budgeting";
+}
+
+.preview::before {
+  content: "Plan like the pros - Workbench Budgeting";
+}
+
+.download::before {
+  content: "Download - Workbench Budgeting";
+}
+
+/* ── Features section ── */
 .features {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 64px 24px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.feature-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 32px 28px;
-  width: 100%;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-}
-
-.feature-card--right {
-  text-align: right;
-}
-
-.feature-card--right .sub-features {
-  align-items: flex-end;
-}
-
-.feature-card--right .sub-feature {
-  align-items: flex-end;
-}
-
-.feature-card .icon {
-  font-size: 2rem;
-  margin-bottom: 14px;
-}
-
-.feature-card h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #2c5f2e;
-}
-
-.feature-card p {
-  font-size: 0.95rem;
-  color: #555;
-}
-
-/* Sub-features: each feature can have multiple sub-items with screenshot + text */
-.feature-card .sub-features {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 16px;
-}
-
-.feature-card .sub-feature {
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.feature-card .sub-feature-screenshot {
-  min-height: 140px;
-  width: 100%;
-  background: #eaf3e8;
-  border: 2px dashed rgba(44, 95, 46, 0.25);
-  border-radius: 8px;
-  overflow: hidden;
+.feature-card {
+  background: #fff;
+  border: 2px solid;
+  border-color: #000 #fff #fff #000;
+  padding: 16px 20px;
+  box-shadow: inset 2px 2px 0 #808080;
+  border-radius: 4px;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
-.feature-card .sub-feature-screenshot img {
+.feature-card:hover {
+  box-shadow: inset 2px 2px 0 #808080, 0 4px 16px rgba(0, 0, 128, 0.08);
+}
+
+.feature-card h3 {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000080;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #808080;
+  letter-spacing: -0.01em;
+}
+
+.feature-card p {
+  font-size: 12px;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.feature-card .sub-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.feature-card .sub-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature-card .sub-feature-screenshot {
+  min-height: 100px;
   width: 100%;
-  height: auto;
-  display: block;
-  vertical-align: top;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  box-shadow: inset 2px 2px 0 #000;
 }
 
 .feature-card .sub-feature p {
   margin: 0;
-  font-size: 0.95rem;
-  color: #555;
 }
 
-/* ── Screenshot / Preview ── */
+/* ── Preview section ── */
 .preview {
-  background-color: #eaf3e8;
-  padding: 56px 24px;
+  padding: 16px 24px;
   text-align: center;
 }
 
 .preview h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #2c5f2e;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000080;
+  letter-spacing: -0.02em;
 }
 
 .preview p {
-  font-size: 1rem;
-  color: #555;
-  max-width: 540px;
-  margin: 0 auto;
+  font-size: 12px;
+  color: #000;
 }
 
-/* ── Download Section ── */
+/* ── Download section ── */
 .download {
-  background-color: #2c5f2e;
-  color: #fff;
+  padding: 20px 24px;
   text-align: center;
-  padding: 72px 24px;
 }
 
 .download h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000;
+  letter-spacing: -0.02em;
 }
 
 .download p {
-  font-size: 1.05rem;
-  opacity: 0.85;
-  margin-bottom: 36px;
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 12px;
+  color: #000;
+  margin-bottom: 16px;
 }
 
 .download-btn {
   display: inline-block;
-  background-color: #fff;
-  color: #2c5f2e;
-  font-size: 1.05rem;
-  font-weight: 700;
-  padding: 16px 40px;
-  border-radius: 50px;
+  background: #c0c0c0;
+  color: #000;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s, transform 0.1s;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
 }
 
 .download-btn:hover {
-  background-color: #a8d5a2;
-  color: #1a3d1c;
+  background: #e8e6e3;
   transform: translateY(-2px);
+  box-shadow: 1px 1px 0 #000, 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .download-btn:active {
+  border-color: #808080 #fff #fff #808080;
+  box-shadow: inset 2px 2px 0 #808080;
+  padding: 13px 27px 11px 29px;
   transform: translateY(0);
 }
 
-.download .note {
-  margin-top: 20px;
-  font-size: 0.85rem;
-  opacity: 0.65;
+.download-btn:focus-visible {
+  outline: 2px solid #000080;
+  outline-offset: 3px;
 }
 
-/* ── Footer ── */
+.download .note {
+  margin-top: 12px;
+  font-size: 11px;
+  color: #808080;
+}
+
+/* ── Footer (status bar style) ── */
 footer {
-  background-color: #1a1a1a;
-  color: #888;
+  background: #c0c0c0;
+  color: #000;
   text-align: center;
-  padding: 24px;
-  font-size: 0.85rem;
+  padding: 6px 16px;
+  font-size: 11px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  box-shadow: inset 2px 2px 0 #808080;
+  margin-top: 24px;
 }
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-  header .logo {
-    font-size: 2rem;
+  body {
+    font-size: 12px;
   }
 
-  .download h2 {
-    font-size: 1.5rem;
+  header .logo {
+    font-size: 1rem;
+  }
+
+  .features,
+  .preview,
+  .download {
+    margin: 12px 8px;
   }
 }
