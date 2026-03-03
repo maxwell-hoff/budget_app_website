@@ -86,23 +86,23 @@ body::before {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
-.preview::before,
-.features::before,
-.download::before {
+/* .preview::before, */
+/* .features::before, */
+/* .download::before {
   content: "";
-}
+} */
 
-.preview::before {
+/* .preview::before {
   content: "VALUE STATEMENT";
-}
+} */
 
-.features::before {
+/* .features::before {
   content: "FEATURES";
-}
+} */
 
-.download::before {
+/* .download::before {
   content: "DOWNLOAD";
-}
+} */
 
 .hero-content {
   position: relative;
