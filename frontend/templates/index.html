@@ -121,6 +121,66 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      const hero = document.querySelector(".hero-content");
+      const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      if (hero && !reducedMotionQuery.matches) {
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const setHeroCoords = (property, value) => {
+          hero.style.setProperty(property, `${clamp(value, 0, 100).toFixed(2)}%`);
+        };
+
+        const defaultX = 50;
+        const defaultY = 35;
+        let targetX = defaultX;
+        let targetY = defaultY;
+        let currentX = defaultX;
+        let currentY = defaultY;
+        let hovering = false;
+
+        hero.addEventListener("mousemove", (event) => {
+          const rect = hero.getBoundingClientRect();
+          const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+          const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+          targetX = clamp(xPercent, 0, 100);
+          targetY = clamp(yPercent, 0, 100);
+        });
+
+        hero.addEventListener("mouseenter", () => {
+          hovering = true;
+        });
+
+        hero.addEventListener("mouseleave", () => {
+          hovering = false;
+          targetX = defaultX;
+          targetY = defaultY;
+        });
+
+        const animateHeroRipple = (timestamp) => {
+          const time = timestamp / 1000;
+
+          // Smoothly steer toward target, then layer an ambient orbiting ripple.
+          currentX += (targetX - currentX) * 0.08;
+          currentY += (targetY - currentY) * 0.08;
+
+          const rippleSpeed = hovering ? 2.4 : 1.4;
+          const rippleRangeX = hovering ? 6 : 3.5;
+          const rippleRangeY = hovering ? 5 : 3;
+
+          const rippleX = currentX + Math.sin(time * rippleSpeed) * rippleRangeX + Math.sin(time * 0.7) * 1.2;
+          const rippleY = currentY + Math.cos(time * rippleSpeed * 0.85) * rippleRangeY;
+
+          setHeroCoords("--mouse-x", currentX);
+          setHeroCoords("--mouse-y", currentY);
+          setHeroCoords("--ripple-x", rippleX);
+          setHeroCoords("--ripple-y", rippleY);
+
+          window.requestAnimationFrame(animateHeroRipple);
+        };
+
+        window.requestAnimationFrame(animateHeroRipple);
+      }
     </script>
 
   </body>
