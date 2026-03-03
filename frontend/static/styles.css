@@ -1,6 +1,7 @@
 /* 90s retro-future visual system */
 
 :root {
+  --site-font-family: "Segoe UI"; /*, "Tahoma", "Segoe UI", sans-serif, "MS Sans Serif" */
   --bg-deep: #2f2f2f;
   --bg-mid: #5a5a5a;
   --panel: #c0c0c0;
@@ -28,7 +29,7 @@ html {
 }
 
 body {
-  font-family: "MS Sans Serif", "Tahoma", "Segoe UI", sans-serif;
+  font-family: var(--site-font-family);
   color: var(--ink);
   min-height: 100vh;
   line-height: 1.45;
@@ -156,14 +157,12 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 999px;
   color: #e5e5e5;
-  font-family: "Inter", system-ui, sans-serif;
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.12em;
 }
 
 .logo {
-  font-family: "Inter", system-ui, sans-serif;
   font-size: clamp(1.5rem, 4vw, 2.6rem);
   line-height: 1.1;
   letter-spacing: -0.04em;
@@ -180,7 +179,6 @@ body::before {
   margin-top: 0.85rem;
   max-width: 54ch;
   color: #dddddd;
-  font-family: "Inter", system-ui, sans-serif;
   font-size: clamp(0.94rem, 2vw, 1.06rem);
 }
 
@@ -201,12 +199,6 @@ body::before {
   padding: 1rem 1.25rem 1.3rem;
   text-align: center;
   background: linear-gradient(165deg, #d6d6d6, #bdbdbd);
-}
-
-.preview h2,
-.download h2,
-.feature-card h3 {
-  font-family: "Inter", system-ui, sans-serif;
 }
 
 .preview h2 {
@@ -319,7 +311,6 @@ body::before {
   border: 2px solid;
   border-color: #ffffff #808080 #808080 #ffffff;
   text-decoration: none;
-  font-family: "Inter", system-ui, sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.02em;
