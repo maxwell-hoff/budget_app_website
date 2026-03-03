@@ -108,6 +108,8 @@ body::before {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  --tile-cols: 24;
+  --tile-rows: 12;
   padding: clamp(1.3rem, 3vw, 2.2rem);
   background:
     radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.16), transparent 42%),
@@ -130,38 +132,21 @@ body::before {
   z-index: 1;
 }
 
-.hero-ripple-layer {
+.hero-tile-layer {
   position: absolute;
   inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--tile-cols), 1fr);
+  grid-template-rows: repeat(var(--tile-rows), 1fr);
   z-index: 0;
   pointer-events: none;
+  mix-blend-mode: difference;
 }
 
-.hero-ripple {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  transform: translate(-50%, -50%) scale(0.2);
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0) 72%);
-  animation: hero-ripple-wave 1150ms ease-out forwards;
-}
-
-@keyframes hero-ripple-wave {
-  0% {
-    transform: translate(-50%, -50%) scale(0.2);
-    opacity: 0.7;
-  }
-
-  65% {
-    opacity: 0.25;
-  }
-
-  100% {
-    transform: translate(-50%, -50%) scale(16);
-    opacity: 0;
-  }
+.hero-tile {
+  --paint: 0;
+  background: rgba(192, 192, 192, var(--paint));
+  transition: background-color 260ms ease-out;
 }
 
 .kicker {
