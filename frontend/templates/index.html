@@ -22,10 +22,10 @@
           <p class="tagline">
             Workbench Budgeting provides the tools and space to build that understanding. Functionality that professionals use built for everyday people, at a fraction of the cost.
           </p>
-          <div class="hero-actions">
+          <!-- <div class="hero-actions">
             <a href="#download" class="download-btn primary-cta" aria-label="Jump to download section">Start now</a>
             <a href="#features" class="download-btn secondary-cta" aria-label="Jump to features section">Explore features</a>
-          </div>
+          </div> -->
         </div>
       </header>
 
@@ -122,8 +122,8 @@
       const hero = document.querySelector(".hero-content");
       if (hero) {
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-        const cols = 56;
-        const rows = 26;
+        const cols = 96;
+        const rows = 48;
         hero.style.setProperty("--tile-cols", cols);
         hero.style.setProperty("--tile-rows", rows);
 
@@ -147,14 +147,14 @@
 
           const tile = tiles[row * cols + col];
           const currentPaint = parseFloat(tile.style.getPropertyValue("--paint")) || 0;
-          const nextPaint = clamp(currentPaint + strength, 0, 0.8);
+          const nextPaint = clamp(currentPaint + strength, 0, 0.56);
           tile.style.setProperty("--paint", nextPaint.toFixed(2));
         };
 
         let lastPaintAt = 0;
-        const paintIntervalMs = 75;
-        const brushRadius = 10;
-        const brushStrength = 0.09;
+        const paintIntervalMs = 24;
+        const brushRadius = 9;
+        const brushStrength = 0.045;
 
         const paintFromEvent = (event) => {
           const now = performance.now();
