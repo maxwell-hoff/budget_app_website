@@ -145,20 +145,38 @@
 
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-      const typeTextNodes = async (element, options) => {
+      const prepareTypeLine = (element, options = {}) => {
         const nodes = getTextNodes(element);
         if (!nodes.length) {
-          return;
+          return null;
         }
+
+        const fullHeight = element.getBoundingClientRect().height;
+        element.style.minHeight = `${Math.ceil(fullHeight)}px`;
 
         const snapshots = nodes.map((node) => node.nodeValue || "");
         nodes.forEach((node) => {
           node.nodeValue = "";
         });
 
-        for (let i = 0; i < nodes.length; i += 1) {
-          const node = nodes[i];
-          const source = snapshots[i];
+        if (options.hideUntilStart) {
+          // Keep layout space while preventing the text from showing early.
+          element.style.visibility = "hidden";
+        }
+
+        return { element, nodes, snapshots };
+      };
+
+      const typePreparedLine = async (preparedLine, options) => {
+        if (!preparedLine) {
+          return;
+        }
+
+        preparedLine.element.style.visibility = "visible";
+
+        for (let i = 0; i < preparedLine.nodes.length; i += 1) {
+          const node = preparedLine.nodes[i];
+          const source = preparedLine.snapshots[i];
 
           for (let index = 0; index < source.length; index += options.charsPerStep) {
             node.nodeValue = source.slice(0, index + options.charsPerStep);
@@ -179,12 +197,18 @@
           return;
         }
 
+        const preparedHeadline = headline ? prepareTypeLine(headline) : null;
+        const preparedTagline = tagline ? prepareTypeLine(tagline, { hideUntilStart: true }) : null;
+
         await wait(typewriterConfig.startDelayMs);
-        for (let i = 0; i < lines.length; i += 1) {
-          await typeTextNodes(lines[i], typewriterConfig);
-          if (i < lines.length - 1) {
-            await wait(typewriterConfig.lineDelayMs);
-          }
+
+        if (preparedHeadline) {
+          await typePreparedLine(preparedHeadline, typewriterConfig);
+        }
+
+        if (preparedTagline) {
+          await wait(typewriterConfig.lineDelayMs);
+          await typePreparedLine(preparedTagline, typewriterConfig);
         }
       };
 
