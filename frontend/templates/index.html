@@ -120,6 +120,76 @@
       document.getElementById("year").textContent = new Date().getFullYear();
 
       const hero = document.querySelector(".hero-content");
+      const typewriterConfig = {
+        enabled: true,
+        startDelayMs: 250,
+        // Characters printed per tick. Set to 1 for letter-by-letter.
+        charsPerStep: 1,
+        typeDelayMs: 24,
+        lineDelayMs: 260,
+      };
+
+      const getTextNodes = (root) => {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (node.nodeValue && node.nodeValue.trim().length > 0) {
+            nodes.push(node);
+          }
+        }
+
+        return nodes;
+      };
+
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const typeTextNodes = async (element, options) => {
+        const nodes = getTextNodes(element);
+        if (!nodes.length) {
+          return;
+        }
+
+        const snapshots = nodes.map((node) => node.nodeValue || "");
+        nodes.forEach((node) => {
+          node.nodeValue = "";
+        });
+
+        for (let i = 0; i < nodes.length; i += 1) {
+          const node = nodes[i];
+          const source = snapshots[i];
+
+          for (let index = 0; index < source.length; index += options.charsPerStep) {
+            node.nodeValue = source.slice(0, index + options.charsPerStep);
+            await wait(options.typeDelayMs);
+          }
+        }
+      };
+
+      const runHeroTypewriter = async () => {
+        if (!typewriterConfig.enabled || !hero) {
+          return;
+        }
+
+        const headline = hero.querySelector(".logo");
+        const tagline = hero.querySelector(".tagline");
+        const lines = [headline, tagline].filter(Boolean);
+        if (!lines.length) {
+          return;
+        }
+
+        await wait(typewriterConfig.startDelayMs);
+        for (let i = 0; i < lines.length; i += 1) {
+          await typeTextNodes(lines[i], typewriterConfig);
+          if (i < lines.length - 1) {
+            await wait(typewriterConfig.lineDelayMs);
+          }
+        }
+      };
+
+      runHeroTypewriter();
+
       if (hero) {
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
         const cols = 96;
