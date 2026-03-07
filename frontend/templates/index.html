@@ -8,82 +8,297 @@
       name="description"
       content="Workbench Budgeting — a simple, powerful app to track your spending and take control of your finances."
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   </head>
   <body>
+    <div class="site-wrap">
+      <header class="hero-window">
+        <div class="window-bar" aria-hidden="true">
+          <span>workbench_budgeting.exe</span>
+        </div>
+        <div class="hero-content">
+          <p class="kicker">WELCOME TO THE FUTURE OF BUDGETING</p>
+          <h1 class="logo">Do you know how your budget<span> is shaping your future?</span></h1>
+          <p class="tagline">
+            Workbench Budgeting provides the tools and space to build that understanding. Functionality that professionals use, built for everyday people, at a fraction of the cost.
+          </p>
+          <!-- <div class="hero-actions">
+            <a href="#download" class="download-btn primary-cta" aria-label="Jump to download section">Start now</a>
+            <a href="#features" class="download-btn secondary-cta" aria-label="Jump to features section">Explore features</a>
+          </div> -->
+        </div>
+      </header>
 
-    <!-- ── Hero ── -->
-    <header>
-      <div class="logo">Workbench <span>Budgeting</span></div>
-      <p class="tagline">
-        A simple, powerful tool to track your spending and take control of your
-        finances — built for people who want clarity, not complexity.
-      </p>
-    </header>
+      <section class="features" id="features" aria-label="Features">
+        <div class="feature-card">
+          <h3>Scenario Planning</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Save different paths as scenarios.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Easily compare scenarios side-by-side.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
 
-    <!-- ── Features ── -->
-    <section class="features" aria-label="Features">
-      <div class="feature-card">
-        <div class="icon">📊</div>
-        <h3>Clear Spending Insights</h3>
+        <div class="feature-card">
+          <h3>Advanced Accounting Tools</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Mark transactions as transfers between accounts.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Spread out payments over time.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Split transactions across multiple accounts.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <h3>Budget vs. Actual Insights</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Understand the root causes of overspending.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <h3>Privacy-First by Default</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Your financial data stays on your device, not on someone else's server.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <h3>All Accounts in One Place</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>View consolidated balances from many institutions.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Create spouse profiles and plan together.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <h3>Fine-tuned Forecasting</h3>
+          <div class="sub-features">
+            <div class="sub-feature">
+              <p>Adjust parameters at an event level.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+            <div class="sub-feature">
+              <p>Create parameters to apply to all events.</p>
+              <div class="sub-feature-screenshot" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="preview" aria-label="Value statement">
+        <h2>Want AI to build a budget for you?</h2>
         <p>
-          Visualize where your money goes each month with clean, easy-to-read
-          charts and category breakdowns.
+          Then find another app. Peace of mind comes from verifying yourself. Good luck finding that with an AI built budget.
         </p>
-      </div>
+      </section>
 
-      <div class="feature-card">
-        <div class="icon">📝</div>
-        <h3>Flexible Budgets</h3>
-        <p>
-          Set monthly budgets for any category and instantly see how much you
-          have left to spend.
-        </p>
-      </div>
+      <section class="download" id="download" aria-label="Download">
+        <h2>Download the App</h2>
+        <p>Get started with Workbench Budgeting today. Free to download and use, with demo data included.</p>
+        <a href="#" class="download-btn" aria-label="Download Workbench Budgeting">Download Now</a>
+        <p class="note">Available for desktop. More platforms coming soon.</p>
+      </section>
 
-      <div class="feature-card">
-        <div class="icon">🔒</div>
-        <h3>Private &amp; Offline</h3>
-        <p>
-          Your financial data stays on your device. No accounts, no cloud
-          sync — just you and your numbers.
-        </p>
-      </div>
-    </section>
-
-    <!-- ── Preview ── -->
-    <section class="preview" aria-label="App preview">
-      <h2>Your budget, your way</h2>
-      <p>
-        Workbench Budgeting gives you a clean workspace to plan, record, and
-        review your spending at any time — without the subscription fees.
-      </p>
-    </section>
-
-    <!-- ── Download ── -->
-    <section class="download" id="download" aria-label="Download">
-      <h2>Download the App</h2>
-      <p>
-        Get started with Workbench Budgeting today. Free to download and use.
-      </p>
-      <!-- TODO: replace href with the actual download URL for the app -->
-      <a
-        href="#"
-        class="download-btn"
-        aria-label="Download Workbench Budgeting"
-      >
-        ⬇ Download Now
-      </a>
-      <p class="note">Available for desktop. More platforms coming soon.</p>
-    </section>
-
-    <!-- ── Footer ── -->
-    <footer>
-      <p>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</p>
-    </footer>
+      <footer>
+        <p>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</p>
+      </footer>
+    </div>
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      const hero = document.querySelector(".hero-content");
+      const typewriterConfig = {
+        enabled: true,
+        startDelayMs: 250,
+        // Characters printed per tick. Set to 1 for letter-by-letter.
+        charsPerStep: 1,
+        typeDelayMs: 24,
+        lineDelayMs: 260,
+      };
+
+      const getTextNodes = (root) => {
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (node.nodeValue && node.nodeValue.trim().length > 0) {
+            nodes.push(node);
+          }
+        }
+
+        return nodes;
+      };
+
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const prepareTypeLine = (element, options = {}) => {
+        const nodes = getTextNodes(element);
+        if (!nodes.length) {
+          return null;
+        }
+
+        const fullHeight = element.getBoundingClientRect().height;
+        element.style.minHeight = `${Math.ceil(fullHeight)}px`;
+
+        const snapshots = nodes.map((node) => node.nodeValue || "");
+        nodes.forEach((node) => {
+          node.nodeValue = "";
+        });
+
+        if (options.hideUntilStart) {
+          // Keep layout space while preventing the text from showing early.
+          element.style.visibility = "hidden";
+        }
+
+        return { element, nodes, snapshots };
+      };
+
+      const typePreparedLine = async (preparedLine, options) => {
+        if (!preparedLine) {
+          return;
+        }
+
+        preparedLine.element.style.visibility = "visible";
+
+        for (let i = 0; i < preparedLine.nodes.length; i += 1) {
+          const node = preparedLine.nodes[i];
+          const source = preparedLine.snapshots[i];
+
+          for (let index = 0; index < source.length; index += options.charsPerStep) {
+            node.nodeValue = source.slice(0, index + options.charsPerStep);
+            await wait(options.typeDelayMs);
+          }
+        }
+      };
+
+      const runHeroTypewriter = async () => {
+        if (!typewriterConfig.enabled || !hero) {
+          return;
+        }
+
+        const headline = hero.querySelector(".logo");
+        const tagline = hero.querySelector(".tagline");
+        const lines = [headline, tagline].filter(Boolean);
+        if (!lines.length) {
+          return;
+        }
+
+        const preparedHeadline = headline ? prepareTypeLine(headline) : null;
+        const preparedTagline = tagline ? prepareTypeLine(tagline, { hideUntilStart: true }) : null;
+
+        await wait(typewriterConfig.startDelayMs);
+
+        if (preparedHeadline) {
+          await typePreparedLine(preparedHeadline, typewriterConfig);
+        }
+
+        if (preparedTagline) {
+          await wait(typewriterConfig.lineDelayMs);
+          await typePreparedLine(preparedTagline, typewriterConfig);
+        }
+      };
+
+      runHeroTypewriter();
+
+      if (hero) {
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const cols = 96;
+        const rows = 48;
+        hero.style.setProperty("--tile-cols", cols);
+        hero.style.setProperty("--tile-rows", rows);
+
+        const tileLayer = document.createElement("div");
+        tileLayer.className = "hero-tile-layer";
+        hero.prepend(tileLayer);
+
+        const tiles = [];
+        for (let i = 0; i < cols * rows; i += 1) {
+          const tile = document.createElement("span");
+          tile.className = "hero-tile";
+          tile.style.setProperty("--paint", "0");
+          tileLayer.append(tile);
+          tiles.push(tile);
+        }
+
+        const paintAt = (col, row, strength) => {
+          if (col < 0 || col >= cols || row < 0 || row >= rows) {
+            return;
+          }
+
+          const tile = tiles[row * cols + col];
+          const currentPaint = parseFloat(tile.style.getPropertyValue("--paint")) || 0;
+          const nextPaint = clamp(currentPaint + strength, 0, 0.56);
+          tile.style.setProperty("--paint", nextPaint.toFixed(2));
+        };
+
+        let lastPaintAt = 0;
+        const paintIntervalMs = 0;
+        const brushRadius = 9;
+        const brushStrength = 0.045;
+
+        const paintFromEvent = (event) => {
+          const now = performance.now();
+          if (now - lastPaintAt < paintIntervalMs) {
+            return;
+          }
+
+          const rect = hero.getBoundingClientRect();
+          const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+          const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+          const col = Math.floor((clamp(xPercent, 0, 99.9) / 100) * cols);
+          const row = Math.floor((clamp(yPercent, 0, 99.9) / 100) * rows);
+
+          // Soft circular brush for smoother, less blocky transitions.
+          for (let dy = -brushRadius; dy <= brushRadius; dy += 1) {
+            for (let dx = -brushRadius; dx <= brushRadius; dx += 1) {
+              const distance = Math.hypot(dx, dy);
+              if (distance > brushRadius) {
+                continue;
+              }
+
+              const falloff = 1 - distance / brushRadius;
+              const strength = brushStrength * (falloff * falloff);
+              if (strength > 0) {
+                paintAt(col + dx, row + dy, strength);
+              }
+            }
+          }
+
+          lastPaintAt = now;
+        };
+
+        hero.addEventListener("mousemove", paintFromEvent);
+        hero.addEventListener("mouseenter", paintFromEvent);
+      }
     </script>
 
   </body>
