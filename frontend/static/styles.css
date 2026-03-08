@@ -33,7 +33,7 @@ body {
   color: var(--ink);
   min-height: 100vh;
   line-height: 1.45;
-  background: linear-gradient(145deg, var(--bg-deep), var(--bg-mid));
+  background: #000000;
   position: relative;
 }
 
@@ -54,7 +54,6 @@ body::before {
   margin: 1.5rem auto 2rem;
 }
 
-.hero-window,
 .preview,
 .features,
 .download {
@@ -67,7 +66,15 @@ body::before {
 }
 
 .hero-window {
+  overflow: hidden;
+}
+
+.hero-window {
   margin-bottom: 1rem;
+}
+
+.hero-window > .window-bar {
+  display: none;
 }
 
 .window-bar,
