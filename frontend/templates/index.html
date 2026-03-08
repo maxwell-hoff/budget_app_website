@@ -133,6 +133,22 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      const belowHeroSections = document.querySelectorAll(
+        ".features, .preview, .download, footer"
+      );
+
+      belowHeroSections.forEach((el) => el.classList.add("below-hero-hidden"));
+
+      const tagline = document.querySelector(".tagline");
+      if (tagline) {
+        tagline.addEventListener("animationend", () => {
+          belowHeroSections.forEach((el) => {
+            el.classList.remove("below-hero-hidden");
+            el.classList.add("below-hero-visible");
+          });
+        });
+      }
     </script>
 
   </body>
