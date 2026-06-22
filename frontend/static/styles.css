@@ -271,34 +271,34 @@ body::before {
 
 .hero__title {
   margin-top: 1rem;
-  font-size: clamp(2rem, 4.6vw, 3.35rem);
-  line-height: 1.06;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.85rem, 3.9vw, 2.95rem);
+  line-height: 1.14;
+  letter-spacing: -0.022em;
   font-weight: 800;
   color: var(--ink);
   text-wrap: balance;
 }
+/* Underline highlight that wraps cleanly across lines */
 .hero__title em {
   font-style: normal;
   color: var(--accent);
-  position: relative;
-  white-space: nowrap;
-}
-.hero__title em::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.05em;
-  height: 0.14em;
-  background: var(--accent-line);
+  background-image: linear-gradient(var(--accent-line), var(--accent-line));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.14em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .hero__tagline {
   margin-top: 1.25rem;
-  max-width: 52ch;
+  max-width: 56ch;
   color: var(--ink-muted);
-  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  font-size: clamp(0.98rem, 1.4vw, 1.06rem);
+}
+.hero__tagline strong {
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .hero__actions {
@@ -748,10 +748,10 @@ body::before {
 }
 .philosophy__quote {
   margin-top: 1.2rem;
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.1;
+  letter-spacing: -0.022em;
+  line-height: 1.16;
   text-wrap: balance;
 }
 .philosophy__quote span {
@@ -759,9 +759,10 @@ body::before {
 }
 .philosophy__sub {
   margin-top: 1.3rem;
-  max-width: 60ch;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  max-width: 62ch;
+  color: rgba(255, 255, 255, 0.80);
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.65;
 }
 
 /* ── Download ── */
