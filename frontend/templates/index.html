@@ -77,24 +77,6 @@
           </div>
 
           <div class="window__body">
-            <div class="kpis">
-              <div class="kpi">
-                <div class="kpi__label">Total Balance</div>
-                <div class="kpi__value" data-count="184320" data-prefix="$">$0</div>
-                <div class="kpi__sub">+12.4% YoY</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi__label">Net Income · Mo</div>
-                <div class="kpi__value good" data-count="2600" data-prefix="$">$0</div>
-                <div class="kpi__sub">June</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi__label">Implied Bal.</div>
-                <div class="kpi__value" data-count="182940" data-prefix="$">$0</div>
-                <div class="kpi__sub">Reconciled</div>
-              </div>
-            </div>
-
             <div class="chart">
               <div class="chart__head">
                 <span class="chart__title">Cashflow &amp; Balance · Monthly</span>
@@ -103,54 +85,59 @@
                   <span><i style="background:#c0392b"></i>Expenses</span>
                   <span><i style="background:#003a70"></i>Balance</span>
                   <span><i style="background:#5b2c8c"></i>Net</span>
+                  <span><i class="dash"></i>Implied</span>
                 </span>
               </div>
-              <svg viewBox="0 0 320 124" role="img" aria-label="Monthly income and expense bars with total balance and net income lines">
+              <svg viewBox="0 0 320 140" role="img" aria-label="Monthly income bars above a zero line, expense bars below, with total balance, net income, and implied balance lines">
                 <!-- gridlines -->
                 <g stroke="var(--border)" stroke-width="1">
-                  <line x1="0" y1="28" x2="320" y2="28" />
-                  <line x1="0" y1="56" x2="320" y2="56" />
-                  <line x1="0" y1="84" x2="320" y2="84" />
-                  <line x1="0" y1="104" x2="320" y2="104" />
+                  <line x1="0" y1="20" x2="320" y2="20" />
+                  <line x1="0" y1="54" x2="320" y2="54" />
+                  <line x1="0" y1="116" x2="320" y2="116" />
                 </g>
+                <!-- zero baseline (cash axis): income above, expenses below -->
+                <line x1="0" y1="88" x2="320" y2="88" stroke="var(--border-strong)" stroke-width="1" />
+                <text class="chart__axis-label" x="2" y="85">0</text>
 
-                <!-- Income (green) + Expense (red) bars per month -->
+                <!-- Income (up, green) + Expense (down, red) bars per month -->
                 <g>
-                  <rect class="chart-bar chart-bar--income" x="16"  y="44" width="9" height="60" style="animation-delay:.65s" />
-                  <rect class="chart-bar chart-bar--expense" x="29" y="60" width="9" height="44" style="animation-delay:.70s" />
-                  <rect class="chart-bar chart-bar--income" x="69"  y="40" width="9" height="64" style="animation-delay:.75s" />
-                  <rect class="chart-bar chart-bar--expense" x="82" y="54" width="9" height="50" style="animation-delay:.80s" />
-                  <rect class="chart-bar chart-bar--income" x="122" y="46" width="9" height="58" style="animation-delay:.85s" />
-                  <rect class="chart-bar chart-bar--expense" x="135" y="42" width="9" height="62" style="animation-delay:.90s" />
-                  <rect class="chart-bar chart-bar--income" x="176" y="34" width="9" height="70" style="animation-delay:.95s" />
-                  <rect class="chart-bar chart-bar--expense" x="189" y="64" width="9" height="40" style="animation-delay:1.0s" />
-                  <rect class="chart-bar chart-bar--income" x="229" y="38" width="9" height="66" style="animation-delay:1.05s" />
-                  <rect class="chart-bar chart-bar--expense" x="242" y="52" width="9" height="52" style="animation-delay:1.10s" />
-                  <rect class="chart-bar chart-bar--income" x="282" y="32" width="9" height="72" style="animation-delay:1.15s" />
-                  <rect class="chart-bar chart-bar--expense" x="295" y="58" width="9" height="46" style="animation-delay:1.20s" />
+                  <rect class="chart-bar chart-bar--income"  x="16"  y="61" width="9" height="27" style="animation-delay:.65s" />
+                  <rect class="chart-bar chart-bar--expense" x="29"  y="88" width="9" height="38" style="animation-delay:.70s" />
+                  <rect class="chart-bar chart-bar--income"  x="69"  y="56" width="9" height="32" style="animation-delay:.75s" />
+                  <rect class="chart-bar chart-bar--expense" x="82"  y="88" width="9" height="36" style="animation-delay:.80s" />
+                  <rect class="chart-bar chart-bar--income"  x="122" y="47" width="9" height="41" style="animation-delay:.85s" />
+                  <rect class="chart-bar chart-bar--expense" x="135" y="88" width="9" height="27" style="animation-delay:.90s" />
+                  <rect class="chart-bar chart-bar--income"  x="176" y="43" width="9" height="45" style="animation-delay:.95s" />
+                  <rect class="chart-bar chart-bar--expense" x="189" y="88" width="9" height="26" style="animation-delay:1.0s" />
+                  <rect class="chart-bar chart-bar--income"  x="229" y="46" width="9" height="42" style="animation-delay:1.05s" />
+                  <rect class="chart-bar chart-bar--expense" x="242" y="88" width="9" height="33" style="animation-delay:1.10s" />
+                  <rect class="chart-bar chart-bar--income"  x="282" y="42" width="9" height="46" style="animation-delay:1.15s" />
+                  <rect class="chart-bar chart-bar--expense" x="295" y="88" width="9" height="29" style="animation-delay:1.20s" />
                 </g>
 
-                <!-- Implied balance (dashed) -->
-                <polyline class="chart-line--implied" points="27,74 80,68 133,64 187,54 240,48 293,40" />
-                <!-- Net income (purple) -->
-                <polyline class="chart-line--net" points="27,58 80,54 133,66 187,46 240,52 293,44" />
-                <!-- Total balance (navy, drawn in) -->
+                <!-- Net income (purple) — dips below the zero line when expenses exceed income (Jan/Feb) -->
+                <polyline class="chart-line--net" points="27,100 80,92 133,74 187,69 240,79 293,71" />
+                <!-- Total balance (navy, drawn in) — softens early, then climbs -->
                 <polyline class="chart-line chart-line--plan chart-line--draw"
-                  points="27,70 80,64 133,60 187,50 240,44 293,36" />
+                  points="27,33 80,35 133,29 187,24 240,21 293,14" />
+                <!-- Implied balance (dashed) — only available for the latest two months -->
+                <polyline class="chart-line--implied" points="240,25 293,18" />
+                <circle cx="240" cy="25" r="2.2" fill="#2a7ab0" />
 
                 <!-- month labels -->
                 <g class="chart__axis-label" text-anchor="middle">
-                  <text x="27" y="118">Jan</text>
-                  <text x="80" y="118">Feb</text>
-                  <text x="133" y="118">Mar</text>
-                  <text x="187" y="118">Apr</text>
-                  <text x="240" y="118">May</text>
-                  <text x="293" y="118">Jun</text>
+                  <text x="27" y="134">Jan</text>
+                  <text x="80" y="134">Feb</text>
+                  <text x="133" y="134">Mar</text>
+                  <text x="187" y="134">Apr</text>
+                  <text x="240" y="134">May</text>
+                  <text x="293" y="134">Jun</text>
                 </g>
               </svg>
             </div>
 
             <!-- Cashflow pivot grid (metric rows × periods) -->
+            <div class="window__label">Cashflow Statement</div>
             <div class="cfgrid" aria-label="Cashflow by month">
               <div class="cfgrid__row cfgrid__row--head">
                 <span class="cfgrid__cell">Metric</span>
@@ -186,6 +173,54 @@
                 <span class="cfgrid__cell">179,120</span>
                 <span class="cfgrid__cell">180,520</span>
                 <span class="cfgrid__cell">184,320</span>
+              </div>
+            </div>
+
+            <!-- Transactions: the source the statement above rolls up from -->
+            <div class="window__label">
+              Transactions
+              <span class="hint">&uarr; rolls up into the statement</span>
+            </div>
+            <div class="txnlist" aria-label="Transactions">
+              <div class="txnlist__row txnlist__row--head">
+                <span>Date</span>
+                <span>Description</span>
+                <span>Amount</span>
+                <span>Transfer</span>
+                <span>Amortize</span>
+                <span>Split</span>
+              </div>
+              <div class="txnlist__row">
+                <span class="txnlist__date">06/14</span>
+                <span class="txnlist__desc">Costco</span>
+                <span class="txnlist__amt neg">−$842.00</span>
+                <span class="txnlist__marker"><span class="flagbox"></span></span>
+                <span class="txnlist__marker"><span class="txnpill is-set">12 mo</span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+              </div>
+              <div class="txnlist__row">
+                <span class="txnlist__date">06/12</span>
+                <span class="txnlist__desc">Payroll Deposit</span>
+                <span class="txnlist__amt pos">+$4,200.00</span>
+                <span class="txnlist__marker"><span class="flagbox"></span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+              </div>
+              <div class="txnlist__row is-muted" title="Marked as a transfer — excluded from the cashflow statement">
+                <span class="txnlist__date">06/10</span>
+                <span class="txnlist__desc">Move to Brokerage</span>
+                <span class="txnlist__amt neg">−$1,500.00</span>
+                <span class="txnlist__marker"><span class="flagbox is-on"></span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+              </div>
+              <div class="txnlist__row">
+                <span class="txnlist__date">06/08</span>
+                <span class="txnlist__desc">Home Depot</span>
+                <span class="txnlist__amt neg">−$320.00</span>
+                <span class="txnlist__marker"><span class="flagbox"></span></span>
+                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
+                <span class="txnlist__marker"><span class="txnpill is-set">2 acct</span></span>
               </div>
             </div>
           </div>
@@ -402,7 +437,7 @@
                     <span class="txnrow__amt">−$842.00</span>
                   </div>
                   <span class="txnrow__ctl-label">Transfer</span>
-                  <span class="flagbox"></span>
+                  <span class="flagbox is-on"></span>
                   <span class="txnrow__ctl-label">Amortize</span>
                   <span class="txnrow__ctl">12 months <span class="caret">▼</span></span>
                   <span class="txnrow__ctl-label">Split</span>
@@ -425,11 +460,13 @@
       <div class="wrap philosophy__inner on-scroll">
         <span class="kicker">Our philosophy</span>
         <p class="philosophy__quote">
-          The future of budgeting <span>isn't AI-driven.</span>
+          Real peace of mind about money <span>doesn't come from a smarter algorithm.</span>
         </p>
         <p class="philosophy__sub">
-          It's using tools that have been around for decades, but simplified and made
-          accessible to everyone.
+          It comes from understanding — and understanding comes from working with the 
+          numbers yourself. We named this Workbench because the right analogy is a 
+          craftsman at a bench, turning something over in his hands until he knows it. 
+          The tools do what tools do. The understanding is yours.
         </p>
       </div>
     </section>
@@ -534,7 +571,7 @@
       }
 
       /* ── Bring each app-sample (and the hero cashflow grid) to life ── */
-      const liveEls = document.querySelectorAll(".feature__shot, .cfgrid");
+      const liveEls = document.querySelectorAll(".feature__shot, .cfgrid, .txnlist");
       const activateLive = (el) => {
         el.classList.add("is-live");
         startSampleLoops(el);
@@ -576,8 +613,11 @@
           }, 1100);
         }
 
-        /* Advanced accounting: toggle the Transfer flag on/off */
-        const flag = shot.querySelector(".flagbox");
+        /* Advanced accounting: toggle the Transfer flag on/off
+           (only in the feature sample, not the hero transaction list) */
+        const flag = shot.classList.contains("feature__shot")
+          ? shot.querySelector(".flagbox")
+          : null;
         if (flag) {
           setTimeout(() => {
             flag.classList.add("is-on");
