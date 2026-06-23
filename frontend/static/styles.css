@@ -636,6 +636,83 @@ body::before {
   font-size: 1.02rem;
 }
 
+/* ── Why this exists: the problem bridge ── */
+.problem__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 4vw, 3.25rem);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .problem__grid { grid-template-columns: 1.05fr 1fr; }
+}
+.problem__title {
+  margin-top: 0.7rem;
+  font-size: clamp(1.55rem, 3.3vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  line-height: 1.14;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.problem__title em {
+  font-style: normal;
+  color: var(--accent);
+  background-image: linear-gradient(var(--accent-line), var(--accent-line));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.14em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.problem__thesis {
+  margin-top: 1.3rem;
+  max-width: 46ch;
+  font-size: clamp(1.02rem, 1.6vw, 1.18rem);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+}
+.problem__para {
+  margin-bottom: 1rem;
+  color: var(--ink-muted);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+.problem__para strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.problem__para em {
+  font-style: italic;
+  color: var(--ink);
+}
+.problem__audience {
+  margin-top: 1.6rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-pop);
+}
+.problem__audience-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.problem__audience p {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  line-height: 1.62;
+}
+
 /* ── Features ── */
 .features {
   display: grid;
