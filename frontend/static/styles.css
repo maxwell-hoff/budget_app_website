@@ -328,6 +328,20 @@ body::before {
   background: var(--good);
   border-radius: 50%;
 }
+.hero__buildlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-line);
+  transition: border-color var(--t-fast);
+}
+.hero__buildlink:hover {
+  border-bottom-color: var(--accent);
+}
 
 /* Reveal animation for hero text */
 .reveal-up {
@@ -918,6 +932,69 @@ body::before {
   color: rgba(255, 255, 255, 0.80);
   font-size: clamp(1rem, 1.5vw, 1.12rem);
   line-height: 1.65;
+}
+
+/* ── Social proof / build-in-public ── */
+.proof {
+  text-align: center;
+}
+.proof__inner {
+  max-width: 760px;
+  margin-inline: auto;
+}
+.proof .kicker {
+  justify-content: center;
+}
+.proof__quote {
+  margin: 1.1rem 0 0;
+  font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.32;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.proof__quote span {
+  color: var(--accent);
+  background-image: linear-gradient(var(--accent-line), var(--accent-line));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.14em;
+}
+.proof__meta {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.proof__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+}
+.proof__author::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--good);
+  border-radius: 50%;
+}
+.proof__link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-line);
+  transition: border-color var(--t-fast);
+}
+.proof__link:hover {
+  border-bottom-color: var(--accent);
 }
 
 /* ── Download ── */
