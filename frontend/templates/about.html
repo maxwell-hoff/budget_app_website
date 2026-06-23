@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Garden Studio · Workbench Budgeting</title>
+    <meta
+      name="description"
+      content="Garden Studio is the one-person software shop behind Workbench Budgeting — built by someone from corporate finance who wanted consumer tools that take your money seriously."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <!-- ── Top navigation (app titlebar motif) ── -->
+    <nav class="nav">
+      <div class="wrap nav__inner">
+        <a class="nav__brand" href="/" aria-label="Workbench Budgeting home">
+          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          Workbench&nbsp;Budgeting
+        </a>
+        <span class="nav__spacer"></span>
+        <div class="nav__links">
+          <a href="/#features">Features</a>
+          <a href="/#philosophy">Philosophy</a>
+          <a href="/about" aria-current="page">About</a>
+          <a href="/#download" class="btn btn--primary btn--sm nav__cta">Download</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── About hero ── -->
+    <header class="about-hero">
+      <div class="wrap">
+        <span class="kicker reveal-up d1">About</span>
+        <h1 class="about-hero__title reveal-up d2">Garden Studio</h1>
+        <p class="about-hero__lead reveal-up d3">
+          The one-person software shop behind Workbench Budgeting.
+        </p>
+      </div>
+    </header>
+
+    <!-- ── About body ── -->
+    <section class="section about" aria-label="About Garden Studio">
+      <div class="wrap about__inner">
+        <div class="prose on-scroll">
+          <p>
+            Garden Studio is a one-person software shop. The name comes from a period of
+            garden leave between jobs — time I used to find out what I'd do if money wasn't
+            an object. The answer was building stuff like this app.
+          </p>
+          <p>
+            I've spent most of my career in corporate finance, working with large corporate
+            budgets and with complex financial information systems. The professional tools
+            for that scale are serious. The consumer tools I had for my own money weren't. I
+            started keeping my personal budget in an Excel spreadsheet about ten years ago,
+            and it slowly became a zombie — hard to update, impossible to hand off to others,
+            but still the best option I had.
+          </p>
+          <p>
+            What frustrated me most wasn't the interface. It was the accounting. Venmo
+            transfers — a group dinner where four people pay you back the same night —
+            completely breaking your spend totals. A big expense like a car downpayment being
+            unable to spread across months. A transfer between accounts rendering that month
+            indecipherable. Every consumer app I tried either ignored these cases or handled
+            them badly. And the features I needed existed somewhere — just never in the same
+            tool.
+          </p>
+          <p>
+            I've also watched a lot of people around me struggle with their finances, not for
+            lack of trying but for lack of a tool that takes them seriously.
+            <strong>Workbench is the app I needed. I think it might be the one they need too.</strong>
+          </p>
+        </div>
+
+        <aside class="about-card on-scroll" aria-label="Studio details">
+          <div class="about-card__bar">
+            <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="about-card__name">garden_studio</span>
+          </div>
+          <dl class="about-card__list">
+            <div>
+              <dt>Studio</dt>
+              <dd>Garden Studio</dd>
+            </div>
+            <div>
+              <dt>Product</dt>
+              <dd>Workbench Budgeting</dd>
+            </div>
+            <div>
+              <dt>Team</dt>
+              <dd>Solo · independent</dd>
+            </div>
+            <div>
+              <dt>Background</dt>
+              <dd>Corporate finance</dd>
+            </div>
+            <div>
+              <dt>Focus</dt>
+              <dd>Serious tools for personal money</dd>
+            </div>
+          </dl>
+          <a href="/#download" class="btn btn--primary about-card__cta">Download the App</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <span class="footer__brand">
+          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          Workbench Budgeting
+        </span>
+        <span>&copy; <span id="year"></span> Garden Studio. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const revealEls = document.querySelectorAll(".on-scroll");
+      if (reduceMotion || !("IntersectionObserver" in window)) {
+        revealEls.forEach((el) => el.classList.add("in-view"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12 }
+        );
+        revealEls.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>
