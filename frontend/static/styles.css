@@ -833,6 +833,138 @@ body::before {
 }
 
 /* ============================================================
+   About page (/about)
+   ============================================================ */
+.about-hero {
+  position: relative;
+  z-index: 1;
+  padding: clamp(3rem, 7vw, 5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+  border-bottom: 1px solid var(--border);
+}
+.about-hero__title {
+  margin-top: 0.9rem;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  color: var(--ink);
+}
+.about-hero__lead {
+  margin-top: 1rem;
+  max-width: 48ch;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  color: var(--ink-muted);
+}
+
+.about__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.75rem, 4vw, 3.25rem);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .about__inner {
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+}
+
+.prose p {
+  margin: 0 0 1.2rem;
+  max-width: 66ch;
+  color: var(--ink-muted);
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+.prose p:first-child {
+  font-size: clamp(1.15rem, 2vw, 1.32rem);
+  line-height: 1.55;
+  color: var(--ink);
+}
+.prose p:last-child {
+  margin-bottom: 0;
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Studio detail card — app panel motif */
+.about-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+@media (min-width: 900px) {
+  .about-card {
+    position: sticky;
+    top: 72px;
+  }
+}
+.about-card__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(180deg, var(--titlebar), var(--titlebar-2));
+}
+.about-card__bar .dots {
+  display: flex;
+  gap: 5px;
+}
+.about-card__bar .dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+}
+.about-card__bar .dots span:first-child {
+  background: var(--accent);
+}
+.about-card__name {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+.about-card__list {
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+.about-card__list > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.about-card__list > div:last-child {
+  border-bottom: none;
+}
+.about-card__list dt {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.about-card__list dd {
+  margin: 0;
+  text-align: right;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.about-card__cta {
+  display: flex;
+  width: calc(100% - 2rem);
+  margin: 0.4rem 1rem 1rem;
+}
+
+/* ============================================================
    Scroll reveal (JS toggles .in-view)
    ============================================================ */
 .on-scroll {
