@@ -807,54 +807,141 @@ body::before {
   transform: rotate(45deg);
 }
 
-/* ── How it works: the loop ── */
-.loop__flow {
-  display: flex;
-  align-items: stretch;
-  gap: 0.6rem;
-}
-.loopstep {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
+/* ── How it works × the tools: the loop, columnized as a table ── */
+
+/* Pre-step: guided on-ramp banner, spanning the whole table */
+.flow__onramp {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  align-items: center;
+  padding: 1.3rem 1.4rem;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-line);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-md);
-  padding: 1.3rem 1.2rem;
 }
-.loopstep__num {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--accent);
+@media (min-width: 760px) {
+  .flow__onramp { grid-template-columns: 1.45fr 1fr; }
 }
-.loopstep__title {
-  margin-top: 0.5rem;
-  font-size: 1.02rem;
+.flow__onramp-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--accent);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+}
+.flow__onramp-title {
+  margin-top: 0.7rem;
+  font-size: clamp(1.05rem, 1.9vw, 1.28rem);
   font-weight: 700;
   letter-spacing: -0.01em;
+  line-height: 1.25;
   color: var(--ink);
 }
-.loopstep__desc {
-  margin-top: 0.55rem;
-  font-size: 0.88rem;
+.flow__onramp-desc {
+  margin-top: 0.45rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
   color: var(--ink-muted);
 }
-.loop__arrow {
-  flex: 0 0 auto;
-  align-self: center;
-  font-size: 1.15rem;
+.flow__onramp-shot { margin: 0; align-self: center; }
+
+.flow__downarrow {
+  display: block;
+  text-align: center;
+  margin: 0.7rem 0 0.4rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--border-strong);
 }
-.loopstep--result {
+
+/* The table: steps are columns (the "how"), tools stack beneath (the "what").
+   Subgrid keeps all the step headers aligned across columns even when each
+   column holds a different number of tool cards. */
+.flow__table {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+.flowcol {
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  row-gap: 0.9rem;
+}
+.flowcol__head {
+  padding: 0.9rem 1rem 1rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+.flowcol--payoff .flowcol__head {
   background: var(--accent-subtle);
   border-color: var(--accent-line);
+  border-top-color: var(--accent);
 }
+.flowcol__step {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.flowcol__title {
+  margin-top: 0.3rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.flowcol__sub {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.flowcol__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* denser feature cards inside the loop columns */
+.flow .feature { padding: 1.1rem 1rem 1rem; }
+.flow .feature__title { margin-top: 0; }
+.flow .feature__shot { margin-top: 0.7rem; }
+
+/* Step 4 payoff cell — the number, not another tool */
+.payoff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  height: 100%;
+  padding: 1.1rem 1rem 1.2rem;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-md);
+}
+.payoff__desc {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+/* shared number block (reused by the payoff cell) */
 .loop__number {
   margin-top: auto;
-  padding-top: 1rem;
+  padding-top: 0.8rem;
 }
 .loop__number-label {
   display: block;
@@ -880,9 +967,54 @@ body::before {
   font-size: 0.66rem;
   color: var(--muted);
 }
-@media (max-width: 860px) {
-  .loop__flow { flex-direction: column; }
-  .loop__arrow { transform: rotate(90deg); }
+
+/* Privacy — a product attribute, not a step; a callout beneath the table */
+.flow__privacy {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+.flow__privacy-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+.flow__privacy-text {
+  flex: 1 1 320px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+.flow__privacy-text strong { color: var(--ink); font-weight: 600; }
+.flow__privacy-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.flow__privacy-chips .privacy-row__status { margin-left: 0; }
+
+@media (max-width: 1000px) {
+  .flow__table {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+  }
+  .flowcol {
+    grid-row: auto;
+    grid-template-rows: none;
+  }
+}
+@media (max-width: 600px) {
+  .flow__table { grid-template-columns: 1fr; }
 }
 
 /* ── Philosophy / pull-quote ── */
@@ -1955,56 +2087,6 @@ body::before {
 .setup.is-live .setup__option:nth-child(1) { transition-delay: 0.10s; }
 .setup.is-live .setup__option:nth-child(2) { transition-delay: 0.20s; }
 .setup.is-live .setup__option:nth-child(3) { transition-delay: 0.30s; }
-
-/* ── How it works: guided-setup lead-in (step zero) ── */
-.loopstart {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.1rem;
-  margin-bottom: 1.6rem;
-  padding: 1.2rem 1.4rem;
-  background: var(--accent-subtle);
-  border: 1px solid var(--accent-line);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-md);
-}
-.loopstart__badge {
-  flex: 0 0 auto;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--accent);
-  padding: 0.3rem 0.6rem;
-  border-radius: var(--radius-sm);
-}
-.loopstart__title {
-  font-size: clamp(1.05rem, 1.9vw, 1.25rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-  color: var(--ink);
-}
-.loopstart__desc {
-  margin-top: 0.4rem;
-  font-size: 0.92rem;
-  line-height: 1.6;
-  color: var(--ink-muted);
-}
-.loopstart__arrow {
-  position: absolute;
-  left: 50%;
-  bottom: -1.55rem;
-  transform: translateX(-50%);
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--border-strong);
-}
-@media (max-width: 620px) {
-  .loopstart { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
-}
 
 /* ── Guided setup — compact feature shot ── */
 .setupmini { display: flex; flex-direction: column; }
