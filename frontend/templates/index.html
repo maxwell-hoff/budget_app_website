@@ -6,7 +6,7 @@
     <title>Workbench Budgeting — Figure out what your budget should actually be</title>
     <meta
       name="description"
-      content="Workbench Budgeting is a private, desktop app that turns your real spending into a forecast, scenario comparisons, and a budget you arrive at yourself — serious accounting tools, in plain language."
+      content="Workbench Budgeting is a private desktop app with a guided setup that walks you from zero to your real numbers in about five minutes — then turns your spending into a forecast, scenario comparisons, and a budget you arrive at yourself. Whether you've outgrown other budgeting apps or never tracked your money at all."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,175 +55,64 @@
             <a href="#features" class="btn btn--lg">Explore Features</a>
           </div>
           <div class="hero__trust reveal-up d5">
-            <span>Your own numbers in ~5 minutes — no accounts to connect</span>
+            <span>Guided setup takes you from zero to your real numbers in about 5 minutes</span>
             <span>Runs locally — your data never leaves your device</span>
             <a class="hero__buildlink" href="#" target="_blank" rel="noopener">Built in public &rarr;</a>
           </div>
         </div>
 
-        <!-- Live product window — replaces the old cinematic video hero -->
-        <div class="window" aria-label="Workbench Budgeting interface preview">
+        <!-- Live product window — guided setup interview (the on-ramp) -->
+        <div class="window setup" aria-label="Workbench Budgeting guided setup preview">
           <div class="window__bar">
             <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span class="window__title">workbench_budgeting — actuals</span>
+            <span class="window__title">workbench_budgeting — guided setup</span>
           </div>
 
-          <!-- Faithful recreation of the app's Actuals toolbar -->
-          <div class="app-toolbar" aria-hidden="true">
-            <span class="app-control app-control--profile">Personal <span class="caret">▼</span></span>
-            <span class="app-control">Refresh</span>
-            <span class="app-control app-control--primary">Save</span>
-            <span class="app-control">Actions <span class="caret">▼</span></span>
-            <span class="app-toolbar__spacer"></span>
-            <span class="app-control">Month <span class="caret">▼</span></span>
+          <!-- Interview progress -->
+          <div class="setup__progress" aria-hidden="true">
+            <div class="setup__progress-row">
+              <span class="setup__step">Step 2 of 5 · Your income</span>
+              <span class="setup__time">~5 min</span>
+            </div>
+            <div class="setup__bar"><span class="setup__fill"></span></div>
           </div>
 
-          <div class="window__body">
-            <div class="chart">
-              <div class="chart__head">
-                <span class="chart__title">Cashflow &amp; Balance · Monthly</span>
-                <span class="chart__legend">
-                  <span><i style="background:#0d6e3f"></i>Income</span>
-                  <span><i style="background:#c0392b"></i>Expenses</span>
-                  <span><i style="background:#003a70"></i>Balance</span>
-                  <span><i style="background:#5b2c8c"></i>Net</span>
-                  <span><i class="dash"></i>Implied</span>
+          <div class="window__body setup__body">
+            <span class="setup__kicker">Let's get the basics down</span>
+            <h3 class="setup__q">How do you usually get paid?</h3>
+            <p class="setup__help">
+              No need to be exact — you can refine every number later. We just need a place to start.
+            </p>
+
+            <div class="setup__options" role="radiogroup" aria-label="How you get paid">
+              <span class="setup__option is-active">
+                <span class="setup__radio" aria-hidden="true"></span>
+                <span class="setup__opt-text">
+                  <span class="setup__opt-title">A steady paycheck</span>
+                  <span class="setup__opt-sub">Same amount on a regular schedule</span>
                 </span>
-              </div>
-              <svg viewBox="0 0 320 140" role="img" aria-label="Monthly income bars above a zero line, expense bars below, with total balance, net income, and implied balance lines">
-                <!-- gridlines -->
-                <g stroke="var(--border)" stroke-width="1">
-                  <line x1="0" y1="20" x2="320" y2="20" />
-                  <line x1="0" y1="54" x2="320" y2="54" />
-                  <line x1="0" y1="116" x2="320" y2="116" />
-                </g>
-                <!-- zero baseline (cash axis): income above, expenses below -->
-                <line x1="0" y1="88" x2="320" y2="88" stroke="var(--border-strong)" stroke-width="1" />
-                <text class="chart__axis-label" x="2" y="85">0</text>
-
-                <!-- Income (up, green) + Expense (down, red) bars per month -->
-                <g>
-                  <rect class="chart-bar chart-bar--income"  x="16"  y="61" width="9" height="27" style="animation-delay:.65s" />
-                  <rect class="chart-bar chart-bar--expense" x="29"  y="88" width="9" height="38" style="animation-delay:.70s" />
-                  <rect class="chart-bar chart-bar--income"  x="69"  y="56" width="9" height="32" style="animation-delay:.75s" />
-                  <rect class="chart-bar chart-bar--expense" x="82"  y="88" width="9" height="36" style="animation-delay:.80s" />
-                  <rect class="chart-bar chart-bar--income"  x="122" y="47" width="9" height="41" style="animation-delay:.85s" />
-                  <rect class="chart-bar chart-bar--expense" x="135" y="88" width="9" height="27" style="animation-delay:.90s" />
-                  <rect class="chart-bar chart-bar--income"  x="176" y="43" width="9" height="45" style="animation-delay:.95s" />
-                  <rect class="chart-bar chart-bar--expense" x="189" y="88" width="9" height="26" style="animation-delay:1.0s" />
-                  <rect class="chart-bar chart-bar--income"  x="229" y="46" width="9" height="42" style="animation-delay:1.05s" />
-                  <rect class="chart-bar chart-bar--expense" x="242" y="88" width="9" height="33" style="animation-delay:1.10s" />
-                  <rect class="chart-bar chart-bar--income"  x="282" y="42" width="9" height="46" style="animation-delay:1.15s" />
-                  <rect class="chart-bar chart-bar--expense" x="295" y="88" width="9" height="29" style="animation-delay:1.20s" />
-                </g>
-
-                <!-- Net income (purple) — dips below the zero line when expenses exceed income (Jan/Feb) -->
-                <polyline class="chart-line--net" points="27,100 80,92 133,74 187,69 240,79 293,71" />
-                <!-- Total balance (navy, drawn in) — softens early, then climbs -->
-                <polyline class="chart-line chart-line--plan chart-line--draw"
-                  points="27,33 80,35 133,29 187,24 240,21 293,14" />
-                <!-- Implied balance (dashed) — only available for the latest two months -->
-                <polyline class="chart-line--implied" points="240,25 293,18" />
-                <circle cx="240" cy="25" r="2.2" fill="#2a7ab0" />
-
-                <!-- month labels -->
-                <g class="chart__axis-label" text-anchor="middle">
-                  <text x="27" y="134">Jan</text>
-                  <text x="80" y="134">Feb</text>
-                  <text x="133" y="134">Mar</text>
-                  <text x="187" y="134">Apr</text>
-                  <text x="240" y="134">May</text>
-                  <text x="293" y="134">Jun</text>
-                </g>
-              </svg>
+              </span>
+              <span class="setup__option">
+                <span class="setup__radio" aria-hidden="true"></span>
+                <span class="setup__opt-text">
+                  <span class="setup__opt-title">It varies month to month</span>
+                  <span class="setup__opt-sub">Freelance, commission, tips, or bonuses</span>
+                </span>
+              </span>
+              <span class="setup__option">
+                <span class="setup__radio" aria-hidden="true"></span>
+                <span class="setup__opt-text">
+                  <span class="setup__opt-title">A few different sources</span>
+                  <span class="setup__opt-sub">We'll add them one at a time</span>
+                </span>
+              </span>
             </div>
 
-            <!-- Cashflow pivot grid (metric rows × periods) -->
-            <div class="window__label">Cashflow Statement</div>
-            <div class="cfgrid" aria-label="Cashflow by month">
-              <div class="cfgrid__row cfgrid__row--head">
-                <span class="cfgrid__cell">Metric</span>
-                <span class="cfgrid__cell">Mar</span>
-                <span class="cfgrid__cell">Apr</span>
-                <span class="cfgrid__cell">May</span>
-                <span class="cfgrid__cell">Jun</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Income</span>
-                <span class="cfgrid__cell pos">6,400</span>
-                <span class="cfgrid__cell pos">7,000</span>
-                <span class="cfgrid__cell pos">6,600</span>
-                <span class="cfgrid__cell pos">7,200</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Expenses</span>
-                <span class="cfgrid__cell neg">(4,200)</span>
-                <span class="cfgrid__cell neg">(4,000)</span>
-                <span class="cfgrid__cell neg">(5,200)</span>
-                <span class="cfgrid__cell neg">(4,600)</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Net</span>
-                <span class="cfgrid__cell pos">2,200</span>
-                <span class="cfgrid__cell pos">3,000</span>
-                <span class="cfgrid__cell pos">1,400</span>
-                <span class="cfgrid__cell pos">2,600</span>
-              </div>
-              <div class="cfgrid__row cfgrid__row--total">
-                <span class="cfgrid__cell">Total Bal.</span>
-                <span class="cfgrid__cell">176,120</span>
-                <span class="cfgrid__cell">179,120</span>
-                <span class="cfgrid__cell">180,520</span>
-                <span class="cfgrid__cell">184,320</span>
-              </div>
-            </div>
-
-            <!-- Transactions: the source the statement above rolls up from -->
-            <div class="window__label">
-              Transactions
-              <span class="hint">&uarr; rolls up into the statement</span>
-            </div>
-            <div class="txnlist" aria-label="Transactions">
-              <div class="txnlist__row txnlist__row--head">
-                <span>Date</span>
-                <span>Description</span>
-                <span>Amount</span>
-                <span>Transfer</span>
-                <span>Amortize</span>
-                <span>Split</span>
-              </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/14</span>
-                <span class="txnlist__desc">Costco</span>
-                <span class="txnlist__amt neg">−$842.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill is-set">12 mo</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/12</span>
-                <span class="txnlist__desc">Payroll Deposit</span>
-                <span class="txnlist__amt pos">+$4,200.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row is-muted" title="Marked as a transfer — excluded from the cashflow statement">
-                <span class="txnlist__date">06/10</span>
-                <span class="txnlist__desc">Move to Brokerage</span>
-                <span class="txnlist__amt neg">−$1,500.00</span>
-                <span class="txnlist__marker"><span class="flagbox is-on"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/08</span>
-                <span class="txnlist__desc">Home Depot</span>
-                <span class="txnlist__amt neg">−$320.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill is-set">2 acct</span></span>
-              </div>
+            <div class="setup__nav">
+              <span class="setup__back">Back</span>
+              <span class="setup__navspacer"></span>
+              <span class="setup__hint">↵ Enter to continue</span>
+              <span class="setup__next">Continue →</span>
             </div>
           </div>
         </div>
@@ -238,6 +127,7 @@
         <span class="ticker__item">Your own numbers in 5 minutes</span>
         <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
         <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
+        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
         <span class="ticker__item">Model the trade-off before you commit</span>
         <!-- duplicate for seamless loop -->
         <span class="ticker__item">See what overspending really costs</span>
@@ -245,6 +135,7 @@
         <span class="ticker__item">Your own numbers in 5 minutes</span>
         <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
         <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
+        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
         <span class="ticker__item">Model the trade-off before you commit</span>
       </div>
     </div>
@@ -282,11 +173,12 @@
             <div class="problem__audience">
               <span class="problem__audience-label">Who it's for</span>
               <p>
-                You've already outgrown Mint, YNAB, and Monarch. You don't need help
-                categorizing your coffee — you want to genuinely understand your numbers and
-                steer them. But you're not a financial planner with a client book and a CFP,
-                and you shouldn't have to become one. Workbench sits exactly there: serious
-                enough to model real trade-offs, plain enough to actually use.
+                Whether you've outgrown Mint, YNAB, and Monarch — or you've never really sat
+                down with your finances at all. A guided setup walks you in from zero, so you
+                don't need a system already in place to start. And once you're in, it's serious
+                enough to model real trade-offs without making you a financial planner with a
+                client book and a CFP. Workbench sits exactly there: plain enough to begin
+                today, deep enough to grow into.
               </p>
             </div>
           </div>
@@ -302,9 +194,23 @@
           <h2 class="section__title">A budget you arrive at — not one you're handed.</h2>
           <p class="section__lead">
             Rules of thumb don't know your life. Workbench turns your own numbers into a budget
-            you can trust — each step building on the last, until the right figure is just
-            sitting there in front of you.
+            you can trust — and it starts by walking you through setup, so you don't need a
+            system already in place to begin.
           </p>
+        </div>
+
+        <!-- Step zero: the guided on-ramp, before the ongoing loop -->
+        <div class="loopstart on-scroll">
+          <span class="loopstart__badge">Start here</span>
+          <div class="loopstart__body">
+            <h3 class="loopstart__title">First, we walk you through it — like an interview, not a spreadsheet.</h3>
+            <p class="loopstart__desc">
+              Guided setup asks plain-language questions about how you earn, spend, and save, and
+              builds your starting picture for you. No jargon, no blank screen to stare at — in
+              about five minutes you're looking at your real numbers. Then the loop below begins.
+            </p>
+          </div>
+          <span class="loopstart__arrow" aria-hidden="true">&darr;</span>
         </div>
 
         <div class="loop__flow on-scroll" data-stagger>
@@ -366,16 +272,48 @@
           <span class="kicker">What's on the workbench</span>
           <h2 class="section__title">Serious tools, made approachable.</h2>
           <p class="section__lead">
-            Every tool here earns its place by doing one thing: showing you the downstream cost
-            of a decision before you commit to it — the kind of capability professionals rely on,
-            in plain language you'll actually want to open.
+            It starts with a guided setup that gets anyone from zero to their real numbers — then
+            opens up into the kind of capability professionals rely on, in plain language you'll
+            actually want to open. Each tool earns its place by showing you the downstream cost of
+            a decision before you commit to it.
           </p>
         </div>
 
         <div class="features on-scroll" data-stagger>
-          <!-- 01 — Scenario Planning -->
+          <!-- 01 — Guided Setup (the on-ramp) -->
           <article class="feature">
             <div class="feature__index">01</div>
+            <h3 class="feature__title">Guided Setup</h3>
+            <div class="feature__shot" aria-hidden="true">
+              <div class="shot__bar">
+                <span class="dots"><span></span><span></span><span></span></span>
+                <span class="shot__name">guided setup — step 2 of 5</span>
+              </div>
+              <div class="shot__body">
+                <div class="setupmini">
+                  <div class="setupmini__head">
+                    <span class="setupmini__step">Your income</span>
+                    <span class="setupmini__count">2 / 5</span>
+                  </div>
+                  <div class="setupmini__bar"><span class="setupmini__fill"></span></div>
+                  <p class="setupmini__q">How do you usually get paid?</p>
+                  <div class="setupmini__opts">
+                    <span class="setupmini__opt is-active"><span class="setupmini__radio"></span>A steady paycheck</span>
+                    <span class="setupmini__opt"><span class="setupmini__radio"></span>It varies month to month</span>
+                    <span class="setupmini__opt"><span class="setupmini__radio"></span>A few different sources</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ul class="feature__list">
+              <li>Answer plain-language questions — no jargon, no blank spreadsheet — and Workbench builds your starting picture for you.</li>
+              <li>Never sat down with your finances before? This is the on-ramp: zero to your real numbers in about five minutes.</li>
+            </ul>
+          </article>
+
+          <!-- 02 — Scenario Planning -->
+          <article class="feature">
+            <div class="feature__index">02</div>
             <h3 class="feature__title">Scenario Planning</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -406,9 +344,9 @@
             </ul>
           </article>
 
-          <!-- 02 — Fine-tuned Forecasting -->
+          <!-- 03 — Fine-tuned Forecasting -->
           <article class="feature">
-            <div class="feature__index">02</div>
+            <div class="feature__index">03</div>
             <h3 class="feature__title">Fine-tuned Forecasting</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -434,9 +372,9 @@
             </ul>
           </article>
 
-          <!-- 03 — Budget vs. Actual -->
+          <!-- 04 — Budget vs. Actual -->
           <article class="feature">
-            <div class="feature__index">03</div>
+            <div class="feature__index">04</div>
             <h3 class="feature__title">Budget vs. Actual Insights</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -462,9 +400,9 @@
             </ul>
           </article>
 
-          <!-- 04 — Privacy-First -->
+          <!-- 05 — Privacy-First -->
           <article class="feature">
-            <div class="feature__index">04</div>
+            <div class="feature__index">05</div>
             <h3 class="feature__title">Privacy-First by Default</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -495,9 +433,9 @@
             </ul>
           </article>
 
-          <!-- 05 — All Accounts -->
+          <!-- 06 — All Accounts -->
           <article class="feature">
-            <div class="feature__index">05</div>
+            <div class="feature__index">06</div>
             <h3 class="feature__title">All Accounts in One Place</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -534,9 +472,9 @@
             </ul>
           </article>
 
-          <!-- 06 — Advanced Accounting -->
+          <!-- 07 — Advanced Accounting -->
           <article class="feature">
-            <div class="feature__index">06</div>
+            <div class="feature__index">07</div>
             <h3 class="feature__title">Numbers That Match Reality</h3>
             <div class="feature__shot" aria-hidden="true">
               <div class="shot__bar">
@@ -702,8 +640,8 @@
         counters.forEach(runCount);
       }
 
-      /* ── Bring each app-sample (and the hero cashflow grid) to life ── */
-      const liveEls = document.querySelectorAll(".feature__shot, .cfgrid, .txnlist");
+      /* ── Bring each app-sample (and the hero guided-setup window) to life ── */
+      const liveEls = document.querySelectorAll(".feature__shot, .setup");
       const activateLive = (el) => {
         el.classList.add("is-live");
         startSampleLoops(el);
@@ -755,6 +693,20 @@
             flag.classList.add("is-on");
             setInterval(() => flag.classList.toggle("is-on"), 2600);
           }, 900);
+        }
+
+        /* Guided setup (hero + feature card): cycle the selected answer */
+        const setupOpts = shot.querySelectorAll(".setup__option, .setupmini__opt");
+        if (setupOpts.length) {
+          let s = 0;
+          const cycleOpt = () => {
+            setupOpts.forEach((o, n) => o.classList.toggle("is-active", n === s));
+            s = (s + 1) % setupOpts.length;
+          };
+          setTimeout(() => {
+            cycleOpt();
+            setInterval(cycleOpt, 2100);
+          }, 1300);
         }
       }
 
