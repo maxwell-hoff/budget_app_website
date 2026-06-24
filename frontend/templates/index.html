@@ -6,7 +6,7 @@
     <title>Workbench Budgeting — Figure out what your budget should actually be</title>
     <meta
       name="description"
-      content="Workbench Budgeting is a private desktop app with a guided setup that walks you from zero to your real numbers in about five minutes — then turns your spending into a forecast, scenario comparisons, and a budget you arrive at yourself. Whether you've outgrown other budgeting apps or never tracked your money at all."
+      content="Workbench Budgeting turns your real spending into a living forecast, so you can see what today's overspending will cost you years from now — and arrive at a budget that's actually yours. A guided setup walks you in from zero in about five minutes, and your data stays local on your device."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,9 +27,7 @@
         </a>
         <span class="nav__spacer"></span>
         <div class="nav__links">
-          <a href="#why">Why</a>
           <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
           <a href="#philosophy">Philosophy</a>
           <a href="/about">About</a>
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
@@ -37,83 +35,21 @@
       </div>
     </nav>
 
-    <!-- ── Hero ── -->
+    <!-- ── Hero (the Why — problem only, no product description) ── -->
     <header class="hero" id="top">
-      <div class="wrap hero__grid">
+      <div class="wrap hero__inner">
         <div class="hero__copy">
-          <span class="kicker reveal-up d1">Budgeting &amp; forecasting · desktop app</span>
+          <span class="kicker reveal-up d1">Budgeting &amp; forecasting · web app, local data</span>
           <h1 class="hero__title reveal-up d2">
             Today's overspending has a price you won't feel for years. Workbench makes you feel it <em>now.</em>
           </h1>
           <p class="hero__tagline reveal-up d3">
-            <strong>A private desktop app that turns your real spending into a living forecast.</strong>
-            Change one assumption — a raise, a move, a cutback — and watch it ripple years ahead,
-            until the budget you should actually run is sitting right in front of you.
+            Overspend this month and nothing pushes back. The <strong>$300 you didn't save</strong>
+            quietly becomes a few thousand you won't have in five years — and without something to
+            show you that, the budget quietly dies.
           </p>
           <div class="hero__actions reveal-up d4">
-            <a href="#download" class="btn btn--primary btn--lg">Download Now</a>
-            <a href="#features" class="btn btn--lg">Explore Features</a>
-          </div>
-          <div class="hero__trust reveal-up d5">
-            <span>Guided setup takes you from zero to your real numbers in about 5 minutes</span>
-            <span>Runs locally — your data never leaves your device</span>
-            <a class="hero__buildlink" href="#" target="_blank" rel="noopener">Built in public &rarr;</a>
-          </div>
-        </div>
-
-        <!-- Live product window — guided setup interview (the on-ramp) -->
-        <div class="window setup" aria-label="Workbench Budgeting guided setup preview">
-          <div class="window__bar">
-            <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span class="window__title">workbench_budgeting — guided setup</span>
-          </div>
-
-          <!-- Interview progress -->
-          <div class="setup__progress" aria-hidden="true">
-            <div class="setup__progress-row">
-              <span class="setup__step">Step 2 of 5 · Your income</span>
-              <span class="setup__time">~5 min</span>
-            </div>
-            <div class="setup__bar"><span class="setup__fill"></span></div>
-          </div>
-
-          <div class="window__body setup__body">
-            <span class="setup__kicker">Let's get the basics down</span>
-            <h3 class="setup__q">How do you usually get paid?</h3>
-            <p class="setup__help">
-              No need to be exact — you can refine every number later. We just need a place to start.
-            </p>
-
-            <div class="setup__options" role="radiogroup" aria-label="How you get paid">
-              <span class="setup__option is-active">
-                <span class="setup__radio" aria-hidden="true"></span>
-                <span class="setup__opt-text">
-                  <span class="setup__opt-title">A steady paycheck</span>
-                  <span class="setup__opt-sub">Same amount on a regular schedule</span>
-                </span>
-              </span>
-              <span class="setup__option">
-                <span class="setup__radio" aria-hidden="true"></span>
-                <span class="setup__opt-text">
-                  <span class="setup__opt-title">It varies month to month</span>
-                  <span class="setup__opt-sub">Freelance, commission, tips, or bonuses</span>
-                </span>
-              </span>
-              <span class="setup__option">
-                <span class="setup__radio" aria-hidden="true"></span>
-                <span class="setup__opt-text">
-                  <span class="setup__opt-title">A few different sources</span>
-                  <span class="setup__opt-sub">We'll add them one at a time</span>
-                </span>
-              </span>
-            </div>
-
-            <div class="setup__nav">
-              <span class="setup__back">Back</span>
-              <span class="setup__navspacer"></span>
-              <span class="setup__hint">↵ Enter to continue</span>
-              <span class="setup__next">Continue →</span>
-            </div>
+            <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
           </div>
         </div>
       </div>
@@ -140,103 +76,22 @@
       </div>
     </div>
 
-    <!-- ── Why this exists: the problem (bridge between hero & how-it-works) ── -->
-    <section class="section problem" id="why" aria-label="Why Workbench exists">
-      <div class="wrap">
-        <div class="problem__grid on-scroll">
-          <div class="problem__lead-col">
-            <span class="kicker">Why Workbench exists</span>
-            <h2 class="problem__title">
-              Most budgets don't fail from a lack of discipline. They fail because you
-              can't see what breaking them <em>costs you.</em>
-            </h2>
-            <p class="problem__thesis">
-              So we built a tool that makes the cost of every choice visible — and lets you
-              arrive at your budget instead of being handed one.
-            </p>
-          </div>
-
-          <div class="problem__body-col">
-            <p class="problem__para">
-              Overspend on dining this month and nothing pushes back. There's no signal that
-              the <strong>$300 you didn't save</strong> just quietly became a few thousand you
-              won't have in five years. The decision and its consequence are separated by
-              years — so in the moment, the real cost stays invisible.
-            </p>
-            <p class="problem__para">
-              That's the actual reason rules of thumb don't work. 50/30/20, "spend less than
-              you make," the envelope method — none of them can show you the downstream price
-              of a single decision, because none of them are tied to <em>your</em> trajectory.
-              So discipline feels arbitrary, and the budget quietly dies.
-            </p>
-
-            <div class="problem__audience">
-              <span class="problem__audience-label">Who it's for</span>
-              <p>
-                Whether you've outgrown Mint, YNAB, and Monarch — or you've never really sat
-                down with your finances at all. A guided setup walks you in from zero, so you
-                don't need a system already in place to start. And once you're in, it's serious
-                enough to model real trade-offs without making you a financial planner with a
-                client book and a CFP. Workbench sits exactly there: plain enough to begin
-                today, deep enough to grow into.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── How it works × what's on the workbench: the loop and the tools ── -->
+    <!-- ── The fix: how Workbench works × the tools (the solution reveal) ── -->
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
         <div class="section__head on-scroll">
-          <span class="kicker">How it works · what's on the workbench</span>
+          <span class="kicker">The fix</span>
           <h2 class="section__title">
             From messy transactions to a number you trust — and the tools that get you there.
           </h2>
           <p class="section__lead">
-            Each step is a stage in the loop; the tools beneath it are what you actually use to
-            get through that stage. Every one of them exists for the same reason — to show you the
-            downstream price of a decision before you commit to it. Not just what you spent, but
-            what it compounds to.
+            Here's how Workbench fixes that. A guided setup walks you in from zero — plain-language
+            questions, no blank screen, your real numbers in about five minutes — and from there
+            you're in a loop. Each step below is a stage; the tools beneath it are what you use to
+            get through it, every one built to show you the downstream price of a decision before
+            you commit. Not just what you spent, but what it compounds to.
           </p>
         </div>
-
-        <!-- Pre-step: the guided on-ramp, spanning the whole table -->
-        <div class="flow__onramp on-scroll">
-          <div class="flow__onramp-copy">
-            <span class="flow__onramp-badge">Start here</span>
-            <h3 class="flow__onramp-title">Before the loop starts, guided setup walks you in.</h3>
-            <p class="flow__onramp-desc">
-              Plain-language questions about how you earn, spend, and save build your starting
-              picture for you — no jargon, no blank screen to stare at. In about five minutes
-              you're looking at your real numbers. Then the loop below begins.
-            </p>
-          </div>
-          <div class="feature__shot flow__onramp-shot" aria-hidden="true">
-            <div class="shot__bar">
-              <span class="dots"><span></span><span></span><span></span></span>
-              <span class="shot__name">guided setup — step 2 of 5</span>
-            </div>
-            <div class="shot__body">
-              <div class="setupmini">
-                <div class="setupmini__head">
-                  <span class="setupmini__step">Your income</span>
-                  <span class="setupmini__count">2 / 5</span>
-                </div>
-                <div class="setupmini__bar"><span class="setupmini__fill"></span></div>
-                <p class="setupmini__q">How do you usually get paid?</p>
-                <div class="setupmini__opts">
-                  <span class="setupmini__opt is-active"><span class="setupmini__radio"></span>A steady paycheck</span>
-                  <span class="setupmini__opt"><span class="setupmini__radio"></span>It varies month to month</span>
-                  <span class="setupmini__opt"><span class="setupmini__radio"></span>A few different sources</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <span class="flow__downarrow" aria-hidden="true">&darr;</span>
 
         <!-- The loop as a table: steps across the top, the tools for each step beneath -->
         <div class="flow__table on-scroll" id="features" data-stagger>
@@ -476,17 +331,16 @@
       </div>
     </section>
 
-    <!-- ── Social proof / build-in-public ── -->
-    <section class="section proof" aria-label="What people are saying">
+    <!-- ── Build-in-public transparency ── -->
+    <section class="section proof" aria-label="Built in public">
       <div class="wrap proof__inner on-scroll">
         <span class="kicker">Built in the open</span>
-        <blockquote class="proof__quote">
-          &ldquo;I finally understand why my budget kept slipping. Watching a single
-          $300 month turn into a <span>five-figure hole</span> years out changed how I spend —
-          without anyone telling me to cut my coffee.&rdquo;
-        </blockquote>
+        <p class="proof__quote">
+          Workbench is being built <span>in public.</span> Every trade-off, dead end, and shipped
+          feature is out where you can see it — no manufactured reviews, no growth-hacked hype.
+          Watch it take shape, kick the tires, and help decide where it goes next.
+        </p>
         <div class="proof__meta">
-          <span class="proof__author">Early access user</span>
           <a class="proof__link" href="#" target="_blank" rel="noopener">Follow the build in public &rarr;</a>
         </div>
       </div>
@@ -497,16 +351,16 @@
       <div class="wrap">
         <div class="download__card on-scroll">
           <span class="kicker">Get started</span>
-          <h2 class="download__title">Get your numbers in front of you</h2>
+          <h2 class="download__title">See what your current path is actually costing you</h2>
           <p class="download__sub">
-            Free to download. Open it, load the included demo data or import your own, and
-            you'll have your real numbers on screen in about five minutes — no accounts to
-            connect, nothing leaves your device.
+            Free to use. Load the included demo data or import your own, and you'll see exactly
+            where this path leads — and what each choice along the way is quietly costing you years
+            from now.
           </p>
           <div class="download__actions">
             <a href="#" class="btn btn--primary btn--lg" aria-label="Download Workbench Budgeting">Download Now</a>
           </div>
-          <p class="download__note">Available for desktop. More platforms coming soon.</p>
+          <p class="download__note">Free to use — your data stays on your device, always.</p>
         </div>
       </div>
     </section>
