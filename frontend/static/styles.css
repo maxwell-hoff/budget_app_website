@@ -269,8 +269,10 @@ body::before {
   }
 }
 
-/* Condensed hero (Why-only): a single constrained text column */
-.hero__inner {
+/* Condensed hero (Why-only): a single constrained text column,
+   left-aligned within the standard page container so its left edge
+   matches the nav and the sections below it. */
+.hero__copy {
   max-width: 780px;
 }
 
