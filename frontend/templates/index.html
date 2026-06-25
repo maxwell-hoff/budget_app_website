@@ -55,54 +55,89 @@
             </div>
           </div>
 
-          <!-- The problem made visible: two balance paths that diverge over five years.
-               No product UI — just the consequence the headline describes. -->
+          <!-- The problem made visible: what a monthly overspend quietly compounds to.
+               Three levels so the reader finds their own number — no categories,
+               no scolding; the future label does the emotional work. -->
           <div class="hero__viz reveal-up d3">
-            <figure class="hviz">
-              <svg viewBox="0 0 560 320" role="img" aria-labelledby="hvizTitle hvizDesc">
-                <title id="hvizTitle">The five-year cost of a decision you can't see</title>
-                <desc id="hvizDesc">
-                  Two account balances start together today and diverge over five years. The path
-                  where the cost was seen and adjusted ends roughly $111,640 above the current path —
-                  the gap is the compounding cost of the decisions you can't see yet.
-                </desc>
-                <defs>
-                  <linearGradient id="hvizGap" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#003a70" stop-opacity="0.18" />
-                    <stop offset="100%" stop-color="#003a70" stop-opacity="0.02" />
-                  </linearGradient>
-                </defs>
+            <figure class="combo">
+              <figcaption class="combo__head">What today's overspending quietly compounds to</figcaption>
 
-                <!-- baseline + time axis -->
-                <line class="hviz__base" x1="44" y1="252" x2="360" y2="252" />
-                <text class="hviz__axis" x="44" y="272" text-anchor="start">Today</text>
-                <text class="hviz__axis" x="360" y="272" text-anchor="end">Five years from now</text>
+              <div class="combo__chart">
+                <svg viewBox="0 0 520 300" role="img" aria-labelledby="comboTitle comboDesc">
+                  <title id="comboTitle">What a monthly overspend compounds to over time</title>
+                  <desc id="comboDesc">
+                    Three trajectories from today: going $100 over budget each month becomes about
+                    $4,000 in three years, $300 over becomes about $21,000 in five years, and $500
+                    over becomes about $87,000 in ten years.
+                  </desc>
+                  <defs>
+                    <linearGradient id="comboFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#003a70" stop-opacity="0.16" />
+                      <stop offset="100%" stop-color="#003a70" stop-opacity="0.01" />
+                    </linearGradient>
+                  </defs>
 
-                <!-- the gap: the consequence made visual -->
-                <path class="hviz__gap" d="M44 236 C150 234 262 162 360 54 L360 182 C280 202 168 234 44 236 Z" />
+                  <!-- grid + axes -->
+                  <g class="combo__grid">
+                    <line x1="52" y1="36" x2="496" y2="36" />
+                    <line x1="52" y1="116" x2="496" y2="116" />
+                    <line x1="52" y1="196" x2="496" y2="196" />
+                    <line x1="52" y1="276" x2="496" y2="276" class="combo__axis" />
+                    <line x1="52" y1="36" x2="52" y2="276" class="combo__axis" />
+                  </g>
+                  <g class="combo__ylab">
+                    <text x="44" y="40" text-anchor="end">$90k</text>
+                    <text x="44" y="120" text-anchor="end">$60k</text>
+                    <text x="44" y="200" text-anchor="end">$30k</text>
+                    <text x="44" y="280" text-anchor="end">$0</text>
+                  </g>
+                  <g class="combo__xlab">
+                    <text x="52" y="293" text-anchor="start">Today</text>
+                    <text x="270" y="293" text-anchor="middle">5 years</text>
+                    <text x="488" y="293" text-anchor="end">10 years</text>
+                  </g>
 
-                <!-- current path (what happens if nothing changes) -->
-                <path class="hviz__line hviz__line--current" d="M44 236 C168 234 280 202 360 182" />
-                <!-- adjusted path (what happens once the cost is visible) -->
-                <path class="hviz__line hviz__line--adjusted" d="M44 236 C150 234 262 162 360 54" />
+                  <!-- area under the biggest trajectory -->
+                  <path class="combo__area" d="M52 276 C210 274 330 215 488 44 L488 276 L52 276 Z" />
 
-                <!-- shared starting point + endpoints -->
-                <circle class="hviz__dot" cx="44" cy="236" r="3.5" />
-                <circle class="hviz__dot hviz__dot--muted" cx="360" cy="182" r="4" />
-                <circle class="hviz__dot hviz__dot--accent" cx="360" cy="54" r="4" />
+                  <!-- trajectories: lighter = smaller leak, darker = bigger -->
+                  <path class="combo__line combo__line--1" d="M52 276 C110 275 150 271 183 265" />
+                  <path class="combo__line combo__line--2" d="M52 276 C150 275 215 248 270 220" />
+                  <path class="combo__line combo__line--3" d="M52 276 C210 274 330 215 488 44" />
 
-                <!-- bracket calling out the gap -->
-                <path class="hviz__bracket" d="M372 54 H380 M376 54 V182 M372 182 H380" />
+                  <!-- endpoints -->
+                  <circle class="combo__dot combo__dot--1" cx="183" cy="265" r="4" />
+                  <circle class="combo__dot combo__dot--2" cx="270" cy="220" r="4" />
+                  <circle class="combo__dot combo__dot--3" cx="488" cy="44" r="4.5" />
+                </svg>
+              </div>
 
-                <!-- the dollar figure that sharpens it -->
-                <text class="hviz__num" x="392" y="108" data-count="111640" data-prefix="$">$0</text>
-                <text class="hviz__cap" x="393" y="130">the five-year cost of a</text>
-                <text class="hviz__cap" x="393" y="145">decision you can't see yet</text>
-
-                <!-- which line is which -->
-                <text class="hviz__tag hviz__tag--adjusted" x="352" y="44" text-anchor="end">If you'd seen it &amp; adjusted</text>
-                <text class="hviz__tag hviz__tag--current" x="352" y="204" text-anchor="end">Your current path</text>
-              </svg>
+              <ul class="combo__legend" aria-label="What each trajectory is">
+                <li class="combo__row">
+                  <span class="combo__swatch combo__swatch--1" aria-hidden="true"></span>
+                  <span class="combo__line1">
+                    <span class="combo__plan"><span class="combo__mo" data-count="100" data-prefix="+$">+$0</span>/mo · 3 yrs</span>
+                    <span class="combo__fig">becomes <strong data-count="4000" data-prefix="$">$0</strong></span>
+                  </span>
+                  <span class="combo__dream">the trip you keep postponing</span>
+                </li>
+                <li class="combo__row">
+                  <span class="combo__swatch combo__swatch--2" aria-hidden="true"></span>
+                  <span class="combo__line1">
+                    <span class="combo__plan"><span class="combo__mo" data-count="300" data-prefix="+$">+$0</span>/mo · 5 yrs</span>
+                    <span class="combo__fig">becomes <strong data-count="21000" data-prefix="$">$0</strong></span>
+                  </span>
+                  <span class="combo__dream">the kitchen renovation you keep putting off</span>
+                </li>
+                <li class="combo__row">
+                  <span class="combo__swatch combo__swatch--3" aria-hidden="true"></span>
+                  <span class="combo__line1">
+                    <span class="combo__plan"><span class="combo__mo" data-count="500" data-prefix="+$">+$0</span>/mo · 10 yrs</span>
+                    <span class="combo__fig">becomes <strong data-count="87000" data-prefix="$">$0</strong></span>
+                  </span>
+                  <span class="combo__dream">a down payment on a home</span>
+                </li>
+              </ul>
             </figure>
           </div>
         </div>
