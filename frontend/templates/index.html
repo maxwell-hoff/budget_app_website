@@ -35,22 +35,75 @@
       </div>
     </nav>
 
-    <!-- ── Hero (the Why — problem only, no product description) ── -->
+    <!-- ── Hero (the Why — problem stated left, problem illustrated right) ── -->
     <header class="hero" id="top">
       <div class="wrap">
-        <div class="hero__copy">
-          <span class="kicker reveal-up d1">Personal budgeting software built for consequences, not categories</span>
-          <h1 class="hero__title reveal-up d2">
-            A budget only works if you can see what breaking it actually <em>costs.</em>
-          </h1>
-          <p class="hero__tagline reveal-up d3">
-            Most consumer budgeting apps show you what you spent. Workbench shows you what it 
-            <strong>compounds to.</strong> Connect your accounts, change one assumption — a raise,
-            a cutback, a new expense — and watch what it does to the next five years. When
-            the tradeoff is real, the decision becomes easier.
-          </p>
-          <div class="hero__actions reveal-up d4">
-            <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
+        <div class="hero__grid">
+          <div class="hero__copy">
+            <span class="kicker reveal-up d1">Personal budgeting software built for consequences, not categories</span>
+            <h1 class="hero__title reveal-up d2">
+              A budget only works if you can see what breaking it actually <em>costs.</em>
+            </h1>
+            <p class="hero__tagline reveal-up d3">
+              Most consumer budgeting apps show you what you spent. Workbench shows you what it 
+              <strong>compounds to.</strong> Connect your accounts, change one assumption — a raise,
+              a cutback, a new expense — and watch what it does to the next five years. When
+              the tradeoff is real, the decision becomes easier.
+            </p>
+            <div class="hero__actions reveal-up d4">
+              <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
+            </div>
+          </div>
+
+          <!-- The problem made visible: two balance paths that diverge over five years.
+               No product UI — just the consequence the headline describes. -->
+          <div class="hero__viz reveal-up d3">
+            <figure class="hviz">
+              <svg viewBox="0 0 560 320" role="img" aria-labelledby="hvizTitle hvizDesc">
+                <title id="hvizTitle">The five-year cost of a decision you can't see</title>
+                <desc id="hvizDesc">
+                  Two account balances start together today and diverge over five years. The path
+                  where the cost was seen and adjusted ends roughly $111,640 above the current path —
+                  the gap is the compounding cost of the decisions you can't see yet.
+                </desc>
+                <defs>
+                  <linearGradient id="hvizGap" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#003a70" stop-opacity="0.18" />
+                    <stop offset="100%" stop-color="#003a70" stop-opacity="0.02" />
+                  </linearGradient>
+                </defs>
+
+                <!-- baseline + time axis -->
+                <line class="hviz__base" x1="44" y1="252" x2="360" y2="252" />
+                <text class="hviz__axis" x="44" y="272" text-anchor="start">Today</text>
+                <text class="hviz__axis" x="360" y="272" text-anchor="end">Five years from now</text>
+
+                <!-- the gap: the consequence made visual -->
+                <path class="hviz__gap" d="M44 236 C150 234 262 162 360 54 L360 182 C280 202 168 234 44 236 Z" />
+
+                <!-- current path (what happens if nothing changes) -->
+                <path class="hviz__line hviz__line--current" d="M44 236 C168 234 280 202 360 182" />
+                <!-- adjusted path (what happens once the cost is visible) -->
+                <path class="hviz__line hviz__line--adjusted" d="M44 236 C150 234 262 162 360 54" />
+
+                <!-- shared starting point + endpoints -->
+                <circle class="hviz__dot" cx="44" cy="236" r="3.5" />
+                <circle class="hviz__dot hviz__dot--muted" cx="360" cy="182" r="4" />
+                <circle class="hviz__dot hviz__dot--accent" cx="360" cy="54" r="4" />
+
+                <!-- bracket calling out the gap -->
+                <path class="hviz__bracket" d="M372 54 H380 M376 54 V182 M372 182 H380" />
+
+                <!-- the dollar figure that sharpens it -->
+                <text class="hviz__num" x="392" y="108" data-count="111640" data-prefix="$">$0</text>
+                <text class="hviz__cap" x="393" y="130">the five-year cost of a</text>
+                <text class="hviz__cap" x="393" y="145">decision you can't see yet</text>
+
+                <!-- which line is which -->
+                <text class="hviz__tag hviz__tag--adjusted" x="352" y="44" text-anchor="end">If you'd seen it &amp; adjusted</text>
+                <text class="hviz__tag hviz__tag--current" x="352" y="204" text-anchor="end">Your current path</text>
+              </svg>
+            </figure>
           </div>
         </div>
       </div>
