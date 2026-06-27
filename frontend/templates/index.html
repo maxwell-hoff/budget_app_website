@@ -780,11 +780,12 @@
       }
 
       function lerpSeries(from, to, t) {
-        return from.map((row, i) => ({
-          label: to[i]?.label ?? row.label,
-          income: lerp(row.income, to[i]?.income ?? row.income, t),
-          expenses: lerp(row.expenses, to[i]?.expenses ?? row.expenses, t),
-          net: lerp(row.net, to[i]?.net ?? row.net, t),
+        const len = Math.max(from.length, to.length);
+        return Array.from({ length: len }, (_, i) => ({
+          label: to[i]?.label ?? from[i]?.label ?? "",
+          income: lerp(from[i]?.income ?? 0, to[i]?.income ?? 0, t),
+          expenses: lerp(from[i]?.expenses ?? 0, to[i]?.expenses ?? 0, t),
+          net: lerp(from[i]?.net ?? 0, to[i]?.net ?? 0, t),
         }));
       }
 
@@ -793,13 +794,15 @@
       }
 
       function chartBounds(series) {
-        let yMax = 200;
-        let yMin = -1600;
+        if (!series?.length) return { yMin: -500, yMax: 500 };
+        let yMax = 0;
+        let yMin = 0;
         for (const row of series) {
           yMax = Math.max(yMax, row.income, row.net, 0);
           yMin = Math.min(yMin, row.expenses, row.net, 0);
         }
-        const pad = Math.max(80, (yMax - yMin) * 0.12);
+        const span = Math.max(yMax - yMin, 400);
+        const pad = span * 0.14;
         return { yMin: yMin - pad, yMax: yMax + pad };
       }
 
@@ -881,19 +884,19 @@
         const chartSvg = document.getElementById("realityChartSvg");
         if (!shot || !list || !chartSvg) return;
 
-        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const JUN = 5;
+        const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const JUN = 1;
         const zeroMonth = (label) => ({ label, income: 0, expenses: 0, net: 0 });
 
         function chartForPhase(phase) {
-          const data = MONTHS.map(zeroMonth);
+          const data = REALITY_MONTHS.map(zeroMonth);
           if (phase === "initial" || phase === "split") {
             data[JUN].income = 150;
             data[JUN].expenses = -1400;
           } else if (phase === "transfer") {
             data[JUN].expenses = -1250;
           } else if (phase === "amortize") {
-            for (let i = JUN; i < MONTHS.length; i++) {
+            for (let i = JUN; i < data.length; i++) {
               data[i].expenses = i === JUN ? -150 : -100;
             }
           }
@@ -1036,7 +1039,7 @@
         const params = document.getElementById("forecastParams");
         if (!shot || !chartSvg || !growthEl || !inflationEl || !params) return;
 
-        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const FORECAST_YEARS = ["2026", "2027", "2028", "2029", "2030", "2031"];
         const BASE_INC = 5200;
         const BASE_EXP = -3800;
 
@@ -1045,11 +1048,11 @@
         let chartFrom = null;
 
         function buildSeries(g, inf) {
-          const gM = g / 100 / 12;
-          const iM = inf / 100 / 12;
-          return MONTHS.map((label, m) => {
-            const income = BASE_INC * Math.pow(1 + gM, m);
-            const expenses = -(3800 * Math.pow(1 + iM, m));
+          const gY = g / 100;
+          const iY = inf / 100;
+          return FORECAST_YEARS.map((label, y) => {
+            const income = BASE_INC * Math.pow(1 + gY, y);
+            const expenses = BASE_EXP * Math.pow(1 + iY, y);
             return { label, income, expenses, net: income + expenses };
           });
         }
