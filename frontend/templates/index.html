@@ -60,7 +60,26 @@
                no scolding; the future label does the emotional work. -->
           <div class="hero__viz reveal-up d3">
             <figure class="branch">
-              <figcaption class="branch__head">One choice tonight · two futures</figcaption>
+              <figcaption class="branch__head">One choice tonight · many futures</figcaption>
+
+              <div class="branch__controls">
+                <div class="branch__control-group">
+                  <span class="branch__control-label">Investment approach</span>
+                  <div class="branch__segmented" id="branchRisk">
+                    <button class="branch__seg" data-value="low">Low risk</button>
+                    <button class="branch__seg is-active" data-value="med">Medium risk</button>
+                    <button class="branch__seg" data-value="high">High risk</button>
+                  </div>
+                </div>
+                <div class="branch__control-group">
+                  <span class="branch__control-label">Return results</span>
+                  <div class="branch__segmented" id="branchLuck">
+                    <button class="branch__seg" data-value="bad">Bad luck</button>
+                    <button class="branch__seg is-active" data-value="normal">Normal</button>
+                    <button class="branch__seg" data-value="good">Good luck</button>
+                  </div>
+                </div>
+              </div>
 
               <div class="branch__stage">
                 <svg class="branch__svg" viewBox="0 0 560 320">
@@ -680,10 +699,24 @@
         const YR_MIN = 1, YR_MAX = 10, YR_STEP = 1;
         const PRESENT = { x: 150, y: 76 };
         const FUT_Y = 252;
-        const R = 0.07 / 12;             // ~7%/yr, compounded monthly
+
+        const RATES = {
+          low:  { bad: 0.01, normal: 0.03, good: 0.05 },
+          med:  { bad: 0.00, normal: 0.07, good: 0.13 },
+          high: { bad:-0.05, normal: 0.11, good: 0.20 },
+        };
+        const getR = () => {
+          const risk = document.querySelector("#branchRisk .branch__seg.is-active").dataset.value;
+          const luck = document.querySelector("#branchLuck .branch__seg.is-active").dataset.value;
+          return RATES[risk][luck] / 12;
+        };
 
         const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-        const factor = (months) => (Math.pow(1 + R, months) - 1) / R;
+        const factor = (months) => {
+          const r = getR();
+          if (Math.abs(r) < 1e-10) return months;
+          return (Math.pow(1 + r, months) - 1) / r;
+        };
 
         const osToY = (os) =>
           Y_BOT - ((os - OS_MIN) / (OS_MAX - OS_MIN)) * (Y_BOT - Y_TOP);
@@ -704,7 +737,8 @@
           return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
         };
         const dreamFor = (fv) =>
-          fv < 6000 ? "a long weekend away"
+          fv < 1500 ? "a nice dinner out"
+          : fv < 6000 ? "a long weekend away"
           : fv < 12000 ? "a car that won't worry you"
           : fv < 22000 ? "a once-in-a-lifetime trip"
           : fv < 40000 ? "the dream kitchen remodel"
@@ -821,6 +855,17 @@
           }
           e.preventDefault();
           render(osState, clamp(yr, YR_MIN, YR_MAX));
+        });
+
+        /* segmented control clicks */
+        document.querySelectorAll(".branch__segmented").forEach((group) => {
+          group.addEventListener("click", (e) => {
+            const btn = e.target.closest(".branch__seg");
+            if (!btn || btn.classList.contains("is-active")) return;
+            group.querySelectorAll(".branch__seg").forEach((b) => b.classList.remove("is-active"));
+            btn.classList.add("is-active");
+            render(osState, yrState);
+          });
         });
 
         /* initial paint, with a one-time count-up on the future figure */
