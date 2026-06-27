@@ -1419,6 +1419,28 @@ body::before {
   text-transform: uppercase;
   font-size: 0.74rem;
 }
+.footer__end {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.footer__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+.footer__social:hover {
+  color: #fff;
+}
+.footer__x-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+}
 
 /* ============================================================
    About page (/about)
