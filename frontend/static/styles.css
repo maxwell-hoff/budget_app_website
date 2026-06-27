@@ -1204,6 +1204,92 @@ body::before {
   border-bottom-color: var(--accent);
 }
 
+/* ── Pricing ── */
+.pricing__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 760px) {
+  .pricing__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+.pricing__tier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.35rem 1.25rem 1.3rem;
+  transition: transform var(--t-normal), box-shadow var(--t-normal), border-color var(--t-normal);
+}
+.pricing__tier:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--border-strong);
+}
+.pricing__tier--paid {
+  background: var(--accent-subtle);
+  border-color: var(--accent-line);
+}
+.pricing__tier--paid:hover {
+  border-color: var(--accent);
+}
+.pricing__tier-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.pricing__tier--paid .pricing__tier-head {
+  border-bottom-color: var(--accent-line);
+}
+.pricing__tier-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.pricing__price {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.pricing__tier-tag {
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.pricing__tier--paid .pricing__tier-tag {
+  color: var(--accent);
+  border-color: var(--accent-line);
+  background: var(--surface-1);
+}
+.pricing__tier-body {
+  font-size: 0.92rem;
+  line-height: 1.58;
+  color: var(--ink-muted);
+}
+.pricing__note {
+  margin-top: 1.25rem;
+  max-width: 62ch;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
 /* ── Download ── */
 .download {
   text-align: center;
