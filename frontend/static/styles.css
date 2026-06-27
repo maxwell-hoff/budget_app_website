@@ -1031,7 +1031,7 @@ body::before {
 }
 .feature__list--steps li {
   counter-increment: demo-step;
-  padding: 0.65rem 0.85rem 0.65rem 2.4rem;
+  padding: 0.65rem 0.85rem 0.65rem 2.65rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface-2);
@@ -1044,6 +1044,7 @@ body::before {
 }
 .feature__list--steps li::before {
   content: counter(demo-step);
+  left: 0.65rem;
   top: 0.72rem;
   width: 1.15rem;
   height: 1.15rem;
@@ -1195,6 +1196,14 @@ body::before {
 }
 .flow .feature__title { margin-top: 0; }
 .flow .feature__shot { margin-top: 0.85rem; }
+.flow .feature__shot--demo {
+  margin-bottom: 0;
+}
+.flow .feature__shot--demo + .feature__list,
+.flow .feature__shot--demo + .feature__list--steps {
+  margin-top: 0;
+  padding-top: 1.2rem;
+}
 .flow-step .feature {
   border-color: var(--border);
   box-shadow: none;
