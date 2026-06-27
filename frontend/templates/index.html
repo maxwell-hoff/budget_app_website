@@ -47,10 +47,10 @@
               Budgeting isn't about restriction. It's about understanding tradeoffs through <em>time.</em>
             </h1>
             <p class="hero__tagline reveal-up d3">
-              Go to dinner with your friends tonight, or take a vacation 10 years from now. 
-              Take a trip this weekend, or get those car upgrades in five years. 
-              The tradeoffs are always there — Workbench just makes them <strong>visible 
-              before you decide.</strong>
+              Go to dinner with your friends tonight, or drive a car that doesn't stress you 
+              out in three years. Book the weekend getaway, or put those same dollars toward 
+              the kitchen renovation you keep postponing. The tradeoffs are always there — Workbench 
+              makes them <strong>visible before you decide.</strong>
             </p>
             <div class="hero__actions reveal-up d4">
               <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
@@ -66,7 +66,7 @@
 
               <div class="branch__controls">
                 <div class="branch__control-group">
-                  <span class="branch__control-label">Investment approach</span>
+                  <span class="branch__control-label">How you invest the savings.</span>
                   <div class="branch__segmented" id="branchRisk">
                     <button class="branch__seg" data-value="low">Low risk</button>
                     <button class="branch__seg is-active" data-value="med">Medium risk</button>
@@ -119,7 +119,7 @@
 
                   <!-- the draggable decision point (vertical = how much) -->
                   <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
-                     aria-label="Investment amount" aria-orientation="vertical"
+                     aria-label="Monthly savings" aria-orientation="vertical"
                      aria-valuemin="50" aria-valuemax="300" aria-valuenow="200"
                      aria-valuetext="$200">
                     <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
@@ -139,7 +139,7 @@
               </div>
 
               <p class="branch__hint">
-                <strong>Drag the dots.</strong> How much you invest — and how far ahead you look.
+                <strong>Drag the dots.</strong> How much you save instead — and how far ahead you look.
               </p>
             </figure>
           </div>
@@ -415,7 +415,7 @@
     <!-- ── Philosophy / pull-quote ── -->
     <section class="philosophy" id="philosophy" aria-label="Philosophy">
       <div class="wrap philosophy__inner on-scroll">
-        <span class="kicker">Our philosophy</span>
+        <span class="kicker">My philosophy</span>
         <p class="philosophy__quote">
           Understanding can't be <span>handed to you.</span>
         </p>
@@ -443,7 +443,7 @@
           @GardenStudio__ on Twitter.
         </p>
         <div class="proof__meta">
-          <a class="proof__link" href="#" target="_blank" rel="noopener">Follow the build in public &rarr;</a>
+          <a class="proof__link" href="https://x.com/GardenStudio__" target="_blank" rel="noopener noreferrer">Follow the build in public &rarr;</a>
         </div>
       </div>
     </section>
@@ -538,7 +538,16 @@
           <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
           Workbench Budgeting
         </span>
-        <span>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</span>
+        <div class="footer__end">
+          <a href="https://gardenstudiosoftware.com" class="footer__social" target="_blank" rel="noopener noreferrer">Garden Studio Software</a>
+          <a href="https://x.com/GardenStudio__" class="footer__social" target="_blank" rel="noopener noreferrer" aria-label="Follow Garden Studio on X">
+            <svg class="footer__x-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/>
+            </svg>
+            @GardenStudio__
+          </a>
+          <span>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</span>
+        </div>
       </div>
     </footer>
 
