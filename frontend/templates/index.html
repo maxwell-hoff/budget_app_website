@@ -88,12 +88,12 @@
                   <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
                   <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
                   <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
-                  <text class="branch__axlab" x="505" y="306" text-anchor="end">10 years</text>
+                  <text class="branch__axlab" x="505" y="306" text-anchor="end">60 years</text>
 
                   <!-- the spectrum the decision point slides along (vertical = amount) -->
                   <line class="branch__track" x1="95" y1="70" x2="95" y2="230" />
-                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$10,000</text>
-                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$100</text>
+                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$300</text>
+                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$50</text>
 
                   <!-- the two diverging paths (recomputed as you drag) -->
                   <path id="branchPresent" class="branch__path branch__path--present" d="M95 202 C120 202 130 76 150 76" />
@@ -114,17 +114,17 @@
                   <!-- the draggable decision point (vertical = how much) -->
                   <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
                      aria-label="Investment amount" aria-orientation="vertical"
-                     aria-valuemin="100" aria-valuemax="10000" aria-valuenow="1000"
-                     aria-valuetext="$1,000">
+                     aria-valuemin="50" aria-valuemax="300" aria-valuenow="100"
+                     aria-valuetext="$100">
                     <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
                     <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
-                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$1,000</text>
+                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$100</text>
                   </g>
 
                   <!-- the draggable horizon point (horizontal = how far ahead) -->
                   <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
                      aria-label="Time horizon in years" aria-orientation="horizontal"
-                     aria-valuemin="1" aria-valuemax="10" aria-valuenow="5"
+                     aria-valuemin="1" aria-valuemax="60" aria-valuenow="5"
                      aria-valuetext="5 years from now">
                     <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
                     <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
@@ -694,9 +694,9 @@
         /* geometry (viewBox units) */
         const NX = 95;                   // decision point x (left of centre)
         const Y_TOP = 70, Y_BOT = 230;   // top = largest investment
-        const OS_MIN = 100, OS_MAX = 10000, OS_STEP = 100;
+        const OS_MIN = 50, OS_MAX = 300, OS_STEP = 1;
         const X_NOW = 95, X_END = 505;   // timeline span
-        const YR_MIN = 1, YR_MAX = 10, YR_STEP = 1;
+        const YR_MIN = 1, YR_MAX = 60, YR_STEP = 1;
         const PRESENT = { x: 150, y: 76 };
         const FUT_Y = 252;
 
@@ -733,23 +733,23 @@
           return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
         };
         const dreamFor = (fv) =>
-          fv < 500 ? "a nice dinner for two"
-          : fv < 2000 ? "a long weekend away"
-          : fv < 6000 ? "a once-in-a-lifetime trip"
-          : fv < 15000 ? "a reliable used car"
-          : fv < 30000 ? "the dream kitchen remodel"
-          : fv < 60000 ? "a down payment on a home"
-          : "a serious head start on retirement";
+          fv < 75 ? "a few really good books"
+          : fv < 150 ? "a nice dinner for two"
+          : fv < 350 ? "a new pair of kicks"
+          : fv < 800 ? "a weekend getaway"
+          : fv < 2000 ? "that vacation you've been dreaming of"
+          : fv < 6000 ? "a home office upgrade"
+          : "the start of something bigger";
         const money = (v) => "$" + v.toLocaleString();
 
-        let osState = 1000, yrState = 5;
+        let osState = 100, yrState = 5;
 
         const render = (os, yr, animateAmt) => {
           osState = os;
           yrState = yr;
           const ny = osToY(os);
           const fx = yrToX(yr);
-          const fv = Math.round((os * factor(yr * 12)) / 10) * 10;
+          const fv = Math.round(os * factor(yr * 12));
 
           /* decision point (vertical handle) */
           nodeDot.setAttribute("cy", ny);
@@ -782,7 +782,7 @@
             const step = (now) => {
               const t = Math.min((now - start) / dur, 1);
               const eased = 1 - Math.pow(1 - t, 3);
-              futureAmt.textContent = money(Math.round((fv * eased) / 10) * 10);
+              futureAmt.textContent = money(Math.round(fv * eased));
               if (t < 1) requestAnimationFrame(step);
               else futureAmt.textContent = money(fv);
             };
@@ -865,7 +865,7 @@
         });
 
         /* initial paint, with a one-time count-up on the future figure */
-        render(1000, 5, true);
+        render(100, 5, true);
       })();
     </script>
   </body>
