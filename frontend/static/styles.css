@@ -1201,7 +1201,6 @@ body::before {
 .philosophy__inner {
   position: relative;
   padding: clamp(3.5rem, 8vw, 6rem) 0;
-  max-width: 880px;
 }
 .philosophy .kicker {
   color: #8fb6e6;
@@ -1229,9 +1228,6 @@ body::before {
 }
 
 /* ── Social proof / build-in-public ── */
-.proof__inner {
-  max-width: 880px;
-}
 .proof__quote {
   margin: 1.1rem 0 0;
   font-size: clamp(1.25rem, 2.6vw, 1.7rem);
@@ -1355,9 +1351,6 @@ body::before {
 }
 
 /* ── Download ── */
-.download {
-  text-align: center;
-}
 .download__card {
   position: relative;
   background: var(--surface-1);
@@ -1365,10 +1358,7 @@ body::before {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-pop);
   padding: clamp(2.5rem, 5vw, 3.5rem) 1.5rem;
-  max-width: 720px;
-  margin-inline: auto;
 }
-.download__card .kicker { justify-content: center; }
 .download__title {
   margin-top: 0.8rem;
   font-size: clamp(1.7rem, 3.4vw, 2.4rem);
@@ -1376,7 +1366,7 @@ body::before {
   letter-spacing: -0.02em;
 }
 .download__sub {
-  margin: 0.9rem auto 0;
+  margin: 0.9rem 0 0;
   max-width: 48ch;
   color: var(--ink-muted);
 }
@@ -1384,8 +1374,17 @@ body::before {
   margin-top: 1.6rem;
   display: flex;
   gap: 0.75rem;
-  justify-content: center;
   flex-wrap: wrap;
+}
+.download__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.download__os-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
 }
 .download__note {
   margin-top: 1.1rem;
@@ -1825,6 +1824,37 @@ body::before {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.72);
+}
+.shot__refresh {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.shot__refresh:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+.shot__refresh svg {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+.shot__refresh.is-spinning svg {
+  animation: shotRefreshSpin 0.85s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes shotRefreshSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 .shot__body { padding: 0.7rem; }
 

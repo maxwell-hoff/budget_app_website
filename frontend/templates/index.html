@@ -47,9 +47,10 @@
               Budgeting isn't about restriction. It's about understanding tradeoffs through <em>time.</em>
             </h1>
             <p class="hero__tagline reveal-up d3">
-              Go to dinner with your friends tonight, or get a nicer car five years from now. 
-              Take that weekend trip, or put it toward a down payment in three years. The tradeoffs 
-              are always there — Workbench just makes them visible <strong>before</strong> you decide.
+              Go to dinner with your friends tonight, or take a vacation 10 years from now. 
+              Take a trip this weekend, or get those car upgrades in five years. 
+              The tradeoffs are always there — Workbench just makes them <strong>visible 
+              before you decide.</strong>
             </p>
             <div class="hero__actions reveal-up d4">
               <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
@@ -231,6 +232,11 @@
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">accounts — personal</span>
+                    <button type="button" class="shot__refresh" aria-label="Refresh accounts">
+                      <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M13.65 2.35A7 7 0 1 0 14 8h-2a5 5 0 1 1-1.17-3.24L9 7h5V2l-1.35 1.35z" fill="currentColor"/>
+                      </svg>
+                    </button>
                   </div>
                   <div class="shot__body">
                     <table class="minitable">
@@ -507,7 +513,18 @@
             from now.
           </p>
           <div class="download__actions">
-            <a href="#" class="btn btn--primary btn--lg" aria-label="Download Workbench Budgeting">Download Now</a>
+            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for macOS">
+              <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/>
+              </svg>
+              macOS
+            </a>
+            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for Windows">
+              <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/>
+              </svg>
+              Windows
+            </a>
           </div>
           <p class="download__note">Free to use — your data stays on your device, always.</p>
         </div>
@@ -602,7 +619,10 @@
         startSampleLoops(el);
       };
       if (reduceMotion || !("IntersectionObserver" in window)) {
-        liveEls.forEach((el) => el.classList.add("is-live"));
+        liveEls.forEach((el) => {
+          el.classList.add("is-live");
+          startSampleLoops(el);
+        });
       } else {
         const liveObserver = new IntersectionObserver(
           (entries) => {
@@ -620,6 +640,29 @@
 
       /* ── Per-sample looping behaviors ── */
       function startSampleLoops(shot) {
+        /* Accounts: refresh button re-runs the balance count-up */
+        const refreshBtn = shot.querySelector(".shot__refresh");
+        if (refreshBtn) {
+          const refreshAccounts = () => {
+            if (!reduceMotion) refreshBtn.classList.add("is-spinning");
+            shot.querySelectorAll(".num[data-count]").forEach((el) => {
+              const dec = parseInt(el.dataset.decimals || "0", 10);
+              el.textContent = (el.dataset.prefix || "") + fmtNum(0, dec) + (el.dataset.suffix || "");
+              runCount(el);
+            });
+            if (!reduceMotion) {
+              setTimeout(() => refreshBtn.classList.remove("is-spinning"), 900);
+            }
+          };
+          refreshBtn.addEventListener("click", refreshAccounts);
+          if (!reduceMotion) {
+            setTimeout(() => {
+              refreshAccounts();
+              setInterval(refreshAccounts, 4800);
+            }, 2200);
+          }
+        }
+
         if (reduceMotion) return;
 
         /* Scenario card: cycle the active tab + highlight matching row */
