@@ -1105,10 +1105,6 @@ body::before {
 }
 
 /* shared number block (reused by the payoff cell) */
-.loop__number {
-  margin-top: auto;
-  padding-top: 0.8rem;
-}
 .loop__number-label {
   display: block;
   font-size: 0.58rem;
