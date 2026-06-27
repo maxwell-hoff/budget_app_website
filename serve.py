@@ -20,4 +20,5 @@ def about():
     return render_template('about.html')
 
 
-app.run(debug=(not args.no_flask_debug), host=args.host, port=int(args.port))
+if __name__ == '__main__':
+    app.run(debug=(not args.no_flask_debug), host=args.host, port=int(args.port))
