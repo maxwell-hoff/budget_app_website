@@ -1031,7 +1031,7 @@ body::before {
    column holds a different number of tool cards. */
 .flow__table {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   grid-template-rows: auto 1fr;
   gap: 0.9rem;
   align-items: start;
@@ -2180,6 +2180,239 @@ body::before {
 .feature__shot.is-live .txnrow__ctl .caret {
   display: inline-block;
   animation: caretNudge 1.7s ease-in-out infinite;
+}
+
+/* ============================================================
+   App-style demo shots (transactions + mini charts)
+   ============================================================ */
+.feature__shot--demo .shot__body--demo {
+  padding: 0.65rem;
+}
+
+.app-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: stretch;
+}
+.app-demo__txns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.app-demo__caption {
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--muted);
+  min-height: 2.4em;
+}
+.app-demo__chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.45rem 0.5rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.app-demo__chart--forecast {
+  margin-top: 0.55rem;
+}
+
+.forecast-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mini-chart-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.1rem;
+}
+.mini-chart-toolbar__label {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mini-chart-toolbar__status {
+  margin-left: auto;
+  font-size: 0.58rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.mini-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mini-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+  padding-top: 0.15rem;
+}
+.mini-chart-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mini-chart-legend__item::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 1px;
+}
+.mini-chart-legend__item--income::before { background: var(--good); }
+.mini-chart-legend__item--expense::before { background: var(--bad); }
+.mini-chart-legend__item--net::before {
+  width: 0.75rem;
+  height: 2px;
+  background: #5b2c8c;
+  border-radius: 0;
+}
+
+/* Transaction demo list */
+.txn-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  min-height: 11.5rem;
+}
+.txn-demo__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 0.15rem 0.45rem;
+  align-items: center;
+  padding: 0.38rem 0.42rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  font-size: 0.68rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.feature__shot.is-live .txn-demo__row {
+  opacity: 1;
+  transform: none;
+}
+.txn-demo__row.is-splitting {
+  animation: txnSplitPulse 0.55s ease;
+}
+@keyframes txnSplitPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 2px rgba(0, 58, 112, 0.22); }
+}
+.txn-demo__row.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+.txn-demo__row.is-transfer .txn-demo__transfer .flagbox {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.txn-demo__row.is-transfer .txn-demo__transfer .flagbox::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+.txn-demo__row.is-muted {
+  opacity: 0.42;
+}
+.txn-demo__row.is-muted .txn-demo__amt { color: var(--muted); }
+.txn-demo__desc {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.txn-demo__amt {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  justify-self: end;
+}
+.txn-demo__amt--income { color: var(--good); }
+.txn-demo__amt--expense { color: var(--bad); }
+.txn-demo__controls {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  align-items: center;
+  padding-top: 0.2rem;
+  border-top: 1px solid var(--border);
+}
+.txn-demo__ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.txn-demo__ctl-val {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  padding: 0.12rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.txn-demo__ctl-val.is-active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+.txn-demo__transfer .flagbox {
+  width: 13px;
+  height: 13px;
+}
+
+.paramgrid--interactive .paramgrid__control {
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+}
+.paramgrid--interactive .paramgrid__control:hover {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+.paramgrid--interactive .paramgrid__control:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@media (max-width: 720px) {
+  .app-demo {
+    grid-template-columns: 1fr;
+  }
+  .txn-demo { min-height: auto; }
 }
 
 /* cashflow grid reveal in hero window */
