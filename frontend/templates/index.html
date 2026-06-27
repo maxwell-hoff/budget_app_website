@@ -187,17 +187,21 @@
           </p>
         </div>
 
-        <!-- The loop as a table: steps across the top, the tools for each step beneath -->
-        <div class="flow__table on-scroll" id="features" data-stagger>
-          <!-- Step 1 — Clean up (wider column for the live demo) -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 1</span>
-              <h3 class="flowcol__title">Clean up what really happened</h3>
-              <p class="flowcol__sub">First the history has to be honest — before anything can be projected.</p>
+        <!-- The loop: full-width vertical steps, each with room to breathe -->
+        <div class="flow__track on-scroll" id="features" data-stagger>
+
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">1</span>
             </div>
-            <div class="flowcol__cards">
-              <article class="feature feature--reality">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 1</span>
+                <h3 class="flow-step__title">Clean up what really happened</h3>
+                <p class="flow-step__lead">First the history has to be honest — before anything can be projected.</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero feature--reality">
                 <h3 class="feature__title">Numbers That Match Reality</h3>
                 <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality">
                   <div class="shot__bar">
@@ -215,7 +219,7 @@
                           <span class="mini-chart-toolbar__label">Month</span>
                           <span class="mini-chart-toolbar__status" id="realityChartStatus"></span>
                         </div>
-                        <svg class="mini-chart" id="realityChartSvg" viewBox="0 0 360 190" aria-hidden="true"></svg>
+                        <svg class="mini-chart" id="realityChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
                         <div class="mini-chart-legend">
                           <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
                           <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
@@ -232,7 +236,7 @@
                 </ul>
               </article>
 
-              <article class="feature">
+              <article class="feature feature--compact">
                 <h3 class="feature__title">All Accounts in One Place</h3>
                 <div class="feature__shot" aria-hidden="true">
                   <div class="shot__bar">
@@ -273,18 +277,22 @@
                   <li>Plan as a household with a shared profile for you and your spouse.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 2 — Project it forward -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 2</span>
-              <h3 class="flowcol__title">Project it forward</h3>
-              <p class="flowcol__sub">Carry those clean actuals ahead and see where this path lands.</p>
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">2</span>
             </div>
-            <div class="flowcol__cards">
-              <article class="feature feature--forecast">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 2</span>
+                <h3 class="flow-step__title">Project it forward</h3>
+                <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Fine-tuned Forecasting</h3>
                 <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast">
                   <div class="shot__bar">
@@ -292,27 +300,31 @@
                     <span class="shot__name">forecast · projection chart</span>
                   </div>
                   <div class="shot__body shot__body--demo">
-                    <div class="forecast-demo">
-                      <div class="paramgrid paramgrid--interactive" id="forecastParams">
-                        <span class="paramgrid__label">Annual growth</span>
-                        <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
-                          <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
-                        </button>
-                        <span class="paramgrid__label">Frequency</span>
-                        <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                        <span class="paramgrid__label">Inflation</span>
-                        <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
-                          <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
-                        </button>
-                        <span class="paramgrid__label">Project until</span>
-                        <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                    <div class="forecast-demo forecast-demo--wide">
+                      <div class="forecast-demo__params">
+                        <p class="forecast-demo__params-title">Parameters</p>
+                        <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
+                          <span class="paramgrid__label">Annual growth</span>
+                          <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
+                            <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Frequency</span>
+                          <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
+                          <span class="paramgrid__label">Inflation</span>
+                          <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
+                            <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Project until</span>
+                          <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                        </div>
+                        <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
                       </div>
                       <div class="app-demo__chart app-demo__chart--forecast">
                         <div class="mini-chart-toolbar">
                           <span class="mini-chart-toolbar__label">Year</span>
                           <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
                         </div>
-                        <svg class="mini-chart" id="forecastChartSvg" viewBox="0 0 360 190" aria-hidden="true"></svg>
+                        <svg class="mini-chart" id="forecastChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
                         <div class="mini-chart-legend">
                           <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
                           <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
@@ -327,17 +339,21 @@
                   <li>Model rising rent, inflation, or a new expense and watch it ripple through every month ahead.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 3 — Test the tradeoffs -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 3</span>
-              <h3 class="flowcol__title">Test the tradeoffs</h3>
-              <p class="flowcol__sub">Put each path side by side and watch what it costs you years out.</p>
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">3</span>
             </div>
-            <div class="flowcol__cards">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 3</span>
+                <h3 class="flow-step__title">Test the tradeoffs</h3>
+                <p class="flow-step__lead">Put each path side by side and watch what it costs you years out.</p>
+              </header>
+              <div class="flow-step__content flow-step__content--duo">
               <article class="feature">
                 <h3 class="feature__title">Scenario Planning</h3>
                 <div class="feature__shot" aria-hidden="true">
@@ -394,18 +410,21 @@
                   <li>Catch the categories quietly draining you, and trace each overage back to the transaction that caused it.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 4 — Land on your number (the payoff, not another tool) -->
-          <div class="flowcol flowcol--payoff">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 4</span>
-              <h3 class="flowcol__title">Land on your number</h3>
-              <p class="flowcol__sub">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+          <article class="flow-step flow-step--payoff">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">4</span>
             </div>
-            <div class="flowcol__cards">
-              <div class="payoff">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 4</span>
+                <h3 class="flow-step__title">Land on your number</h3>
+                <p class="flow-step__lead">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+              </header>
+              <div class="payoff payoff--wide">
                 <p class="payoff__desc">
                   The loop closes here. Because you built it yourself, you understand exactly why
                   it's this number — and what it costs to break it.
@@ -417,7 +436,8 @@
                 </div>
               </div>
             </div>
-          </div>
+          </article>
+
         </div>
 
         <!-- Privacy: a product attribute, not a step — sits beneath the loop -->
@@ -775,16 +795,16 @@
 
       function renderMiniChart(svg, series, { yMin = -5600, yMax = 5800 } = {}) {
         if (!svg || !series?.length) return;
-        const W = 360;
-        const H = 190;
-        const pad = { top: 14, right: 10, bottom: 26, left: 34 };
+        const W = 560;
+        const H = 220;
+        const pad = { top: 16, right: 12, bottom: 28, left: 36 };
         const plotW = W - pad.left - pad.right;
         const plotH = H - pad.top - pad.bottom;
         const zeroY = pad.top + ((yMax - 0) / (yMax - yMin)) * plotH;
         const yScale = (v) => pad.top + ((yMax - v) / (yMax - yMin)) * plotH;
         const n = series.length;
         const slot = plotW / n;
-        const barW = Math.min(16, slot * 0.32);
+        const barW = Math.min(18, slot * 0.32);
         const gap = (slot - barW * 2) / 3;
 
         const fmtK = (v) => {
@@ -803,7 +823,7 @@
           const expH = Math.max(0, yScale(row.expenses) - zeroY);
           html += `<rect x="${x0}" y="${yScale(row.income)}" width="${barW}" height="${incH}" fill="${CHART_COLORS.income}"/>`;
           html += `<rect x="${x0 + barW + gap}" y="${zeroY}" width="${barW}" height="${expH}" fill="${CHART_COLORS.expense}"/>`;
-          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8}" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">${i % 2 === 0 || n <= 6 ? row.label : ""}</text>`;
+          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8}" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="${CHART_COLORS.axis}">${n <= 8 || i % 2 === 0 || i === n - 1 ? row.label : ""}</text>`;
         }
 
         let lineD = "";
