@@ -83,11 +83,15 @@
 
               <div class="branch__stage">
                 <svg class="branch__svg" viewBox="0 0 560 320">
-                  <!-- timeline along the bottom: drag the future dot along it -->
-                  <line class="branch__axis" x1="95" y1="288" x2="505" y2="288" />
+                  <!-- timeline: Tonight → spent (near-term), break, then 1–60 years -->
+                  <line class="branch__axis" x1="95" y1="288" x2="142" y2="288" />
+                  <path class="branch__break" d="M144 288 L148 284 L152 288 L156 284 L160 288" />
+                  <line class="branch__axis branch__axis--future" x1="168" y1="288" x2="505" y2="288" />
                   <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
+                  <line class="branch__axis" x1="168" y1="283" x2="168" y2="293" />
                   <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
                   <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
+                  <text class="branch__axlab branch__axlab--yrstart" x="168" y="306" text-anchor="middle">1 year</text>
                   <text class="branch__axlab" x="505" y="306" text-anchor="end">60 years</text>
 
                   <!-- the spectrum the decision point slides along (vertical = amount) -->
@@ -105,7 +109,7 @@
 
                   <!-- moving horizon marker under the future dot -->
                   <line id="branchYearTick" class="branch__yeartick" x1="300" y1="284" x2="300" y2="292" />
-                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">5 years</text>
+                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">15 years</text>
 
                   <!-- future outcome callout (fixed; updates as you drag) -->
                   <text id="branchDream" class="branch__lbl-dream" x="548" y="58" text-anchor="end">a car that won't worry you</text>
@@ -114,18 +118,18 @@
                   <!-- the draggable decision point (vertical = how much) -->
                   <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
                      aria-label="Investment amount" aria-orientation="vertical"
-                     aria-valuemin="50" aria-valuemax="300" aria-valuenow="100"
-                     aria-valuetext="$100">
+                     aria-valuemin="50" aria-valuemax="300" aria-valuenow="200"
+                     aria-valuetext="$200">
                     <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
                     <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
-                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$100</text>
+                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$200</text>
                   </g>
 
                   <!-- the draggable horizon point (horizontal = how far ahead) -->
                   <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
                      aria-label="Time horizon in years" aria-orientation="horizontal"
-                     aria-valuemin="1" aria-valuemax="60" aria-valuenow="5"
-                     aria-valuetext="5 years from now">
+                     aria-valuemin="1" aria-valuemax="60" aria-valuenow="15"
+                     aria-valuetext="15 years from now">
                     <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
                     <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
                   </g>
@@ -695,7 +699,9 @@
         const NX = 95;                   // decision point x (left of centre)
         const Y_TOP = 70, Y_BOT = 230;   // top = largest investment
         const OS_MIN = 50, OS_MAX = 300, OS_STEP = 1;
-        const X_NOW = 95, X_END = 505;   // timeline span
+        const X_NOW = 95;                // "Tonight"
+        const X_YR_START = 168;          // year 1 begins after the spent dot + axis break
+        const X_END = 505;               // 60 years
         const YR_MIN = 1, YR_MAX = 60, YR_STEP = 1;
         const PRESENT = { x: 150, y: 76 };
         const FUT_Y = 252;
@@ -720,9 +726,10 @@
           const frac = (Y_BOT - clamp(y, Y_TOP, Y_BOT)) / (Y_BOT - Y_TOP);
           return clamp(Math.round((OS_MIN + frac * (OS_MAX - OS_MIN)) / OS_STEP) * OS_STEP, OS_MIN, OS_MAX);
         };
-        const yrToX = (yr) => X_NOW + (yr / YR_MAX) * (X_END - X_NOW);
+        const yrToX = (yr) =>
+          X_YR_START + ((yr - 1) / (YR_MAX - 1)) * (X_END - X_YR_START);
         const xToYr = (x) => {
-          const yr = ((clamp(x, yrToX(YR_MIN), X_END) - X_NOW) / (X_END - X_NOW)) * YR_MAX;
+          const yr = 1 + ((clamp(x, X_YR_START, X_END) - X_YR_START) / (X_END - X_YR_START)) * (YR_MAX - 1);
           return clamp(Math.round(yr / YR_STEP) * YR_STEP, YR_MIN, YR_MAX);
         };
 
@@ -742,7 +749,7 @@
           : "the start of something bigger";
         const money = (v) => "$" + v.toLocaleString();
 
-        let osState = 100, yrState = 5;
+        let osState = 200, yrState = 15;
 
         const render = (os, yr, animateAmt) => {
           osState = os;
@@ -865,7 +872,7 @@
         });
 
         /* initial paint, with a one-time count-up on the future figure */
-        render(100, 5, true);
+        render(200, 15, true);
       })();
     </script>
   </body>
