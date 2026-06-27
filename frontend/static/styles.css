@@ -1165,15 +1165,8 @@ body::before {
 }
 
 /* ── Social proof / build-in-public ── */
-.proof {
-  text-align: center;
-}
 .proof__inner {
-  max-width: 760px;
-  margin-inline: auto;
-}
-.proof .kicker {
-  justify-content: center;
+  max-width: 880px;
 }
 .proof__quote {
   margin: 1.1rem 0 0;
@@ -1195,7 +1188,6 @@ body::before {
   margin-top: 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1.5rem;
   flex-wrap: wrap;
   font-size: 0.8rem;
