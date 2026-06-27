@@ -1024,6 +1024,62 @@ body::before {
   transform: rotate(45deg);
 }
 
+/* Animation step list — ordered to match the demo loop */
+.feature__list--steps {
+  counter-reset: demo-step;
+  gap: 0.65rem;
+}
+.feature__list--steps li {
+  counter-increment: demo-step;
+  padding: 0.65rem 0.85rem 0.65rem 2.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--muted);
+  transition:
+    color 0.35s ease,
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.feature__list--steps li::before {
+  content: counter(demo-step);
+  top: 0.72rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--muted);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  transform: none;
+  background: var(--surface-1);
+  transition: color 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+.feature__list--steps li.is-active {
+  color: var(--ink);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+.feature__list--steps li.is-active::before {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.feature__list--steps li.is-done {
+  color: var(--ink-muted);
+  border-color: var(--border);
+}
+.feature__list--steps li.is-done::before {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface-1);
+}
+
 /* ── How it works: vertical journey, full-width steps ── */
 
 .flow > .wrap {
