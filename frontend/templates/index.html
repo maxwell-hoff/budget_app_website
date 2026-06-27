@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Workbench Budgeting — Serious financial planning for everyday people</title>
+    <title>Workbench Budgeting — Figure out what your budget should actually be</title>
     <meta
       name="description"
-      content="Workbench Budgeting is a private, desktop budgeting and financial planning app with scenario planning, forecasting, and serious accounting tools — built for everyday people."
+      content="Workbench Budgeting turns your real spending into a living forecast, so you can see what today's overspending will cost you years from now — and arrive at a budget that's actually yours. A guided setup walks you in from zero in about five minutes, and your data stays local on your device."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,203 +27,96 @@
         </a>
         <span class="nav__spacer"></span>
         <div class="nav__links">
-          <a href="#features">Features</a>
+          <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
           <a href="/about">About</a>
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>
-    </nav>
+    </nav> 
 
-    <!-- ── Hero ── -->
+    <!-- ── Hero (the Why — problem stated left, problem illustrated right) ── -->
     <header class="hero" id="top">
-      <div class="wrap hero__grid">
-        <div class="hero__copy">
-          <span class="kicker reveal-up d1">The future of personal budgeting</span>
-          <h1 class="hero__title reveal-up d2">
-            Budgets don't fail because you overspend. They fail because you can't see what <em>overspending costs.</em>
-          </h1>
-          <p class="hero__tagline reveal-up d3">
-            Workbench connects your spending to its consequences. Change one assumption —
-            a raise, a new expense, a cutback — and see what it does to your financial picture
-            months from now. <strong>When the tradeoff is visible, the decision changes.</strong>
-            Built with serious accounting tools underneath so the numbers you're planning from
-            are actually clean.
-          </p>
-          <div class="hero__actions reveal-up d4">
-            <a href="#download" class="btn btn--primary btn--lg">Download Now</a>
-            <a href="#features" class="btn btn--lg">Explore Features</a>
-          </div>
-          <div class="hero__trust reveal-up d5">
-            <span>Runs locally — your data never leaves your device</span>
-            <span>Free to download, demo data included</span>
-          </div>
-        </div>
-
-        <!-- Live product window — replaces the old cinematic video hero -->
-        <div class="window" aria-label="Workbench Budgeting interface preview">
-          <div class="window__bar">
-            <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span class="window__title">workbench_budgeting — actuals</span>
+      <div class="wrap">
+        <div class="hero__grid">
+          <div class="hero__copy">
+            <span class="kicker reveal-up d1">Personal budgeting software built for consequences, not categories</span>
+            <h1 class="hero__title reveal-up d2">
+              A budget only works if you can see what breaking it actually <em>costs.</em>
+            </h1>
+            <p class="hero__tagline reveal-up d3">
+              Most consumer budgeting apps show you what you spent. Workbench shows you what it 
+              <strong>compounds to.</strong> Connect your accounts, change one assumption — a raise,
+              a cutback, a new expense — and watch what it does to the next five years. When
+              the tradeoff is real, the decision becomes easier.
+            </p>
+            <div class="hero__actions reveal-up d4">
+              <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
+            </div>
           </div>
 
-          <!-- Faithful recreation of the app's Actuals toolbar -->
-          <div class="app-toolbar" aria-hidden="true">
-            <span class="app-control app-control--profile">Personal <span class="caret">▼</span></span>
-            <span class="app-control">Refresh</span>
-            <span class="app-control app-control--primary">Save</span>
-            <span class="app-control">Actions <span class="caret">▼</span></span>
-            <span class="app-toolbar__spacer"></span>
-            <span class="app-control">Month <span class="caret">▼</span></span>
-          </div>
+          <!-- The problem made visible: what a monthly overspend quietly compounds to.
+               Three levels so the reader finds their own number — no categories,
+               no scolding; the future label does the emotional work. -->
+          <div class="hero__viz reveal-up d3">
+            <figure class="branch">
+              <figcaption class="branch__head">One choice tonight · two futures</figcaption>
 
-          <div class="window__body">
-            <div class="chart">
-              <div class="chart__head">
-                <span class="chart__title">Cashflow &amp; Balance · Monthly</span>
-                <span class="chart__legend">
-                  <span><i style="background:#0d6e3f"></i>Income</span>
-                  <span><i style="background:#c0392b"></i>Expenses</span>
-                  <span><i style="background:#003a70"></i>Balance</span>
-                  <span><i style="background:#5b2c8c"></i>Net</span>
-                  <span><i class="dash"></i>Implied</span>
-                </span>
-              </div>
-              <svg viewBox="0 0 320 140" role="img" aria-label="Monthly income bars above a zero line, expense bars below, with total balance, net income, and implied balance lines">
-                <!-- gridlines -->
-                <g stroke="var(--border)" stroke-width="1">
-                  <line x1="0" y1="20" x2="320" y2="20" />
-                  <line x1="0" y1="54" x2="320" y2="54" />
-                  <line x1="0" y1="116" x2="320" y2="116" />
-                </g>
-                <!-- zero baseline (cash axis): income above, expenses below -->
-                <line x1="0" y1="88" x2="320" y2="88" stroke="var(--border-strong)" stroke-width="1" />
-                <text class="chart__axis-label" x="2" y="85">0</text>
+              <div class="branch__stage">
+                <svg class="branch__svg" viewBox="0 0 560 320">
+                  <!-- timeline along the bottom: drag the future dot along it -->
+                  <line class="branch__axis" x1="95" y1="288" x2="505" y2="288" />
+                  <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
+                  <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
+                  <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
+                  <text class="branch__axlab" x="505" y="306" text-anchor="end">10 years</text>
 
-                <!-- Income (up, green) + Expense (down, red) bars per month -->
-                <g>
-                  <rect class="chart-bar chart-bar--income"  x="16"  y="61" width="9" height="27" style="animation-delay:.65s" />
-                  <rect class="chart-bar chart-bar--expense" x="29"  y="88" width="9" height="38" style="animation-delay:.70s" />
-                  <rect class="chart-bar chart-bar--income"  x="69"  y="56" width="9" height="32" style="animation-delay:.75s" />
-                  <rect class="chart-bar chart-bar--expense" x="82"  y="88" width="9" height="36" style="animation-delay:.80s" />
-                  <rect class="chart-bar chart-bar--income"  x="122" y="47" width="9" height="41" style="animation-delay:.85s" />
-                  <rect class="chart-bar chart-bar--expense" x="135" y="88" width="9" height="27" style="animation-delay:.90s" />
-                  <rect class="chart-bar chart-bar--income"  x="176" y="43" width="9" height="45" style="animation-delay:.95s" />
-                  <rect class="chart-bar chart-bar--expense" x="189" y="88" width="9" height="26" style="animation-delay:1.0s" />
-                  <rect class="chart-bar chart-bar--income"  x="229" y="46" width="9" height="42" style="animation-delay:1.05s" />
-                  <rect class="chart-bar chart-bar--expense" x="242" y="88" width="9" height="33" style="animation-delay:1.10s" />
-                  <rect class="chart-bar chart-bar--income"  x="282" y="42" width="9" height="46" style="animation-delay:1.15s" />
-                  <rect class="chart-bar chart-bar--expense" x="295" y="88" width="9" height="29" style="animation-delay:1.20s" />
-                </g>
+                  <!-- the spectrum the decision point slides along (vertical = $/mo) -->
+                  <line class="branch__track" x1="95" y1="70" x2="95" y2="230" />
+                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$600 / mo</text>
+                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$20 / mo</text>
 
-                <!-- Net income (purple) — dips below the zero line when expenses exceed income (Jan/Feb) -->
-                <polyline class="chart-line--net" points="27,100 80,92 133,74 187,69 240,79 293,71" />
-                <!-- Total balance (navy, drawn in) — softens early, then climbs -->
-                <polyline class="chart-line chart-line--plan chart-line--draw"
-                  points="27,33 80,35 133,29 187,24 240,21 293,14" />
-                <!-- Implied balance (dashed) — only available for the latest two months -->
-                <polyline class="chart-line--implied" points="240,25 293,18" />
-                <circle cx="240" cy="25" r="2.2" fill="#2a7ab0" />
+                  <!-- the two diverging paths (recomputed as you drag) -->
+                  <path id="branchPresent" class="branch__path branch__path--present" d="M95 202 C120 202 130 76 150 76" />
+                  <path id="branchFuture" class="branch__path branch__path--future" d="M95 202 C187 202 208 252 300 252" />
 
-                <!-- month labels -->
-                <g class="chart__axis-label" text-anchor="middle">
-                  <text x="27" y="134">Jan</text>
-                  <text x="80" y="134">Feb</text>
-                  <text x="133" y="134">Mar</text>
-                  <text x="187" y="134">Apr</text>
-                  <text x="240" y="134">May</text>
-                  <text x="293" y="134">Jun</text>
-                </g>
-              </svg>
-            </div>
+                  <!-- near-term branch: the money is just gone (constant) -->
+                  <circle class="branch__dot branch__dot--present" cx="150" cy="76" r="4" />
+                  <text class="branch__lbl-present" x="162" y="72" text-anchor="start">spent — and gone by Friday</text>
 
-            <!-- Cashflow pivot grid (metric rows × periods) -->
-            <div class="window__label">Cashflow Statement</div>
-            <div class="cfgrid" aria-label="Cashflow by month">
-              <div class="cfgrid__row cfgrid__row--head">
-                <span class="cfgrid__cell">Metric</span>
-                <span class="cfgrid__cell">Mar</span>
-                <span class="cfgrid__cell">Apr</span>
-                <span class="cfgrid__cell">May</span>
-                <span class="cfgrid__cell">Jun</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Income</span>
-                <span class="cfgrid__cell pos">6,400</span>
-                <span class="cfgrid__cell pos">7,000</span>
-                <span class="cfgrid__cell pos">6,600</span>
-                <span class="cfgrid__cell pos">7,200</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Expenses</span>
-                <span class="cfgrid__cell neg">(4,200)</span>
-                <span class="cfgrid__cell neg">(4,000)</span>
-                <span class="cfgrid__cell neg">(5,200)</span>
-                <span class="cfgrid__cell neg">(4,600)</span>
-              </div>
-              <div class="cfgrid__row">
-                <span class="cfgrid__cell">Net</span>
-                <span class="cfgrid__cell pos">2,200</span>
-                <span class="cfgrid__cell pos">3,000</span>
-                <span class="cfgrid__cell pos">1,400</span>
-                <span class="cfgrid__cell pos">2,600</span>
-              </div>
-              <div class="cfgrid__row cfgrid__row--total">
-                <span class="cfgrid__cell">Total Bal.</span>
-                <span class="cfgrid__cell">176,120</span>
-                <span class="cfgrid__cell">179,120</span>
-                <span class="cfgrid__cell">180,520</span>
-                <span class="cfgrid__cell">184,320</span>
-              </div>
-            </div>
+                  <!-- moving horizon marker under the future dot -->
+                  <line id="branchYearTick" class="branch__yeartick" x1="300" y1="284" x2="300" y2="292" />
+                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">5 years</text>
 
-            <!-- Transactions: the source the statement above rolls up from -->
-            <div class="window__label">
-              Transactions
-              <span class="hint">&uarr; rolls up into the statement</span>
-            </div>
-            <div class="txnlist" aria-label="Transactions">
-              <div class="txnlist__row txnlist__row--head">
-                <span>Date</span>
-                <span>Description</span>
-                <span>Amount</span>
-                <span>Transfer</span>
-                <span>Amortize</span>
-                <span>Split</span>
+                  <!-- future outcome callout (fixed; updates as you drag) -->
+                  <text id="branchDream" class="branch__lbl-dream" x="548" y="58" text-anchor="end">a car that won't worry you</text>
+                  <text id="branchFutureAmt" class="branch__lbl-future" x="548" y="80" text-anchor="end">$8,600</text>
+
+                  <!-- the draggable decision point (vertical = how much) -->
+                  <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
+                     aria-label="Monthly overspend" aria-orientation="vertical"
+                     aria-valuemin="20" aria-valuemax="600" aria-valuenow="120"
+                     aria-valuetext="$120 a month">
+                    <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
+                    <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
+                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">+$120/mo</text>
+                  </g>
+
+                  <!-- the draggable horizon point (horizontal = how far ahead) -->
+                  <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
+                     aria-label="Time horizon in years" aria-orientation="horizontal"
+                     aria-valuemin="1" aria-valuemax="10" aria-valuenow="5"
+                     aria-valuetext="5 years from now">
+                    <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
+                    <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
+                  </g>
+                </svg>
               </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/14</span>
-                <span class="txnlist__desc">Costco</span>
-                <span class="txnlist__amt neg">−$842.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill is-set">12 mo</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/12</span>
-                <span class="txnlist__desc">Payroll Deposit</span>
-                <span class="txnlist__amt pos">+$4,200.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row is-muted" title="Marked as a transfer — excluded from the cashflow statement">
-                <span class="txnlist__date">06/10</span>
-                <span class="txnlist__desc">Move to Brokerage</span>
-                <span class="txnlist__amt neg">−$1,500.00</span>
-                <span class="txnlist__marker"><span class="flagbox is-on"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-              </div>
-              <div class="txnlist__row">
-                <span class="txnlist__date">06/08</span>
-                <span class="txnlist__desc">Home Depot</span>
-                <span class="txnlist__amt neg">−$320.00</span>
-                <span class="txnlist__marker"><span class="flagbox"></span></span>
-                <span class="txnlist__marker"><span class="txnpill muted">—</span></span>
-                <span class="txnlist__marker"><span class="txnpill is-set">2 acct</span></span>
-              </div>
-            </div>
+
+              <p class="branch__hint">
+                <strong>Drag the dots.</strong> How much you let slip — and how far ahead you look.
+              </p>
+            </figure>
           </div>
         </div>
       </div>
@@ -232,226 +125,257 @@
     <!-- ── Ticker strip ── -->
     <div class="ticker" aria-hidden="true">
       <div class="ticker__track">
-        <span class="ticker__item">Scenario Planning</span>
-        <span class="ticker__item">Fine-tuned Forecasting</span>
-        <span class="ticker__item">Budget vs. Actual</span>
-        <span class="ticker__item">Privacy-First by Default</span>
-        <span class="ticker__item">All Accounts in One Place</span>
-        <span class="ticker__item">Advanced Accounting Tools</span>
+        <span class="ticker__item">See what overspending really costs</span>
+        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
+        <span class="ticker__item">Your own numbers in 5 minutes</span>
+        <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
+        <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
+        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
+        <span class="ticker__item">Model the trade-off before you commit</span>
         <!-- duplicate for seamless loop -->
-        <span class="ticker__item">Scenario Planning</span>
-        <span class="ticker__item">Fine-tuned Forecasting</span>
-        <span class="ticker__item">Budget vs. Actual</span>
-        <span class="ticker__item">Privacy-First by Default</span>
-        <span class="ticker__item">All Accounts in One Place</span>
-        <span class="ticker__item">Advanced Accounting Tools</span>
+        <span class="ticker__item">See what overspending really costs</span>
+        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
+        <span class="ticker__item">Your own numbers in 5 minutes</span>
+        <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
+        <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
+        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
+        <span class="ticker__item">Model the trade-off before you commit</span>
       </div>
     </div>
 
-    <!-- ── Features ── -->
-    <section class="section" id="features" aria-label="Features">
+    <!-- ── The fix: how Workbench works × the tools (the solution reveal) ── -->
+    <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
         <div class="section__head on-scroll">
-          <span class="kicker">What's on the workbench</span>
-          <h2 class="section__title">Serious tools, made approachable.</h2>
+          <span class="kicker">The fix</span>
+          <h2 class="section__title">
+            From messy transactions to a number you trust — and the tools that get you there.
+          </h2>
           <p class="section__lead">
-            Everything you need to plan deliberately — the kind of capabilities professionals
-            rely on, distilled into something you'll actually want to open.
+            Here's how Workbench fixes that. A guided setup walks you in from zero — plain-language
+            questions, no blank screen, your real numbers in about five minutes — and from there
+            you're in a loop. Each step below is a stage; the tools beneath it are what you use to
+            get through it, every one built to show you the downstream price of a decision before
+            you commit. Not just what you spent, but what it compounds to.
           </p>
         </div>
 
-        <div class="features on-scroll" data-stagger>
-          <!-- 01 — Scenario Planning -->
-          <article class="feature">
-            <div class="feature__index">01</div>
-            <h3 class="feature__title">Scenario Planning</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">scenarios</span>
-              </div>
-              <div class="shot__body">
-                <div class="shot__tabs">
-                  <span class="shot__tab is-active">Base</span>
-                  <span class="shot__tab">Aggressive Save</span>
-                  <span class="shot__tab">Home Purchase</span>
-                </div>
-                <table class="minitable">
-                  <thead>
-                    <tr><th>Scenario</th><th class="num">5-Yr Bal.</th><th class="num">Δ vs Base</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Base</td><td class="num" data-count="184320" data-prefix="$">$0</td><td class="num">—</td></tr>
-                    <tr><td>Aggressive Save</td><td class="num" data-count="241060" data-prefix="$">$0</td><td class="num pos" data-count="56740" data-prefix="+$">+$0</td></tr>
-                    <tr><td>Home Purchase</td><td class="num" data-count="96180" data-prefix="$">$0</td><td class="num neg" data-count="88140" data-prefix="−$">−$0</td></tr>
-                  </tbody>
-                </table>
-              </div>
+        <!-- The loop as a table: steps across the top, the tools for each step beneath -->
+        <div class="flow__table on-scroll" id="features" data-stagger>
+          <!-- Step 1 — Clean up -->
+          <div class="flowcol">
+            <div class="flowcol__head">
+              <span class="flowcol__step">Step 1</span>
+              <h3 class="flowcol__title">Clean up what really happened</h3>
+              <p class="flowcol__sub">First the history has to be honest — before anything can be projected.</p>
             </div>
-            <ul class="feature__list">
-              <li>Save different paths as scenarios.</li>
-              <li>Easily compare scenarios side-by-side.</li>
-            </ul>
-          </article>
-
-          <!-- 02 — Fine-tuned Forecasting -->
-          <article class="feature">
-            <div class="feature__index">02</div>
-            <h3 class="feature__title">Fine-tuned Forecasting</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">forecast params — paycheck</span>
-              </div>
-              <div class="shot__body">
-                <div class="paramgrid">
-                  <span class="paramgrid__label">Annual growth</span>
-                  <span class="paramgrid__control paramgrid__control--focus"><span data-count="3.5" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
-                  <span class="paramgrid__label">Frequency</span>
-                  <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                  <span class="paramgrid__label">Inflation</span>
-                  <span class="paramgrid__control"><span data-count="2.4" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
-                  <span class="paramgrid__label">Project until</span>
-                  <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
-                </div>
-              </div>
-            </div>
-            <ul class="feature__list">
-              <li>Adjust parameters at an event level.</li>
-              <li>Create parameters to apply to all events.</li>
-            </ul>
-          </article>
-
-          <!-- 03 — Budget vs. Actual -->
-          <article class="feature">
-            <div class="feature__index">03</div>
-            <h3 class="feature__title">Budget vs. Actual Insights</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">variance — june</span>
-              </div>
-              <div class="shot__body">
-                <table class="minitable">
-                  <thead>
-                    <tr><th>Category</th><th class="num">Budget</th><th class="num">Actual</th><th class="num">Δ</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Groceries</td><td class="num" data-count="600" data-prefix="$">$0</td><td class="num" data-count="742" data-prefix="$">$0</td><td class="num neg" data-count="142" data-prefix="+$">+$0</td></tr>
-                    <tr><td>Dining</td><td class="num" data-count="200" data-prefix="$">$0</td><td class="num" data-count="150" data-prefix="$">$0</td><td class="num pos" data-count="50" data-prefix="−$">−$0</td></tr>
-                    <tr><td>Transport</td><td class="num" data-count="180" data-prefix="$">$0</td><td class="num" data-count="205" data-prefix="$">$0</td><td class="num neg" data-count="25" data-prefix="+$">+$0</td></tr>
-                    <tr class="is-total"><td>Total</td><td class="num" data-count="980" data-prefix="$">$0</td><td class="num" data-count="1097" data-prefix="$">$0</td><td class="num neg pulse" data-count="117" data-prefix="+$">+$0</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <ul class="feature__list">
-              <li>Understand the root causes of overspending.</li>
-            </ul>
-          </article>
-
-          <!-- 04 — Privacy-First -->
-          <article class="feature">
-            <div class="feature__index">04</div>
-            <h3 class="feature__title">Privacy-First by Default</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">data &amp; privacy</span>
-              </div>
-              <div class="shot__body">
-                <div class="privacy-rows">
-                  <div class="privacy-row">
-                    <span class="privacy-row__icon lock">&#128274;</span>
-                    <span>Encrypted, stored locally</span>
-                    <span class="privacy-row__status status-on">On device</span>
+            <div class="flowcol__cards">
+              <article class="feature">
+                <h3 class="feature__title">Numbers That Match Reality</h3>
+                <div class="feature__shot" aria-hidden="true">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name">transaction</span>
                   </div>
-                  <div class="privacy-row">
-                    <span class="privacy-row__icon">&#128193;</span>
-                    <span class="privacy-row__path">~/budget_app/database.db</span>
-                  </div>
-                  <div class="privacy-row">
-                    <span class="privacy-row__icon">&#9729;</span>
-                    <span>Cloud sync</span>
-                    <span class="privacy-row__status status-off">Off</span>
+                  <div class="shot__body">
+                    <div class="txnrow">
+                      <div class="txnrow__head">
+                        <span class="txnrow__desc">Costco · 06/14</span>
+                        <span class="txnrow__amt">−$842.00</span>
+                      </div>
+                      <span class="txnrow__ctl-label">Transfer</span>
+                      <span class="flagbox is-on"></span>
+                      <span class="txnrow__ctl-label">Amortize</span>
+                      <span class="txnrow__ctl">12 months <span class="caret">▼</span></span>
+                      <span class="txnrow__ctl-label">Split</span>
+                      <span class="txnrow__ctl">2 accounts <span class="caret">▼</span></span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <ul class="feature__list">
-              <li>Your financial data stays on your device, not on someone else's server.</li>
-            </ul>
-          </article>
+                <ul class="feature__list">
+                  <li>Spread a big purchase across the months it really belongs to, so one heavy month doesn't distort the trend.</li>
+                  <li>Mark transfers so moving money between your own accounts never reads as spending.</li>
+                  <li>Split a charge across accounts to match where the money actually went.</li>
+                </ul>
+              </article>
 
-          <!-- 05 — All Accounts -->
-          <article class="feature">
-            <div class="feature__index">05</div>
-            <h3 class="feature__title">All Accounts in One Place</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">accounts — personal</span>
-              </div>
-              <div class="shot__body">
-                <table class="minitable">
-                  <tbody>
-                    <tr>
-                      <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
-                      <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
-                      <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
-                    </tr>
-                    <tr>
-                      <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
-                      <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
-                      <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
-                    </tr>
-                    <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <ul class="feature__list">
-              <li>View consolidated balances from many institutions.</li>
-              <li>Create spouse profiles and plan together.</li>
-            </ul>
-          </article>
-
-          <!-- 06 — Advanced Accounting -->
-          <article class="feature">
-            <div class="feature__index">06</div>
-            <h3 class="feature__title">Advanced Accounting Tools</h3>
-            <div class="feature__shot" aria-hidden="true">
-              <div class="shot__bar">
-                <span class="dots"><span></span><span></span><span></span></span>
-                <span class="shot__name">transaction</span>
-              </div>
-              <div class="shot__body">
-                <div class="txnrow">
-                  <div class="txnrow__head">
-                    <span class="txnrow__desc">Costco · 06/14</span>
-                    <span class="txnrow__amt">−$842.00</span>
+              <article class="feature">
+                <h3 class="feature__title">All Accounts in One Place</h3>
+                <div class="feature__shot" aria-hidden="true">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name">accounts — personal</span>
                   </div>
-                  <span class="txnrow__ctl-label">Transfer</span>
-                  <span class="flagbox is-on"></span>
-                  <span class="txnrow__ctl-label">Amortize</span>
-                  <span class="txnrow__ctl">12 months <span class="caret">▼</span></span>
-                  <span class="txnrow__ctl-label">Split</span>
-                  <span class="txnrow__ctl">2 accounts <span class="caret">▼</span></span>
+                  <div class="shot__body">
+                    <table class="minitable">
+                      <tbody>
+                        <tr>
+                          <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
+                          <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
+                        </tr>
+                        <tr>
+                          <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
+                          <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
+                        </tr>
+                        <tr>
+                          <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
+                          <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
+                        </tr>
+                        <tr>
+                          <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
+                          <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
+                        </tr>
+                        <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
+                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+          <!-- Step 2 — Project it forward -->
+          <div class="flowcol">
+            <div class="flowcol__head">
+              <span class="flowcol__step">Step 2</span>
+              <h3 class="flowcol__title">Project it forward</h3>
+              <p class="flowcol__sub">Carry those clean actuals ahead and see where this path lands.</p>
+            </div>
+            <div class="flowcol__cards">
+              <article class="feature">
+                <h3 class="feature__title">Fine-tuned Forecasting</h3>
+                <div class="feature__shot" aria-hidden="true">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name">forecast params — paycheck</span>
+                  </div>
+                  <div class="shot__body">
+                    <div class="paramgrid">
+                      <span class="paramgrid__label">Annual growth</span>
+                      <span class="paramgrid__control paramgrid__control--focus"><span data-count="3.5" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
+                      <span class="paramgrid__label">Frequency</span>
+                      <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
+                      <span class="paramgrid__label">Inflation</span>
+                      <span class="paramgrid__control"><span data-count="2.4" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
+                      <span class="paramgrid__label">Project until</span>
+                      <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                    </div>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See what a 3% raise does to your five-year balance — before you count on it.</li>
+                  <li>Model rising rent, inflation, or a new expense and watch it ripple through every month ahead.</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+          <!-- Step 3 — Test the tradeoffs -->
+          <div class="flowcol">
+            <div class="flowcol__head">
+              <span class="flowcol__step">Step 3</span>
+              <h3 class="flowcol__title">Test the tradeoffs</h3>
+              <p class="flowcol__sub">Put each path side by side and watch what it costs you years out.</p>
+            </div>
+            <div class="flowcol__cards">
+              <article class="feature">
+                <h3 class="feature__title">Scenario Planning</h3>
+                <div class="feature__shot" aria-hidden="true">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name">scenarios</span>
+                  </div>
+                  <div class="shot__body">
+                    <div class="shot__tabs">
+                      <span class="shot__tab is-active">Base</span>
+                      <span class="shot__tab">Aggressive Save</span>
+                      <span class="shot__tab">Home Purchase</span>
+                    </div>
+                    <table class="minitable">
+                      <thead>
+                        <tr><th>Scenario</th><th class="num">5-Yr Bal.</th><th class="num">Δ vs Base</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Base</td><td class="num" data-count="184320" data-prefix="$">$0</td><td class="num">—</td></tr>
+                        <tr><td>Aggressive Save</td><td class="num" data-count="241060" data-prefix="$">$0</td><td class="num pos" data-count="56740" data-prefix="+$">+$0</td></tr>
+                        <tr><td>Home Purchase</td><td class="num" data-count="96180" data-prefix="$">$0</td><td class="num neg" data-count="88140" data-prefix="−$">−$0</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See exactly what a choice costs: here, buying the house lands $88k below saving aggressively over five years.</li>
+                  <li>Line every path up side by side and decide with your eyes open.</li>
+                </ul>
+              </article>
+
+              <article class="feature">
+                <h3 class="feature__title">Budget vs. Actual Insights</h3>
+                <div class="feature__shot" aria-hidden="true">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name">variance — june</span>
+                  </div>
+                  <div class="shot__body">
+                    <table class="minitable">
+                      <thead>
+                        <tr><th>Category</th><th class="num">Budget</th><th class="num">Actual</th><th class="num">Δ</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Groceries</td><td class="num" data-count="600" data-prefix="$">$0</td><td class="num" data-count="742" data-prefix="$">$0</td><td class="num neg" data-count="142" data-prefix="+$">+$0</td></tr>
+                        <tr><td>Dining</td><td class="num" data-count="200" data-prefix="$">$0</td><td class="num" data-count="150" data-prefix="$">$0</td><td class="num pos" data-count="50" data-prefix="−$">−$0</td></tr>
+                        <tr><td>Transport</td><td class="num" data-count="180" data-prefix="$">$0</td><td class="num" data-count="205" data-prefix="$">$0</td><td class="num neg" data-count="25" data-prefix="+$">+$0</td></tr>
+                        <tr class="is-total"><td>Total</td><td class="num" data-count="980" data-prefix="$">$0</td><td class="num" data-count="1097" data-prefix="$">$0</td><td class="num neg pulse" data-count="117" data-prefix="+$">+$0</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>Catch the categories quietly draining you, and trace each overage back to the transaction that caused it.</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+
+          <!-- Step 4 — Land on your number (the payoff, not another tool) -->
+          <div class="flowcol flowcol--payoff">
+            <div class="flowcol__head">
+              <span class="flowcol__step">Step 4</span>
+              <h3 class="flowcol__title">Land on your number</h3>
+              <p class="flowcol__sub">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+            </div>
+            <div class="flowcol__cards">
+              <div class="payoff">
+                <p class="payoff__desc">
+                  The loop closes here. Because you built it yourself, you understand exactly why
+                  it's this number — and what it costs to break it.
+                </p>
+                <div class="loop__number">
+                  <span class="loop__number-label">Your monthly budget</span>
+                  <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
+                  <span class="loop__number-note">Derived from your data — not a 50/30/20 rule.</span>
                 </div>
               </div>
             </div>
-            <ul class="feature__list">
-              <li>Mark transactions as transfers between accounts.</li>
-              <li>Spread out payments over time.</li>
-              <li>Split transactions across multiple accounts.</li>
-            </ul>
-          </article>
+          </div>
+        </div>
+
+        <!-- Privacy: a product attribute, not a step — sits beneath the loop -->
+        <div class="flow__privacy on-scroll">
+          <span class="flow__privacy-icon" aria-hidden="true">&#128274;</span>
+          <p class="flow__privacy-text">
+            <strong>And all of it runs locally.</strong> Your finances never touch someone else's
+            server — encrypted and stored on your device. Nothing to breach, nothing to sell, no
+            account to lock you out.
+          </p>
+          <span class="flow__privacy-chips" aria-hidden="true">
+            <span class="privacy-row__status status-on">On device</span>
+            <span class="privacy-row__status status-off">Cloud off</span>
+          </span>
         </div>
       </div>
     </section>
@@ -474,20 +398,36 @@
       </div>
     </section>
 
+    <!-- ── Build-in-public transparency ── -->
+    <section class="section proof" aria-label="Built in public">
+      <div class="wrap proof__inner on-scroll">
+        <span class="kicker">Built in the open</span>
+        <p class="proof__quote">
+          Workbench is being built <span>in public.</span> Every trade-off, dead end, and shipped
+          feature is out where you can see it — no manufactured reviews, no growth-hacked hype.
+          Watch it take shape, kick the tires, and help decide where it goes next.
+        </p>
+        <div class="proof__meta">
+          <a class="proof__link" href="#" target="_blank" rel="noopener">Follow the build in public &rarr;</a>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Download ── -->
     <section class="section download" id="download" aria-label="Download">
       <div class="wrap">
         <div class="download__card on-scroll">
           <span class="kicker">Get started</span>
-          <h2 class="download__title">Download the App</h2>
+          <h2 class="download__title">See what your current path is actually costing you</h2>
           <p class="download__sub">
-            Get started with Workbench Budgeting today. Free to download and use, with demo
-            data included.
+            Free to use. Load the included demo data or import your own, and you'll see exactly
+            where this path leads — and what each choice along the way is quietly costing you years
+            from now.
           </p>
           <div class="download__actions">
             <a href="#" class="btn btn--primary btn--lg" aria-label="Download Workbench Budgeting">Download Now</a>
           </div>
-          <p class="download__note">Available for desktop. More platforms coming soon.</p>
+          <p class="download__note">Free to use — your data stays on your device, always.</p>
         </div>
       </div>
     </section>
@@ -573,8 +513,8 @@
         counters.forEach(runCount);
       }
 
-      /* ── Bring each app-sample (and the hero cashflow grid) to life ── */
-      const liveEls = document.querySelectorAll(".feature__shot, .cfgrid, .txnlist");
+      /* ── Bring each app-sample (and the hero guided-setup window) to life ── */
+      const liveEls = document.querySelectorAll(".feature__shot, .setup");
       const activateLive = (el) => {
         el.classList.add("is-live");
         startSampleLoops(el);
@@ -627,6 +567,20 @@
             setInterval(() => flag.classList.toggle("is-on"), 2600);
           }, 900);
         }
+
+        /* Guided setup (hero + feature card): cycle the selected answer */
+        const setupOpts = shot.querySelectorAll(".setup__option, .setupmini__opt");
+        if (setupOpts.length) {
+          let s = 0;
+          const cycleOpt = () => {
+            setupOpts.forEach((o, n) => o.classList.toggle("is-active", n === s));
+            s = (s + 1) % setupOpts.length;
+          };
+          setTimeout(() => {
+            cycleOpt();
+            setInterval(cycleOpt, 2100);
+          }, 1300);
+        }
       }
 
       /* ── Hero scenario tabs: click to switch (manual) ── */
@@ -637,6 +591,183 @@
           tab.classList.add("is-active");
         });
       });
+
+      /* ── Interactive branching path (hero) ──
+         One decision tonight forks into two futures. Drag vertically for how
+         much you let slip each month, and horizontally for how far ahead you
+         look; the future it leads to changes in real time. */
+      (function () {
+        const svg = document.querySelector(".branch__svg");
+        const node = document.getElementById("branchNode");
+        const fHandle = document.getElementById("branchFutureHandle");
+        if (!svg || !node || !fHandle) return;
+
+        const nodeDot = document.getElementById("branchNodeDot");
+        const halo = document.getElementById("branchHalo");
+        const nodeVal = document.getElementById("branchNodeVal");
+        const pPresent = document.getElementById("branchPresent");
+        const pFuture = document.getElementById("branchFuture");
+        const dotFuture = document.getElementById("branchDotFuture");
+        const fHalo = document.getElementById("branchFutureHalo");
+        const yearTick = document.getElementById("branchYearTick");
+        const yearLab = document.getElementById("branchYearLab");
+        const dream = document.getElementById("branchDream");
+        const futureAmt = document.getElementById("branchFutureAmt");
+
+        /* geometry (viewBox units) */
+        const NX = 95;                   // decision point x (left of centre)
+        const Y_TOP = 70, Y_BOT = 230;   // top = most overspend
+        const OS_MIN = 20, OS_MAX = 600, OS_STEP = 10;
+        const X_NOW = 95, X_END = 505;   // timeline span
+        const YR_MIN = 1, YR_MAX = 10, YR_STEP = 1;
+        const PRESENT = { x: 150, y: 76 };
+        const FUT_Y = 252;
+        const R = 0.07 / 12;             // ~7%/yr, compounded monthly
+
+        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+        const factor = (months) => (Math.pow(1 + R, months) - 1) / R;
+
+        const osToY = (os) =>
+          Y_BOT - ((os - OS_MIN) / (OS_MAX - OS_MIN)) * (Y_BOT - Y_TOP);
+        const yToOs = (y) => {
+          const frac = (Y_BOT - clamp(y, Y_TOP, Y_BOT)) / (Y_BOT - Y_TOP);
+          return clamp(Math.round((OS_MIN + frac * (OS_MAX - OS_MIN)) / OS_STEP) * OS_STEP, OS_MIN, OS_MAX);
+        };
+        const yrToX = (yr) => X_NOW + (yr / YR_MAX) * (X_END - X_NOW);
+        const xToYr = (x) => {
+          const yr = ((clamp(x, yrToX(YR_MIN), X_END) - X_NOW) / (X_END - X_NOW)) * YR_MAX;
+          return clamp(Math.round(yr / YR_STEP) * YR_STEP, YR_MIN, YR_MAX);
+        };
+
+        const curve = (ny, ex, ey) => {
+          const k = 0.45;
+          const c1x = NX + (ex - NX) * k;
+          const c2x = ex - (ex - NX) * k;
+          return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
+        };
+        const dreamFor = (fv) =>
+          fv < 6000 ? "a long weekend away"
+          : fv < 12000 ? "a car that won't worry you"
+          : fv < 22000 ? "a once-in-a-lifetime trip"
+          : fv < 40000 ? "the dream kitchen remodel"
+          : fv < 80000 ? "a down payment on a home"
+          : "a serious head start on retirement";
+        const money = (v) => "$" + v.toLocaleString();
+
+        let osState = 120, yrState = 5;
+
+        const render = (os, yr, animateAmt) => {
+          osState = os;
+          yrState = yr;
+          const ny = osToY(os);
+          const fx = yrToX(yr);
+          const fv = Math.round((os * factor(yr * 12)) / 100) * 100;
+
+          /* decision point (vertical handle) */
+          nodeDot.setAttribute("cy", ny);
+          halo.setAttribute("cy", ny);
+          nodeVal.setAttribute("y", ny + 5);
+          nodeVal.textContent = "+$" + os + "/mo";
+          node.setAttribute("aria-valuenow", os);
+          node.setAttribute("aria-valuetext", "$" + os + " a month");
+
+          /* paths */
+          pPresent.setAttribute("d", curve(ny, PRESENT.x, PRESENT.y));
+          pFuture.setAttribute("d", curve(ny, fx, FUT_Y));
+
+          /* horizon point (horizontal handle) */
+          dotFuture.setAttribute("cx", fx);
+          fHalo.setAttribute("cx", fx);
+          yearTick.setAttribute("x1", fx);
+          yearTick.setAttribute("x2", fx);
+          yearLab.setAttribute("x", fx);
+          yearLab.textContent = yr + (yr === 1 ? " year" : " years");
+          fHandle.setAttribute("aria-valuenow", yr);
+          fHandle.setAttribute("aria-valuetext", yr + (yr === 1 ? " year" : " years") + " from now");
+
+          /* outcome callout */
+          dream.textContent = dreamFor(fv);
+
+          if (animateAmt && !reduceMotion) {
+            const start = performance.now();
+            const dur = 1100;
+            const step = (now) => {
+              const t = Math.min((now - start) / dur, 1);
+              const eased = 1 - Math.pow(1 - t, 3);
+              futureAmt.textContent = money(Math.round((fv * eased) / 100) * 100);
+              if (t < 1) requestAnimationFrame(step);
+              else futureAmt.textContent = money(fv);
+            };
+            requestAnimationFrame(step);
+          } else {
+            futureAmt.textContent = money(fv);
+          }
+        };
+
+        /* pointer drag — which handle grabbed decides the axis */
+        let active = null; // 'node' | 'future'
+        const ptX = (e) => {
+          const r = svg.getBoundingClientRect();
+          return ((e.clientX - r.left) / r.width) * 560;
+        };
+        const ptY = (e) => {
+          const r = svg.getBoundingClientRect();
+          return ((e.clientY - r.top) / r.height) * 320;
+        };
+        const grab = (which, handle) => (e) => {
+          active = which;
+          try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+          if (which === "node") render(yToOs(ptY(e)), yrState);
+          else render(osState, xToYr(ptX(e)));
+          e.preventDefault();
+          if (typeof handle.focus === "function") handle.focus();
+        };
+        node.addEventListener("pointerdown", grab("node", node));
+        fHandle.addEventListener("pointerdown", grab("future", fHandle));
+        svg.addEventListener("pointermove", (e) => {
+          if (active === "node") render(yToOs(ptY(e)), yrState);
+          else if (active === "future") render(osState, xToYr(ptX(e)));
+        });
+        const release = (e) => {
+          active = null;
+          try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+        };
+        svg.addEventListener("pointerup", release);
+        svg.addEventListener("pointercancel", release);
+
+        /* keyboard — vertical slider (overspend) */
+        node.addEventListener("keydown", (e) => {
+          let os = osState;
+          switch (e.key) {
+            case "ArrowUp": case "ArrowRight": os += OS_STEP; break;
+            case "ArrowDown": case "ArrowLeft": os -= OS_STEP; break;
+            case "PageUp": os += OS_STEP * 5; break;
+            case "PageDown": os -= OS_STEP * 5; break;
+            case "Home": os = OS_MIN; break;
+            case "End": os = OS_MAX; break;
+            default: return;
+          }
+          e.preventDefault();
+          render(clamp(os, OS_MIN, OS_MAX), yrState);
+        });
+
+        /* keyboard — horizontal slider (horizon) */
+        fHandle.addEventListener("keydown", (e) => {
+          let yr = yrState;
+          switch (e.key) {
+            case "ArrowRight": case "ArrowUp": yr += YR_STEP; break;
+            case "ArrowLeft": case "ArrowDown": yr -= YR_STEP; break;
+            case "Home": yr = YR_MIN; break;
+            case "End": yr = YR_MAX; break;
+            default: return;
+          }
+          e.preventDefault();
+          render(osState, clamp(yr, YR_MIN, YR_MAX));
+        });
+
+        /* initial paint, with a one-time count-up on the future figure */
+        render(120, 5, true);
+      })();
     </script>
   </body>
 </html>
