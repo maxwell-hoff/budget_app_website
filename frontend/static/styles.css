@@ -367,134 +367,146 @@ body::before {
 }
 
 /* ============================================================
-   Hero visualization — the problem made visible
-   One graph: three overspend trajectories compounding over
-   different horizons, so the reader finds their own number.
+   Hero visualization — the interactive branching path
+   One decision tonight forks into two futures: the money
+   spent-and-gone, or what it becomes in five years. Drag the
+   decision point along the overspend spectrum to change the
+   future it leads to.
    ============================================================ */
 .hero__viz {
   width: 100%;
-  max-width: 620px;
+  max-width: 640px;
 }
 
-.combo {
+.branch {
   margin: 0;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-pop);
-  padding: 1rem 1.15rem 1.05rem;
+  padding: 1rem 1.15rem 0.9rem;
 }
-.combo__head {
+.branch__head {
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 
-.combo__chart svg {
+.branch__stage { position: relative; }
+.branch__svg {
   display: block;
   width: 100%;
   height: auto;
   overflow: visible;
+  touch-action: none;
 }
 
-/* axes + gridlines */
-.combo__grid line { stroke: var(--border); stroke-width: 1; }
-.combo__grid .combo__axis { stroke: var(--border-strong); }
-.combo__ylab text,
-.combo__xlab text {
+/* timeline + the spectrum track */
+.branch__axis { stroke: var(--border-strong); stroke-width: 1; }
+.branch__track { stroke: var(--border); stroke-width: 2; stroke-linecap: round; }
+.branch__axlab {
   font-family: var(--font-mono);
   font-size: 11px;
   fill: var(--muted);
 }
-
-/* area under the headline trajectory */
-.combo__area {
-  fill: url(#comboFill);
-  opacity: 0;
-  animation: fadeIn 1.3s ease 1.5s forwards;
+.branch__hintlab {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  fill: var(--muted);
 }
 
-/* the three trajectories */
-.combo__line {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 700;
-  stroke-dashoffset: 700;
-  animation: drawLine 1.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.combo__line--1 { stroke: #8fb0cc; stroke-width: 2; animation-delay: 0.35s; }
-.combo__line--2 { stroke: #3f6f9c; stroke-width: 2.25; animation-delay: 0.65s; }
-.combo__line--3 { stroke: var(--accent); stroke-width: 2.75; animation-delay: 0.95s; }
+/* the two diverging paths */
+.branch__path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.branch__path--present { stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 5 4; }
+.branch__path--future { stroke: var(--accent); stroke-width: 2.75; }
 
-.combo__dot { opacity: 0; animation: fadeIn 0.5s ease forwards; }
-.combo__dot--1 { fill: #8fb0cc; animation-delay: 1.2s; }
-.combo__dot--2 { fill: #3f6f9c; animation-delay: 1.55s; }
-.combo__dot--3 { fill: var(--accent); animation-delay: 2s; }
+.branch__dot--present { fill: var(--border-strong); }
+.branch__dot--future { fill: var(--accent); }
 
-/* legend — maps each line to its plan, payoff, and dream */
-.combo__legend {
-  list-style: none;
-  margin: 0.7rem 0 0;
-  padding: 0;
+/* the draggable decision point */
+.branch__nodewrap { cursor: grab; outline: none; }
+.branch__nodewrap:active { cursor: grabbing; }
+.branch__node {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2;
+  transition: r 0.12s ease;
 }
-.combo__row {
-  display: grid;
-  grid-template-columns: 12px 1fr;
-  column-gap: 0.65rem;
-  row-gap: 0.1rem;
-  padding: 0.55rem 0;
-  border-top: 1px solid var(--border);
+.branch__nodewrap:hover .branch__node { r: 10; }
+.branch__nodewrap:focus-visible .branch__node {
+  stroke: #fff;
+  filter: drop-shadow(0 0 0 2px var(--accent));
 }
-.combo__swatch {
-  grid-row: 1 / span 2;
-  width: 12px;
-  height: 12px;
-  margin-top: 3px;
-  border-radius: 2px;
+.branch__halo,
+.branch__futurehalo {
+  fill: rgba(0, 58, 112, 0.13);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: branchPulse 2.4s ease-in-out infinite;
 }
-.combo__swatch--1 { background: #8fb0cc; }
-.combo__swatch--2 { background: #3f6f9c; }
-.combo__swatch--3 { background: var(--accent); }
+.branch__futurehalo { animation-delay: 1.2s; }
+@keyframes branchPulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.35); }
+}
 
-.combo__line1 {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
+/* the horizon (future) handle, dragged along the timeline */
+.branch__futurewrap { cursor: grab; outline: none; }
+.branch__futurewrap:active { cursor: grabbing; }
+.branch__dot--future { stroke: #fff; stroke-width: 2; }
+.branch__futurewrap:hover .branch__dot--future { r: 7; }
+.branch__futurewrap:focus-visible .branch__dot--future {
+  stroke: #fff;
+  filter: drop-shadow(0 0 0 2px var(--accent));
 }
-.combo__plan {
-  font-size: 0.8rem;
-  color: var(--ink-muted);
+.branch__yeartick { stroke: var(--accent); stroke-width: 1.5; }
+.branch__yearlab {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--accent);
 }
-.combo__mo {
+
+/* labels */
+.branch__lbl-node {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  color: var(--ink);
+  font-size: 15px;
+  fill: var(--ink);
 }
-.combo__fig {
+.branch__lbl-present {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  fill: var(--muted);
+}
+.branch__lbl-dream {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 17px;
+  fill: var(--ink);
+}
+.branch__lbl-future {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 13px;
+  fill: var(--accent);
+}
+
+.branch__hint {
+  margin: 0.55rem 0 0;
   font-size: 0.78rem;
   color: var(--muted);
-  white-space: nowrap;
+  text-align: center;
 }
-.combo__fig strong {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 0.98rem;
-  color: var(--accent);
-}
-.combo__dream {
-  grid-column: 2;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.3;
-}
+.branch__hint strong { color: var(--ink); font-weight: 600; }
 
 /* ── The product window (replaces the old video) ── */
 .window {
@@ -2260,15 +2272,14 @@ body::before {
   .window,
   .chart-line--draw,
   .chart-area,
-  .chart-bar,
-  .combo__area,
-  .combo__line,
-  .combo__dot {
+  .chart-bar {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
     stroke-dashoffset: 0 !important;
   }
+  .branch__halo,
+  .branch__futurehalo { animation: none !important; }
   .ticker__track { animation: none; }
   .on-scroll,
   .on-scroll[data-stagger] > * {

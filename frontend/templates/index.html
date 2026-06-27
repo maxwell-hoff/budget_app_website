@@ -33,7 +33,7 @@
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>
-    </nav>
+    </nav> 
 
     <!-- ── Hero (the Why — problem stated left, problem illustrated right) ── -->
     <header class="hero" id="top">
@@ -59,85 +59,63 @@
                Three levels so the reader finds their own number — no categories,
                no scolding; the future label does the emotional work. -->
           <div class="hero__viz reveal-up d3">
-            <figure class="combo">
-              <figcaption class="combo__head">What today's overspending quietly compounds to</figcaption>
+            <figure class="branch">
+              <figcaption class="branch__head">One choice tonight · two futures</figcaption>
 
-              <div class="combo__chart">
-                <svg viewBox="0 0 520 300" role="img" aria-labelledby="comboTitle comboDesc">
-                  <title id="comboTitle">What a monthly overspend compounds to over time</title>
-                  <desc id="comboDesc">
-                    Three trajectories from today: going $100 over budget each month becomes about
-                    $4,000 in three years, $300 over becomes about $21,000 in five years, and $500
-                    over becomes about $87,000 in ten years.
-                  </desc>
-                  <defs>
-                    <linearGradient id="comboFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#003a70" stop-opacity="0.16" />
-                      <stop offset="100%" stop-color="#003a70" stop-opacity="0.01" />
-                    </linearGradient>
-                  </defs>
+              <div class="branch__stage">
+                <svg class="branch__svg" viewBox="0 0 560 320">
+                  <!-- timeline along the bottom: drag the future dot along it -->
+                  <line class="branch__axis" x1="95" y1="288" x2="505" y2="288" />
+                  <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
+                  <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
+                  <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
+                  <text class="branch__axlab" x="505" y="306" text-anchor="end">10 years</text>
 
-                  <!-- grid + axes -->
-                  <g class="combo__grid">
-                    <line x1="52" y1="36" x2="496" y2="36" />
-                    <line x1="52" y1="116" x2="496" y2="116" />
-                    <line x1="52" y1="196" x2="496" y2="196" />
-                    <line x1="52" y1="276" x2="496" y2="276" class="combo__axis" />
-                    <line x1="52" y1="36" x2="52" y2="276" class="combo__axis" />
+                  <!-- the spectrum the decision point slides along (vertical = $/mo) -->
+                  <line class="branch__track" x1="95" y1="70" x2="95" y2="230" />
+                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$600 / mo</text>
+                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$20 / mo</text>
+
+                  <!-- the two diverging paths (recomputed as you drag) -->
+                  <path id="branchPresent" class="branch__path branch__path--present" d="M95 202 C120 202 130 76 150 76" />
+                  <path id="branchFuture" class="branch__path branch__path--future" d="M95 202 C187 202 208 252 300 252" />
+
+                  <!-- near-term branch: the money is just gone (constant) -->
+                  <circle class="branch__dot branch__dot--present" cx="150" cy="76" r="4" />
+                  <text class="branch__lbl-present" x="162" y="72" text-anchor="start">spent — and gone by Friday</text>
+
+                  <!-- moving horizon marker under the future dot -->
+                  <line id="branchYearTick" class="branch__yeartick" x1="300" y1="284" x2="300" y2="292" />
+                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">5 years</text>
+
+                  <!-- future outcome callout (fixed; updates as you drag) -->
+                  <text id="branchDream" class="branch__lbl-dream" x="548" y="58" text-anchor="end">a car that won't worry you</text>
+                  <text id="branchFutureAmt" class="branch__lbl-future" x="548" y="80" text-anchor="end">$8,600</text>
+
+                  <!-- the draggable decision point (vertical = how much) -->
+                  <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
+                     aria-label="Monthly overspend" aria-orientation="vertical"
+                     aria-valuemin="20" aria-valuemax="600" aria-valuenow="120"
+                     aria-valuetext="$120 a month">
+                    <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
+                    <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
+                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">+$120/mo</text>
                   </g>
-                  <g class="combo__ylab">
-                    <text x="44" y="40" text-anchor="end">$90k</text>
-                    <text x="44" y="120" text-anchor="end">$60k</text>
-                    <text x="44" y="200" text-anchor="end">$30k</text>
-                    <text x="44" y="280" text-anchor="end">$0</text>
+
+                  <!-- the draggable horizon point (horizontal = how far ahead) -->
+                  <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
+                     aria-label="Time horizon in years" aria-orientation="horizontal"
+                     aria-valuemin="1" aria-valuemax="10" aria-valuenow="5"
+                     aria-valuetext="5 years from now">
+                    <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
+                    <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
                   </g>
-                  <g class="combo__xlab">
-                    <text x="52" y="293" text-anchor="start">Today</text>
-                    <text x="270" y="293" text-anchor="middle">5 years</text>
-                    <text x="488" y="293" text-anchor="end">10 years</text>
-                  </g>
-
-                  <!-- area under the biggest trajectory -->
-                  <path class="combo__area" d="M52 276 C210 274 330 215 488 44 L488 276 L52 276 Z" />
-
-                  <!-- trajectories: lighter = smaller leak, darker = bigger -->
-                  <path class="combo__line combo__line--1" d="M52 276 C110 275 150 271 183 265" />
-                  <path class="combo__line combo__line--2" d="M52 276 C150 275 215 248 270 220" />
-                  <path class="combo__line combo__line--3" d="M52 276 C210 274 330 215 488 44" />
-
-                  <!-- endpoints -->
-                  <circle class="combo__dot combo__dot--1" cx="183" cy="265" r="4" />
-                  <circle class="combo__dot combo__dot--2" cx="270" cy="220" r="4" />
-                  <circle class="combo__dot combo__dot--3" cx="488" cy="44" r="4.5" />
                 </svg>
               </div>
 
-              <ul class="combo__legend" aria-label="What each trajectory is">
-                <li class="combo__row">
-                  <span class="combo__swatch combo__swatch--1" aria-hidden="true"></span>
-                  <span class="combo__line1">
-                    <span class="combo__plan"><span class="combo__mo" data-count="100" data-prefix="+$">+$0</span>/mo · 3 yrs</span>
-                    <span class="combo__fig">becomes <strong data-count="4000" data-prefix="$">$0</strong></span>
-                  </span>
-                  <span class="combo__dream">the trip you keep postponing</span>
-                </li>
-                <li class="combo__row">
-                  <span class="combo__swatch combo__swatch--2" aria-hidden="true"></span>
-                  <span class="combo__line1">
-                    <span class="combo__plan"><span class="combo__mo" data-count="300" data-prefix="+$">+$0</span>/mo · 5 yrs</span>
-                    <span class="combo__fig">becomes <strong data-count="21000" data-prefix="$">$0</strong></span>
-                  </span>
-                  <span class="combo__dream">the kitchen renovation you keep putting off</span>
-                </li>
-                <li class="combo__row">
-                  <span class="combo__swatch combo__swatch--3" aria-hidden="true"></span>
-                  <span class="combo__line1">
-                    <span class="combo__plan"><span class="combo__mo" data-count="500" data-prefix="+$">+$0</span>/mo · 10 yrs</span>
-                    <span class="combo__fig">becomes <strong data-count="87000" data-prefix="$">$0</strong></span>
-                  </span>
-                  <span class="combo__dream">a down payment on a home</span>
-                </li>
-              </ul>
+              <p class="branch__hint">
+                <strong>Drag the dots.</strong> How much you let slip — and how far ahead you look.
+              </p>
             </figure>
           </div>
         </div>
@@ -613,6 +591,183 @@
           tab.classList.add("is-active");
         });
       });
+
+      /* ── Interactive branching path (hero) ──
+         One decision tonight forks into two futures. Drag vertically for how
+         much you let slip each month, and horizontally for how far ahead you
+         look; the future it leads to changes in real time. */
+      (function () {
+        const svg = document.querySelector(".branch__svg");
+        const node = document.getElementById("branchNode");
+        const fHandle = document.getElementById("branchFutureHandle");
+        if (!svg || !node || !fHandle) return;
+
+        const nodeDot = document.getElementById("branchNodeDot");
+        const halo = document.getElementById("branchHalo");
+        const nodeVal = document.getElementById("branchNodeVal");
+        const pPresent = document.getElementById("branchPresent");
+        const pFuture = document.getElementById("branchFuture");
+        const dotFuture = document.getElementById("branchDotFuture");
+        const fHalo = document.getElementById("branchFutureHalo");
+        const yearTick = document.getElementById("branchYearTick");
+        const yearLab = document.getElementById("branchYearLab");
+        const dream = document.getElementById("branchDream");
+        const futureAmt = document.getElementById("branchFutureAmt");
+
+        /* geometry (viewBox units) */
+        const NX = 95;                   // decision point x (left of centre)
+        const Y_TOP = 70, Y_BOT = 230;   // top = most overspend
+        const OS_MIN = 20, OS_MAX = 600, OS_STEP = 10;
+        const X_NOW = 95, X_END = 505;   // timeline span
+        const YR_MIN = 1, YR_MAX = 10, YR_STEP = 1;
+        const PRESENT = { x: 150, y: 76 };
+        const FUT_Y = 252;
+        const R = 0.07 / 12;             // ~7%/yr, compounded monthly
+
+        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+        const factor = (months) => (Math.pow(1 + R, months) - 1) / R;
+
+        const osToY = (os) =>
+          Y_BOT - ((os - OS_MIN) / (OS_MAX - OS_MIN)) * (Y_BOT - Y_TOP);
+        const yToOs = (y) => {
+          const frac = (Y_BOT - clamp(y, Y_TOP, Y_BOT)) / (Y_BOT - Y_TOP);
+          return clamp(Math.round((OS_MIN + frac * (OS_MAX - OS_MIN)) / OS_STEP) * OS_STEP, OS_MIN, OS_MAX);
+        };
+        const yrToX = (yr) => X_NOW + (yr / YR_MAX) * (X_END - X_NOW);
+        const xToYr = (x) => {
+          const yr = ((clamp(x, yrToX(YR_MIN), X_END) - X_NOW) / (X_END - X_NOW)) * YR_MAX;
+          return clamp(Math.round(yr / YR_STEP) * YR_STEP, YR_MIN, YR_MAX);
+        };
+
+        const curve = (ny, ex, ey) => {
+          const k = 0.45;
+          const c1x = NX + (ex - NX) * k;
+          const c2x = ex - (ex - NX) * k;
+          return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
+        };
+        const dreamFor = (fv) =>
+          fv < 6000 ? "a long weekend away"
+          : fv < 12000 ? "a car that won't worry you"
+          : fv < 22000 ? "a once-in-a-lifetime trip"
+          : fv < 40000 ? "the dream kitchen remodel"
+          : fv < 80000 ? "a down payment on a home"
+          : "a serious head start on retirement";
+        const money = (v) => "$" + v.toLocaleString();
+
+        let osState = 120, yrState = 5;
+
+        const render = (os, yr, animateAmt) => {
+          osState = os;
+          yrState = yr;
+          const ny = osToY(os);
+          const fx = yrToX(yr);
+          const fv = Math.round((os * factor(yr * 12)) / 100) * 100;
+
+          /* decision point (vertical handle) */
+          nodeDot.setAttribute("cy", ny);
+          halo.setAttribute("cy", ny);
+          nodeVal.setAttribute("y", ny + 5);
+          nodeVal.textContent = "+$" + os + "/mo";
+          node.setAttribute("aria-valuenow", os);
+          node.setAttribute("aria-valuetext", "$" + os + " a month");
+
+          /* paths */
+          pPresent.setAttribute("d", curve(ny, PRESENT.x, PRESENT.y));
+          pFuture.setAttribute("d", curve(ny, fx, FUT_Y));
+
+          /* horizon point (horizontal handle) */
+          dotFuture.setAttribute("cx", fx);
+          fHalo.setAttribute("cx", fx);
+          yearTick.setAttribute("x1", fx);
+          yearTick.setAttribute("x2", fx);
+          yearLab.setAttribute("x", fx);
+          yearLab.textContent = yr + (yr === 1 ? " year" : " years");
+          fHandle.setAttribute("aria-valuenow", yr);
+          fHandle.setAttribute("aria-valuetext", yr + (yr === 1 ? " year" : " years") + " from now");
+
+          /* outcome callout */
+          dream.textContent = dreamFor(fv);
+
+          if (animateAmt && !reduceMotion) {
+            const start = performance.now();
+            const dur = 1100;
+            const step = (now) => {
+              const t = Math.min((now - start) / dur, 1);
+              const eased = 1 - Math.pow(1 - t, 3);
+              futureAmt.textContent = money(Math.round((fv * eased) / 100) * 100);
+              if (t < 1) requestAnimationFrame(step);
+              else futureAmt.textContent = money(fv);
+            };
+            requestAnimationFrame(step);
+          } else {
+            futureAmt.textContent = money(fv);
+          }
+        };
+
+        /* pointer drag — which handle grabbed decides the axis */
+        let active = null; // 'node' | 'future'
+        const ptX = (e) => {
+          const r = svg.getBoundingClientRect();
+          return ((e.clientX - r.left) / r.width) * 560;
+        };
+        const ptY = (e) => {
+          const r = svg.getBoundingClientRect();
+          return ((e.clientY - r.top) / r.height) * 320;
+        };
+        const grab = (which, handle) => (e) => {
+          active = which;
+          try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+          if (which === "node") render(yToOs(ptY(e)), yrState);
+          else render(osState, xToYr(ptX(e)));
+          e.preventDefault();
+          if (typeof handle.focus === "function") handle.focus();
+        };
+        node.addEventListener("pointerdown", grab("node", node));
+        fHandle.addEventListener("pointerdown", grab("future", fHandle));
+        svg.addEventListener("pointermove", (e) => {
+          if (active === "node") render(yToOs(ptY(e)), yrState);
+          else if (active === "future") render(osState, xToYr(ptX(e)));
+        });
+        const release = (e) => {
+          active = null;
+          try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+        };
+        svg.addEventListener("pointerup", release);
+        svg.addEventListener("pointercancel", release);
+
+        /* keyboard — vertical slider (overspend) */
+        node.addEventListener("keydown", (e) => {
+          let os = osState;
+          switch (e.key) {
+            case "ArrowUp": case "ArrowRight": os += OS_STEP; break;
+            case "ArrowDown": case "ArrowLeft": os -= OS_STEP; break;
+            case "PageUp": os += OS_STEP * 5; break;
+            case "PageDown": os -= OS_STEP * 5; break;
+            case "Home": os = OS_MIN; break;
+            case "End": os = OS_MAX; break;
+            default: return;
+          }
+          e.preventDefault();
+          render(clamp(os, OS_MIN, OS_MAX), yrState);
+        });
+
+        /* keyboard — horizontal slider (horizon) */
+        fHandle.addEventListener("keydown", (e) => {
+          let yr = yrState;
+          switch (e.key) {
+            case "ArrowRight": case "ArrowUp": yr += YR_STEP; break;
+            case "ArrowLeft": case "ArrowDown": yr -= YR_STEP; break;
+            case "Home": yr = YR_MIN; break;
+            case "End": yr = YR_MAX; break;
+            default: return;
+          }
+          e.preventDefault();
+          render(osState, clamp(yr, YR_MIN, YR_MAX));
+        });
+
+        /* initial paint, with a one-time count-up on the future figure */
+        render(120, 5, true);
+      })();
     </script>
   </body>
 </html>
