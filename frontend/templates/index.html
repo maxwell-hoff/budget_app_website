@@ -16,6 +16,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   </head>
   <body>
     <!-- ── Top navigation (app titlebar motif) ── -->
@@ -29,6 +30,7 @@
         <div class="nav__links">
           <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
+          <a href="#pricing">Pricing</a>
           <a href="/about">About</a>
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
@@ -40,15 +42,15 @@
       <div class="wrap">
         <div class="hero__grid">
           <div class="hero__copy">
-            <span class="kicker reveal-up d1">Personal budgeting software built for consequences, not categories</span>
+            <span class="kicker reveal-up d1">A personal budgeting app built for consequences, not categories</span>
             <h1 class="hero__title reveal-up d2">
-              A budget only works if you can see what breaking it actually <em>costs.</em>
+              Budgeting isn't about restriction. It's about understanding tradeoffs through <em>time.</em>
             </h1>
             <p class="hero__tagline reveal-up d3">
-              Most consumer budgeting apps show you what you spent. Workbench shows you what it 
-              <strong>compounds to.</strong> Connect your accounts, change one assumption — a raise,
-              a cutback, a new expense — and watch what it does to the next five years. When
-              the tradeoff is real, the decision becomes easier.
+              Go to dinner with your friends tonight, or drive a car that doesn't stress you 
+              out in three years. Book the weekend getaway, or put those same dollars toward 
+              the kitchen renovation you keep postponing. The tradeoffs are always there — Workbench 
+              makes them <strong>visible before you decide.</strong>
             </p>
             <div class="hero__actions reveal-up d4">
               <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
@@ -60,21 +62,44 @@
                no scolding; the future label does the emotional work. -->
           <div class="hero__viz reveal-up d3">
             <figure class="branch">
-              <figcaption class="branch__head">One choice tonight · two futures</figcaption>
+              <figcaption class="branch__head">One choice tonight · many futures</figcaption>
+
+              <div class="branch__controls">
+                <div class="branch__control-group">
+                  <span class="branch__control-label">How you invest the savings</span>
+                  <div class="branch__segmented" id="branchRisk">
+                    <button class="branch__seg" data-value="low">Low risk</button>
+                    <button class="branch__seg is-active" data-value="med">Medium risk</button>
+                    <button class="branch__seg" data-value="high">High risk</button>
+                  </div>
+                </div>
+                <div class="branch__control-group">
+                  <span class="branch__control-label">Return results</span>
+                  <div class="branch__segmented" id="branchLuck">
+                    <button class="branch__seg" data-value="bad">Bad luck</button>
+                    <button class="branch__seg is-active" data-value="normal">Normal</button>
+                    <button class="branch__seg" data-value="good">Good luck</button>
+                  </div>
+                </div>
+              </div>
 
               <div class="branch__stage">
                 <svg class="branch__svg" viewBox="0 0 560 320">
-                  <!-- timeline along the bottom: drag the future dot along it -->
-                  <line class="branch__axis" x1="95" y1="288" x2="505" y2="288" />
+                  <!-- timeline: Tonight → spent (near-term), break, then 1–60 years -->
+                  <line class="branch__axis" x1="95" y1="288" x2="142" y2="288" />
+                  <path class="branch__break" d="M144 288 L148 284 L152 288 L156 284 L160 288" />
+                  <line class="branch__axis branch__axis--future" x1="168" y1="288" x2="505" y2="288" />
                   <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
+                  <line class="branch__axis" x1="168" y1="283" x2="168" y2="293" />
                   <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
                   <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
-                  <text class="branch__axlab" x="505" y="306" text-anchor="end">10 years</text>
+                  <text class="branch__axlab branch__axlab--yrstart" x="168" y="306" text-anchor="middle">1 year</text>
+                  <text class="branch__axlab" x="505" y="306" text-anchor="end">60 years</text>
 
-                  <!-- the spectrum the decision point slides along (vertical = $/mo) -->
+                  <!-- the spectrum the decision point slides along (vertical = amount) -->
                   <line class="branch__track" x1="95" y1="70" x2="95" y2="230" />
-                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$600 / mo</text>
-                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$20 / mo</text>
+                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$300</text>
+                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$50</text>
 
                   <!-- the two diverging paths (recomputed as you drag) -->
                   <path id="branchPresent" class="branch__path branch__path--present" d="M95 202 C120 202 130 76 150 76" />
@@ -86,7 +111,7 @@
 
                   <!-- moving horizon marker under the future dot -->
                   <line id="branchYearTick" class="branch__yeartick" x1="300" y1="284" x2="300" y2="292" />
-                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">5 years</text>
+                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">15 years</text>
 
                   <!-- future outcome callout (fixed; updates as you drag) -->
                   <text id="branchDream" class="branch__lbl-dream" x="548" y="58" text-anchor="end">a car that won't worry you</text>
@@ -94,19 +119,19 @@
 
                   <!-- the draggable decision point (vertical = how much) -->
                   <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
-                     aria-label="Monthly overspend" aria-orientation="vertical"
-                     aria-valuemin="20" aria-valuemax="600" aria-valuenow="120"
-                     aria-valuetext="$120 a month">
+                     aria-label="Monthly savings" aria-orientation="vertical"
+                     aria-valuemin="50" aria-valuemax="300" aria-valuenow="200"
+                     aria-valuetext="$200">
                     <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
                     <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
-                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">+$120/mo</text>
+                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$200</text>
                   </g>
 
                   <!-- the draggable horizon point (horizontal = how far ahead) -->
                   <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
                      aria-label="Time horizon in years" aria-orientation="horizontal"
-                     aria-valuemin="1" aria-valuemax="10" aria-valuenow="5"
-                     aria-valuetext="5 years from now">
+                     aria-valuemin="1" aria-valuemax="60" aria-valuenow="15"
+                     aria-valuetext="15 years from now">
                     <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
                     <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
                   </g>
@@ -114,7 +139,7 @@
               </div>
 
               <p class="branch__hint">
-                <strong>Drag the dots.</strong> How much you let slip — and how far ahead you look.
+                <strong>Drag the dots.</strong> How much you save instead — and how far ahead you look.
               </p>
             </figure>
           </div>
@@ -125,21 +150,23 @@
     <!-- ── Ticker strip ── -->
     <div class="ticker" aria-hidden="true">
       <div class="ticker__track">
-        <span class="ticker__item">See what overspending really costs</span>
-        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
-        <span class="ticker__item">Your own numbers in 5 minutes</span>
-        <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
+        <span class="ticker__item">Budgets based on your future — not rules of thumb someone else invented</span>
+        <span class="ticker__item">Connect your accounts via Plaid — your data stays on your machine</span>
+        <span class="ticker__item">See the five-year cost of this month's choices</span>
+        <span class="ticker__item">Split transactions, amortize purchases, flag transfers</span>
         <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
-        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
-        <span class="ticker__item">Model the trade-off before you commit</span>
+        <span class="ticker__item">Compare three spending scenarios side by side</span>
+        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
+        <span class="ticker__item">Catch what's quietly draining you — before it compounds</span>
         <!-- duplicate for seamless loop -->
-        <span class="ticker__item">See what overspending really costs</span>
-        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
-        <span class="ticker__item">Your own numbers in 5 minutes</span>
-        <span class="ticker__item">No bank logins · no cloud · nothing sold</span>
+        <span class="ticker__item">Budgets based on your future — not rules of thumb someone else invented</span>
+        <span class="ticker__item">Connect your accounts via Plaid — your data stays on your machine</span>
+        <span class="ticker__item">See the five-year cost of this month's choices</span>
+        <span class="ticker__item">Split transactions, amortize purchases, flag transfers</span>
         <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
-        <span class="ticker__item">Never tracked your money? Guided setup walks you through it</span>
-        <span class="ticker__item">Model the trade-off before you commit</span>
+        <span class="ticker__item">Compare three spending scenarios side by side</span>
+        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
+        <span class="ticker__item">Catch what's quietly draining you — before it compounds</span>
       </div>
     </div>
 
@@ -205,6 +232,11 @@
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">accounts — personal</span>
+                    <button type="button" class="shot__refresh" aria-label="Refresh accounts">
+                      <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M13.65 2.35A7 7 0 1 0 14 8h-2a5 5 0 1 1-1.17-3.24L9 7h5V2l-1.35 1.35z" fill="currentColor"/>
+                      </svg>
+                    </button>
                   </div>
                   <div class="shot__body">
                     <table class="minitable">
@@ -383,7 +415,7 @@
     <!-- ── Philosophy / pull-quote ── -->
     <section class="philosophy" id="philosophy" aria-label="Philosophy">
       <div class="wrap philosophy__inner on-scroll">
-        <span class="kicker">Our philosophy</span>
+        <span class="kicker">Philosophy</span>
         <p class="philosophy__quote">
           Understanding can't be <span>handed to you.</span>
         </p>
@@ -391,9 +423,9 @@
           There's a Taoist idea that the knowledge in a craftsman's hands can't be 
           passed on in words — it has to be worked for. Finances are the same. You can 
           read reports, get advice, follow a plan. But knowing what your money is doing 
-          and where it's taking you only comes from working with it directly. So we 
+          and where it's taking you only comes from working with it directly. So I 
           built a tool that rewards that — clean accounting underneath, scenario 
-          planning on top, everything on your machine.
+          planning on top, variance analysis to catch the quiet drains.
         </p>
       </div>
     </section>
@@ -401,15 +433,71 @@
     <!-- ── Build-in-public transparency ── -->
     <section class="section proof" aria-label="Built in public">
       <div class="wrap proof__inner on-scroll">
-        <span class="kicker">Built in the open</span>
+        <span class="kicker">One person. Ten years.</span>
         <p class="proof__quote">
-          Workbench is being built <span>in public.</span> Every trade-off, dead end, and shipped
-          feature is out where you can see it — no manufactured reviews, no growth-hacked hype.
-          Watch it take shape, kick the tires, and help decide where it goes next.
+          Workbench started as a spreadsheet built on a Mint export — the kind you build because 
+          nothing else does what you need. Ten years and a few hundred iterations later, it 
+          became an app.  Built by one person, in the Midwest.  I use it every month and it 
+          changed how I think about my own finances — I built this hoping it does the same 
+          for you. I'm now building the next chapter in public — follow along at 
+          @GardenStudio__ on Twitter.
         </p>
         <div class="proof__meta">
-          <a class="proof__link" href="#" target="_blank" rel="noopener">Follow the build in public &rarr;</a>
+          <a class="proof__link" href="https://x.com/GardenStudio__" target="_blank" rel="noopener noreferrer">Follow the build in public &rarr;</a>
         </div>
+      </div>
+    </section>
+
+    <!-- ── Pricing ── -->
+    <section class="section pricing" id="pricing" aria-label="Pricing">
+      <div class="wrap">
+        <div class="section__head on-scroll">
+          <span class="kicker">Pricing</span>
+          <h2 class="section__title">
+            Free to use. $8.99 a month if you want easy bank account syncing.
+          </h2>
+          <p class="section__lead">
+            The most similarly capable budgeting tool I found before building this 
+            cost $250 a month. Workbench is free — with one paid option for people
+            who'd rather not upload a bank statement each month.
+          </p>
+        </div>
+
+        <div class="pricing__grid on-scroll" data-stagger>
+          <article class="pricing__tier">
+            <header class="pricing__tier-head">
+              <h3 class="pricing__tier-name">Free</h3>
+              <span class="pricing__tier-tag">always</span>
+            </header>
+            <p class="pricing__tier-body">
+              Every feature on this page. Scenario planning, forecasting, variance analysis,
+              professional-grade transaction tools — all of it. Upload your bank statements once
+              a month and everything works exactly as described. Your data stays on your machine
+              and nothing requires a subscription to unlock.
+            </p>
+          </article>
+
+          <article class="pricing__tier pricing__tier--paid">
+            <header class="pricing__tier-head">
+              <h3 class="pricing__tier-name">
+                <span class="pricing__price">$8.99</span> / month
+              </h3>
+              <span class="pricing__tier-tag">auto-refresh</span>
+            </header>
+            <p class="pricing__tier-body">
+              Connects your accounts via Plaid so your transactions update automatically without
+              manual exports. The free tier exists because the product should be accessible to
+              everyone. This tier exists because Plaid charges per connection and those costs have
+              to land somewhere. My fiancée also pointed out that three years of nights and
+              weekends probably deserves something — so here we are.
+            </p>
+          </article>
+        </div>
+
+        <p class="pricing__note on-scroll">
+          Cancel any time. Downgrading to free keeps all your data and all your features — you
+          just go back to manual uploads.
+        </p>
       </div>
     </section>
 
@@ -425,7 +513,18 @@
             from now.
           </p>
           <div class="download__actions">
-            <a href="#" class="btn btn--primary btn--lg" aria-label="Download Workbench Budgeting">Download Now</a>
+            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for macOS">
+              <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/>
+              </svg>
+              macOS
+            </a>
+            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for Windows">
+              <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/>
+              </svg>
+              Windows
+            </a>
           </div>
           <p class="download__note">Free to use — your data stays on your device, always.</p>
         </div>
@@ -439,7 +538,16 @@
           <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
           Workbench Budgeting
         </span>
-        <span>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</span>
+        <div class="footer__end">
+          <a href="https://gardenstudiosoftware.com" class="footer__social" target="_blank" rel="noopener noreferrer">Garden Studio Software</a>
+          <a href="https://x.com/GardenStudio__" class="footer__social" target="_blank" rel="noopener noreferrer" aria-label="Follow Garden Studio on X">
+            <svg class="footer__x-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/>
+            </svg>
+            @GardenStudio__
+          </a>
+          <span>&copy; <span id="year"></span> Workbench Budgeting. All rights reserved.</span>
+        </div>
       </div>
     </footer>
 
@@ -520,7 +628,10 @@
         startSampleLoops(el);
       };
       if (reduceMotion || !("IntersectionObserver" in window)) {
-        liveEls.forEach((el) => el.classList.add("is-live"));
+        liveEls.forEach((el) => {
+          el.classList.add("is-live");
+          startSampleLoops(el);
+        });
       } else {
         const liveObserver = new IntersectionObserver(
           (entries) => {
@@ -538,6 +649,29 @@
 
       /* ── Per-sample looping behaviors ── */
       function startSampleLoops(shot) {
+        /* Accounts: refresh button re-runs the balance count-up */
+        const refreshBtn = shot.querySelector(".shot__refresh");
+        if (refreshBtn) {
+          const refreshAccounts = () => {
+            if (!reduceMotion) refreshBtn.classList.add("is-spinning");
+            shot.querySelectorAll(".num[data-count]").forEach((el) => {
+              const dec = parseInt(el.dataset.decimals || "0", 10);
+              el.textContent = (el.dataset.prefix || "") + fmtNum(0, dec) + (el.dataset.suffix || "");
+              runCount(el);
+            });
+            if (!reduceMotion) {
+              setTimeout(() => refreshBtn.classList.remove("is-spinning"), 900);
+            }
+          };
+          refreshBtn.addEventListener("click", refreshAccounts);
+          if (!reduceMotion) {
+            setTimeout(() => {
+              refreshAccounts();
+              setInterval(refreshAccounts, 4800);
+            }, 2200);
+          }
+        }
+
         if (reduceMotion) return;
 
         /* Scenario card: cycle the active tab + highlight matching row */
@@ -616,16 +750,28 @@
 
         /* geometry (viewBox units) */
         const NX = 95;                   // decision point x (left of centre)
-        const Y_TOP = 70, Y_BOT = 230;   // top = most overspend
-        const OS_MIN = 20, OS_MAX = 600, OS_STEP = 10;
-        const X_NOW = 95, X_END = 505;   // timeline span
-        const YR_MIN = 1, YR_MAX = 10, YR_STEP = 1;
+        const Y_TOP = 70, Y_BOT = 230;   // top = largest investment
+        const OS_MIN = 50, OS_MAX = 300, OS_STEP = 1;
+        const X_NOW = 95;                // "Tonight"
+        const X_YR_START = 168;          // year 1 begins after the spent dot + axis break
+        const X_END = 505;               // 60 years
+        const YR_MIN = 1, YR_MAX = 60, YR_STEP = 1;
         const PRESENT = { x: 150, y: 76 };
         const FUT_Y = 252;
-        const R = 0.07 / 12;             // ~7%/yr, compounded monthly
+
+        const RATES = {
+          low:  { bad: 0.01, normal: 0.03, good: 0.05 },
+          med:  { bad: 0.00, normal: 0.07, good: 0.13 },
+          high: { bad:-0.05, normal: 0.11, good: 0.20 },
+        };
+        const getR = () => {
+          const risk = document.querySelector("#branchRisk .branch__seg.is-active").dataset.value;
+          const luck = document.querySelector("#branchLuck .branch__seg.is-active").dataset.value;
+          return RATES[risk][luck] / 12;
+        };
 
         const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-        const factor = (months) => (Math.pow(1 + R, months) - 1) / R;
+        const factor = (months) => Math.pow(1 + getR(), months);
 
         const osToY = (os) =>
           Y_BOT - ((os - OS_MIN) / (OS_MAX - OS_MIN)) * (Y_BOT - Y_TOP);
@@ -633,9 +779,10 @@
           const frac = (Y_BOT - clamp(y, Y_TOP, Y_BOT)) / (Y_BOT - Y_TOP);
           return clamp(Math.round((OS_MIN + frac * (OS_MAX - OS_MIN)) / OS_STEP) * OS_STEP, OS_MIN, OS_MAX);
         };
-        const yrToX = (yr) => X_NOW + (yr / YR_MAX) * (X_END - X_NOW);
+        const yrToX = (yr) =>
+          X_YR_START + ((yr - 1) / (YR_MAX - 1)) * (X_END - X_YR_START);
         const xToYr = (x) => {
-          const yr = ((clamp(x, yrToX(YR_MIN), X_END) - X_NOW) / (X_END - X_NOW)) * YR_MAX;
+          const yr = 1 + ((clamp(x, X_YR_START, X_END) - X_YR_START) / (X_END - X_YR_START)) * (YR_MAX - 1);
           return clamp(Math.round(yr / YR_STEP) * YR_STEP, YR_MIN, YR_MAX);
         };
 
@@ -646,30 +793,31 @@
           return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
         };
         const dreamFor = (fv) =>
-          fv < 6000 ? "a long weekend away"
-          : fv < 12000 ? "a car that won't worry you"
-          : fv < 22000 ? "a once-in-a-lifetime trip"
-          : fv < 40000 ? "the dream kitchen remodel"
-          : fv < 80000 ? "a down payment on a home"
-          : "a serious head start on retirement";
+          fv < 75 ? "a few really good books"
+          : fv < 150 ? "a nice dinner for two"
+          : fv < 350 ? "a new pair of kicks"
+          : fv < 800 ? "a weekend getaway"
+          : fv < 2000 ? "that vacation you've been dreaming of"
+          : fv < 6000 ? "a home office upgrade"
+          : "the start of something bigger";
         const money = (v) => "$" + v.toLocaleString();
 
-        let osState = 120, yrState = 5;
+        let osState = 200, yrState = 15;
 
         const render = (os, yr, animateAmt) => {
           osState = os;
           yrState = yr;
           const ny = osToY(os);
           const fx = yrToX(yr);
-          const fv = Math.round((os * factor(yr * 12)) / 100) * 100;
+          const fv = Math.round(os * factor(yr * 12));
 
           /* decision point (vertical handle) */
           nodeDot.setAttribute("cy", ny);
           halo.setAttribute("cy", ny);
           nodeVal.setAttribute("y", ny + 5);
-          nodeVal.textContent = "+$" + os + "/mo";
+          nodeVal.textContent = "$" + os.toLocaleString();
           node.setAttribute("aria-valuenow", os);
-          node.setAttribute("aria-valuetext", "$" + os + " a month");
+          node.setAttribute("aria-valuetext", "$" + os.toLocaleString());
 
           /* paths */
           pPresent.setAttribute("d", curve(ny, PRESENT.x, PRESENT.y));
@@ -694,7 +842,7 @@
             const step = (now) => {
               const t = Math.min((now - start) / dur, 1);
               const eased = 1 - Math.pow(1 - t, 3);
-              futureAmt.textContent = money(Math.round((fv * eased) / 100) * 100);
+              futureAmt.textContent = money(Math.round(fv * eased));
               if (t < 1) requestAnimationFrame(step);
               else futureAmt.textContent = money(fv);
             };
@@ -765,8 +913,19 @@
           render(osState, clamp(yr, YR_MIN, YR_MAX));
         });
 
+        /* segmented control clicks */
+        document.querySelectorAll(".branch__segmented").forEach((group) => {
+          group.addEventListener("click", (e) => {
+            const btn = e.target.closest(".branch__seg");
+            if (!btn || btn.classList.contains("is-active")) return;
+            group.querySelectorAll(".branch__seg").forEach((b) => b.classList.remove("is-active"));
+            btn.classList.add("is-active");
+            render(osState, yrState);
+          });
+        });
+
         /* initial paint, with a one-time count-up on the future figure */
-        render(120, 5, true);
+        render(200, 15, true);
       })();
     </script>
   </body>
