@@ -187,46 +187,55 @@
           </p>
         </div>
 
-        <!-- The loop as a table: steps across the top, the tools for each step beneath -->
-        <div class="flow__table on-scroll" id="features" data-stagger>
-          <!-- Step 1 — Clean up -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 1</span>
-              <h3 class="flowcol__title">Clean up what really happened</h3>
-              <p class="flowcol__sub">First the history has to be honest — before anything can be projected.</p>
+        <!-- The loop: full-width vertical steps, each with room to breathe -->
+        <div class="flow__track on-scroll" id="features" data-stagger>
+
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">1</span>
             </div>
-            <div class="flowcol__cards">
-              <article class="feature">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 1</span>
+                <h3 class="flow-step__title">Clean up what really happened</h3>
+                <p class="flow-step__lead">First the history has to be honest — before anything can be projected.</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero feature--reality">
                 <h3 class="feature__title">Numbers That Match Reality</h3>
-                <div class="feature__shot" aria-hidden="true">
+                <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">transaction</span>
+                    <span class="shot__name">transactions · actuals chart</span>
                   </div>
-                  <div class="shot__body">
-                    <div class="txnrow">
-                      <div class="txnrow__head">
-                        <span class="txnrow__desc">Costco · 06/14</span>
-                        <span class="txnrow__amt">−$842.00</span>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo">
+                      <div class="app-demo__txns">
+                        <div class="txn-demo" id="realityTxnList" role="list"></div>
                       </div>
-                      <span class="txnrow__ctl-label">Transfer</span>
-                      <span class="flagbox is-on"></span>
-                      <span class="txnrow__ctl-label">Amortize</span>
-                      <span class="txnrow__ctl">12 months <span class="caret">▼</span></span>
-                      <span class="txnrow__ctl-label">Split</span>
-                      <span class="txnrow__ctl">2 accounts <span class="caret">▼</span></span>
+                      <div class="app-demo__chart">
+                        <div class="mini-chart-toolbar">
+                          <span class="mini-chart-toolbar__label">Month</span>
+                          <span class="mini-chart-toolbar__status" id="realityChartStatus"></span>
+                        </div>
+                        <svg class="mini-chart" id="realityChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
+                        <div class="mini-chart-legend">
+                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <ul class="feature__list">
-                  <li>Spread a big purchase across the months it really belongs to, so one heavy month doesn't distort the trend.</li>
-                  <li>Mark transfers so moving money between your own accounts never reads as spending.</li>
-                  <li>Split a charge across accounts to match where the money actually went.</li>
-                </ul>
+                <ol class="feature__list feature__list--steps" id="realitySteps">
+                  <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your tip.</li>
+                  <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
+                  <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
+                </ol>
               </article>
 
-              <article class="feature">
+              <article class="feature feature--compact">
                 <h3 class="feature__title">All Accounts in One Place</h3>
                 <div class="feature__shot" aria-hidden="true">
                   <div class="shot__bar">
@@ -267,34 +276,60 @@
                   <li>Plan as a household with a shared profile for you and your spouse.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 2 — Project it forward -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 2</span>
-              <h3 class="flowcol__title">Project it forward</h3>
-              <p class="flowcol__sub">Carry those clean actuals ahead and see where this path lands.</p>
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">2</span>
             </div>
-            <div class="flowcol__cards">
-              <article class="feature">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 2</span>
+                <h3 class="flow-step__title">Project it forward</h3>
+                <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Fine-tuned Forecasting</h3>
-                <div class="feature__shot" aria-hidden="true">
+                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">forecast params — paycheck</span>
+                    <span class="shot__name">forecast · projection chart</span>
                   </div>
-                  <div class="shot__body">
-                    <div class="paramgrid">
-                      <span class="paramgrid__label">Annual growth</span>
-                      <span class="paramgrid__control paramgrid__control--focus"><span data-count="3.5" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
-                      <span class="paramgrid__label">Frequency</span>
-                      <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                      <span class="paramgrid__label">Inflation</span>
-                      <span class="paramgrid__control"><span data-count="2.4" data-decimals="1" data-suffix="%">0.0%</span> <span class="caret">▲▼</span></span>
-                      <span class="paramgrid__label">Project until</span>
-                      <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                  <div class="shot__body shot__body--demo">
+                    <div class="forecast-demo forecast-demo--wide">
+                      <div class="forecast-demo__params">
+                        <p class="forecast-demo__params-title">Parameters</p>
+                        <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
+                          <span class="paramgrid__label">Annual growth</span>
+                          <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
+                            <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Frequency</span>
+                          <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
+                          <span class="paramgrid__label">Inflation</span>
+                          <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
+                            <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Project until</span>
+                          <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                        </div>
+                        <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
+                      </div>
+                      <div class="app-demo__chart app-demo__chart--forecast">
+                        <div class="mini-chart-toolbar">
+                          <span class="mini-chart-toolbar__label">Year</span>
+                          <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
+                        </div>
+                        <svg class="mini-chart" id="forecastChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
+                        <div class="mini-chart-legend">
+                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -303,17 +338,21 @@
                   <li>Model rising rent, inflation, or a new expense and watch it ripple through every month ahead.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 3 — Test the tradeoffs -->
-          <div class="flowcol">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 3</span>
-              <h3 class="flowcol__title">Test the tradeoffs</h3>
-              <p class="flowcol__sub">Put each path side by side and watch what it costs you years out.</p>
+          <article class="flow-step">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">3</span>
             </div>
-            <div class="flowcol__cards">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 3</span>
+                <h3 class="flow-step__title">Test the tradeoffs</h3>
+                <p class="flow-step__lead">Put each path side by side and watch what it costs you years out.</p>
+              </header>
+              <div class="flow-step__content flow-step__content--duo">
               <article class="feature">
                 <h3 class="feature__title">Scenario Planning</h3>
                 <div class="feature__shot" aria-hidden="true">
@@ -370,18 +409,21 @@
                   <li>Catch the categories quietly draining you, and trace each overage back to the transaction that caused it.</li>
                 </ul>
               </article>
+              </div>
             </div>
-          </div>
+          </article>
 
-          <!-- Step 4 — Land on your number (the payoff, not another tool) -->
-          <div class="flowcol flowcol--payoff">
-            <div class="flowcol__head">
-              <span class="flowcol__step">Step 4</span>
-              <h3 class="flowcol__title">Land on your number</h3>
-              <p class="flowcol__sub">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+          <article class="flow-step flow-step--payoff">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">4</span>
             </div>
-            <div class="flowcol__cards">
-              <div class="payoff">
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 4</span>
+                <h3 class="flow-step__title">Land on your number</h3>
+                <p class="flow-step__lead">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+              </header>
+              <div class="payoff payoff--wide">
                 <p class="payoff__desc">
                   The loop closes here. Because you built it yourself, you understand exactly why
                   it's this number — and what it costs to break it.
@@ -393,7 +435,8 @@
                 </div>
               </div>
             </div>
-          </div>
+          </article>
+
         </div>
 
         <!-- Privacy: a product attribute, not a step — sits beneath the loop -->
@@ -649,6 +692,11 @@
 
       /* ── Per-sample looping behaviors ── */
       function startSampleLoops(shot) {
+        /* Custom demos manage their own animation */
+        if (shot.dataset.demo === "reality" || shot.dataset.demo === "forecast") {
+          return;
+        }
+
         /* Accounts: refresh button re-runs the balance count-up */
         const refreshBtn = shot.querySelector(".shot__refresh");
         if (refreshBtn) {
@@ -692,7 +740,7 @@
 
         /* Advanced accounting: toggle the Transfer flag on/off
            (only in the feature sample, not the hero transaction list) */
-        const flag = shot.classList.contains("feature__shot")
+        const flag = shot.classList.contains("feature__shot") && !shot.dataset.demo
           ? shot.querySelector(".flagbox")
           : null;
         if (flag) {
@@ -716,6 +764,368 @@
           }, 1300);
         }
       }
+
+      /* ── Mini chart renderer (mirrors app: income/expense bars + net line) ── */
+      const CHART_COLORS = {
+        income: "#0d6e3f",
+        expense: "#c0392b",
+        net: "#5b2c8c",
+        grid: "rgba(26, 26, 46, 0.08)",
+        axis: "#6b7280",
+        zero: "rgba(26, 26, 46, 0.22)",
+      };
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function lerpSeries(from, to, t) {
+        const len = Math.max(from.length, to.length);
+        return Array.from({ length: len }, (_, i) => ({
+          label: to[i]?.label ?? from[i]?.label ?? "",
+          income: lerp(from[i]?.income ?? 0, to[i]?.income ?? 0, t),
+          expenses: lerp(from[i]?.expenses ?? 0, to[i]?.expenses ?? 0, t),
+          net: lerp(from[i]?.net ?? 0, to[i]?.net ?? 0, t),
+        }));
+      }
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function chartBounds(series) {
+        if (!series?.length) return { yMin: -500, yMax: 500 };
+        let yMax = 0;
+        let yMin = 0;
+        for (const row of series) {
+          yMax = Math.max(yMax, row.income, row.net, 0);
+          yMin = Math.min(yMin, row.expenses, row.net, 0);
+        }
+        const span = Math.max(yMax - yMin, 400);
+        const pad = span * 0.14;
+        return { yMin: yMin - pad, yMax: yMax + pad };
+      }
+
+      function renderMiniChart(svg, series, bounds) {
+        if (!svg || !series?.length) return;
+        const { yMin, yMax } = bounds || chartBounds(series);
+        const W = 560;
+        const H = 220;
+        const pad = { top: 16, right: 12, bottom: 28, left: 36 };
+        const plotW = W - pad.left - pad.right;
+        const plotH = H - pad.top - pad.bottom;
+        const zeroY = pad.top + ((yMax - 0) / (yMax - yMin)) * plotH;
+        const yScale = (v) => pad.top + ((yMax - v) / (yMax - yMin)) * plotH;
+        const n = series.length;
+        const slot = plotW / n;
+        const barW = Math.min(18, slot * 0.32);
+        const gap = (slot - barW * 2) / 3;
+
+        const fmtK = (v) => {
+          const abs = Math.abs(v);
+          if (abs >= 1000) return (v < 0 ? "−" : "") + "$" + (abs / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+          return (v < 0 ? "−" : "") + "$" + Math.round(abs);
+        };
+
+        let html = "";
+        html += `<line x1="${pad.left}" y1="${zeroY}" x2="${W - pad.right}" y2="${zeroY}" stroke="${CHART_COLORS.zero}" stroke-width="1"/>`;
+
+        for (let i = 0; i < n; i++) {
+          const x0 = pad.left + i * slot + gap;
+          const row = series[i];
+          const incH = Math.max(0, zeroY - yScale(row.income));
+          const expH = Math.max(0, yScale(row.expenses) - zeroY);
+          if (row.income > 0) {
+            html += `<rect x="${x0}" y="${yScale(row.income)}" width="${barW}" height="${incH}" fill="${CHART_COLORS.income}"/>`;
+          }
+          if (row.expenses < 0) {
+            html += `<rect x="${x0 + barW + gap}" y="${zeroY}" width="${barW}" height="${expH}" fill="${CHART_COLORS.expense}"/>`;
+          }
+          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8}" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="${CHART_COLORS.axis}">${n <= 8 || i % 2 === 0 || i === n - 1 ? row.label : ""}</text>`;
+        }
+
+        let lineD = "";
+        series.forEach((row, i) => {
+          const cx = pad.left + i * slot + slot / 2;
+          const cy = yScale(row.net);
+          lineD += (i ? " L" : "M") + cx + " " + cy;
+        });
+        html += `<path d="${lineD}" fill="none" stroke="${CHART_COLORS.net}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+        html += `<text x="4" y="${pad.top + 4}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">${fmtK(yMax)}</text>`;
+        html += `<text x="4" y="${zeroY + 3}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">$0</text>`;
+        html += `<text x="4" y="${H - pad.bottom}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">${fmtK(yMin)}</text>`;
+
+        svg.innerHTML = html;
+      }
+
+      function animateChart(svg, from, to, duration, onDone) {
+        const bounds = chartBounds([...from, ...to]);
+        if (!svg || reduceMotion) {
+          renderMiniChart(svg, to, bounds);
+          if (onDone) onDone();
+          return;
+        }
+        const start = performance.now();
+        const tick = (now) => {
+          const t = easeOutCubic(Math.min((now - start) / duration, 1));
+          renderMiniChart(svg, lerpSeries(from, to, t), bounds);
+          if (t < 1) requestAnimationFrame(tick);
+          else if (onDone) onDone();
+        };
+        requestAnimationFrame(tick);
+      }
+
+      /* ── Numbers That Match Reality demo ── */
+      (function initRealityDemo() {
+        const shot = document.getElementById("realityDemoShot");
+        const list = document.getElementById("realityTxnList");
+        const steps = document.getElementById("realitySteps");
+        const chartSvg = document.getElementById("realityChartSvg");
+        if (!shot || !list || !chartSvg) return;
+
+        const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const JUN = 1;
+        const zeroMonth = (label) => ({ label, income: 0, expenses: 0, net: 0 });
+
+        function chartForPhase(phase) {
+          const data = REALITY_MONTHS.map(zeroMonth);
+          if (phase === "initial" || phase === "split") {
+            data[JUN].income = 150;
+            data[JUN].expenses = -1400;
+          } else if (phase === "transfer") {
+            data[JUN].expenses = -1250;
+          } else if (phase === "amortize") {
+            for (let i = JUN; i < data.length; i++) {
+              data[i].expenses = i === JUN ? -150 : -100;
+            }
+          }
+          data.forEach((row) => {
+            row.net = row.income + row.expenses;
+          });
+          return data;
+        }
+
+        function setActiveStep(step) {
+          if (!steps) return;
+          steps.querySelectorAll("[data-step]").forEach((li) => {
+            li.classList.toggle("is-active", step && li.dataset.step === step);
+            li.classList.toggle("is-done", step && li.dataset.step !== step && (
+              (step === "transfer" && li.dataset.step === "split") ||
+              (step === "amortize" && (li.dataset.step === "split" || li.dataset.step === "transfer"))
+            ));
+          });
+        }
+
+        function rowHtml(row) {
+          const amtClass = row.amt >= 0 ? "txn-demo__amt--income" : "txn-demo__amt--expense";
+          const sign = row.amt >= 0 ? "+" : "−";
+          const controls = row.controls
+            ? `<div class="txn-demo__controls">${row.controls}</div>`
+            : "";
+          return `<div class="txn-demo__row${row.cls ? " " + row.cls : ""}" data-id="${row.id}" role="listitem">
+            <span class="txn-demo__desc">${row.desc}</span>
+            <span class="txn-demo__amt ${amtClass}">${sign}$${Math.abs(row.amt).toFixed(2)}</span>
+            ${controls}
+          </div>`;
+        }
+
+        const ctl = (label, val, active) =>
+          `<span class="txn-demo__ctl">${label}<span class="txn-demo__ctl-val${active ? " is-active" : ""}">${val}</span></span>`;
+        const transferCtl = (on) =>
+          `<span class="txn-demo__ctl txn-demo__transfer">Transfer<span class="flagbox${on ? " is-on" : ""}"></span></span>`;
+
+        const laptopRow = (amortizeActive) => ({
+          id: "laptop",
+          desc: "Apple Store · 06/15",
+          amt: -1200,
+          controls: ctl("Amortize", amortizeActive ? "12 months" : "—", amortizeActive) + transferCtl(false),
+        });
+
+        const rowsInitial = [
+          { id: "dinner", desc: "Fine Dining · 06/14", amt: -200 },
+          { id: "v1", desc: "Venmo · Alex", amt: 50 },
+          { id: "v2", desc: "Venmo · Sam", amt: 50 },
+          { id: "v3", desc: "Venmo · Jordan", amt: 50 },
+          laptopRow(false),
+        ];
+
+        const rowsSplit = [
+          { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-splitting", controls: ctl("Split", "2 parts", true) + transferCtl(false) },
+          { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: ctl("Split", "2 parts", true) },
+          { id: "v1", desc: "Venmo · Alex", amt: 50, controls: transferCtl(false) },
+          { id: "v2", desc: "Venmo · Sam", amt: 50, controls: transferCtl(false) },
+          { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: transferCtl(false) },
+          laptopRow(false),
+        ];
+
+        const rowsTransfer = rowsSplit.map((r) => {
+          const sel = ["dinner-a", "v1", "v2", "v3"].includes(r.id);
+          return {
+            ...r,
+            cls: [r.cls, sel ? "is-selected is-transfer" : ""].filter(Boolean).join(" "),
+            controls: r.controls && sel
+              ? r.controls.replace('class="flagbox"', 'class="flagbox is-on"')
+              : r.controls,
+          };
+        });
+
+        const rowsAmortize = rowsTransfer.map((r) =>
+          r.id === "laptop" ? laptopRow(true) : r
+        );
+
+        function paintRows(rows) {
+          list.innerHTML = rows.map(rowHtml).join("");
+        }
+
+        let running = false;
+
+        function wait(ms) {
+          return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        async function runLoop() {
+          if (running || !shot.classList.contains("is-live")) return;
+          running = true;
+
+          setActiveStep(null);
+          paintRows(rowsInitial);
+          renderMiniChart(chartSvg, chartForPhase("initial"));
+          await wait(2200);
+
+          setActiveStep("split");
+          paintRows(rowsSplit);
+          await wait(2800);
+
+          setActiveStep("transfer");
+          paintRows(rowsTransfer);
+          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 900);
+          await wait(3200);
+
+          setActiveStep("amortize");
+          paintRows(rowsAmortize);
+          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 1100);
+          await wait(3600);
+
+          running = false;
+          if (shot.classList.contains("is-live")) runLoop();
+        }
+
+        const boot = () => {
+          setActiveStep(null);
+          paintRows(rowsInitial);
+          renderMiniChart(chartSvg, chartForPhase("initial"));
+          if (!reduceMotion) runLoop();
+        };
+
+        if (shot.classList.contains("is-live")) boot();
+        else {
+          const obs = new MutationObserver(() => {
+            if (shot.classList.contains("is-live")) {
+              obs.disconnect();
+              boot();
+            }
+          });
+          obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
+        }
+      })();
+
+      /* ── Fine-tuned Forecast demo ── */
+      (function initForecastDemo() {
+        const shot = document.getElementById("forecastDemoShot");
+        const chartSvg = document.getElementById("forecastChartSvg");
+        const growthEl = document.getElementById("forecastGrowthVal");
+        const inflationEl = document.getElementById("forecastInflationVal");
+        const params = document.getElementById("forecastParams");
+        if (!shot || !chartSvg || !growthEl || !inflationEl || !params) return;
+
+        const FORECAST_YEARS = ["2026", "2027", "2028", "2029", "2030", "2031"];
+        const BASE_INC = 5200;
+        const BASE_EXP = -3800;
+
+        let growth = 3.5;
+        let inflation = 2.4;
+        let chartFrom = null;
+
+        function buildSeries(g, inf) {
+          const gY = g / 100;
+          const iY = inf / 100;
+          return FORECAST_YEARS.map((label, y) => {
+            const income = BASE_INC * Math.pow(1 + gY, y);
+            const expenses = BASE_EXP * Math.pow(1 + iY, y);
+            return { label, income, expenses, net: income + expenses };
+          });
+        }
+
+        function paintParams() {
+          growthEl.textContent = growth.toFixed(1) + "%";
+          inflationEl.textContent = inflation.toFixed(1) + "%";
+        }
+
+        function updateChart(animate) {
+          const next = buildSeries(growth, inflation);
+          if (!chartFrom || !animate || reduceMotion) {
+            renderMiniChart(chartSvg, next);
+            chartFrom = next;
+            return;
+          }
+          const prev = chartFrom;
+          animateChart(chartSvg, prev, next, 700, () => {
+            chartFrom = next;
+          });
+        }
+
+        paintParams();
+        chartFrom = buildSeries(growth, inflation);
+        renderMiniChart(chartSvg, chartFrom);
+
+        params.querySelectorAll("[data-param]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const key = btn.dataset.param;
+            if (key === "growth") growth = growth >= 5 ? 2 : growth + 1;
+            else if (key === "inflation") inflation = inflation >= 4 ? 1.5 : inflation + 0.8;
+            paintParams();
+            updateChart(true);
+            params.querySelectorAll(".paramgrid__control--focus").forEach((el) => el.classList.remove("paramgrid__control--focus"));
+            btn.classList.add("paramgrid__control--focus");
+          });
+        });
+
+        if (reduceMotion) return;
+
+        let cycleIdx = 0;
+        const cycles = [
+          () => { growth = 2.5; inflation = 2.4; },
+          () => { growth = 5.5; inflation = 2.4; },
+          () => { growth = 3.5; inflation = 1.5; },
+          () => { growth = 3.5; inflation = 4.2; },
+          () => { growth = 3.5; inflation = 2.4; },
+        ];
+
+        const autoCycle = () => {
+          if (!shot.classList.contains("is-live")) return;
+          cycles[cycleIdx % cycles.length]();
+          cycleIdx++;
+          paintParams();
+          updateChart(true);
+        };
+
+        setTimeout(() => {
+          if (shot.classList.contains("is-live")) {
+            autoCycle();
+            setInterval(autoCycle, 3200);
+          } else {
+            const obs = new MutationObserver(() => {
+              if (shot.classList.contains("is-live")) {
+                obs.disconnect();
+                autoCycle();
+                setInterval(autoCycle, 3200);
+              }
+            });
+            obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
+          }
+        }, 2400);
+      })();
 
       /* ── Hero scenario tabs: click to switch (manual) ── */
       const heroTabs = document.querySelectorAll(".window__tab");
