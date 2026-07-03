@@ -1084,7 +1084,7 @@ body::before {
 /* ── How it works: vertical journey, full-width steps ── */
 
 .flow > .wrap {
-  width: min(1280px, calc(100% - 2.5rem));
+  width: min(var(--maxw), calc(100% - 2.5rem));
 }
 
 .flow__track {
