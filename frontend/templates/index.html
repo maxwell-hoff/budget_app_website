@@ -417,14 +417,14 @@
                 <p class="flow-step__lead">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
               </header>
               <div class="payoff payoff--wide">
-                <p class="payoff__desc">
+                <!-- <p class="payoff__desc">
                   The loop closes here. Because you built it yourself, you understand exactly why
                   it's this number — and what it costs to break it.
-                </p>
+                </p> -->
                 <div class="loop__number">
                   <span class="loop__number-label">Your monthly budget</span>
                   <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
-                  <span class="loop__number-note">Derived from your data — not a 50/30/20 rule.</span>
+                  <!-- <span class="loop__number-note">Derived from your data — not a 50/30/20 rule.</span> -->
                 </div>
               </div>
             </div>
@@ -456,7 +456,7 @@
           Understanding can't be <span>handed to you.</span>
         </p>
         <p class="philosophy__sub">
-          Some knowledge can't be handed to you — it has to be worked for. Your finances are the same. So I built a tool that rewards doing the work, not skipping it.
+          It has to be worked for. Your finances are the same. So I built a tool that rewards doing the work, not skipping it.
         </p>
       </div>
     </section>
@@ -526,7 +526,8 @@
     <!-- ── Download ── -->
     <section class="section download" id="download" aria-label="Download">
       <div class="wrap">
-        <div class="download__card on-scroll">
+        <div class="download__card download__card--soon on-scroll">
+          <span class="download__badge">Coming soon</span>
           <span class="kicker">Get started</span>
           <h2 class="download__title">See what your current path is actually costing you</h2>
           <p class="download__sub">
@@ -534,21 +535,41 @@
             where this path leads — and what each choice along the way is quietly costing you years
             from now.
           </p>
-          <div class="download__actions">
-            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for macOS">
+          <div class="download__actions" aria-hidden="true">
+            <span class="btn btn--primary btn--lg download__btn is-disabled" role="button" aria-disabled="true" tabindex="-1">
               <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/>
               </svg>
               macOS
-            </a>
-            <a href="#" class="btn btn--primary btn--lg download__btn" aria-label="Download for Windows">
+            </span>
+            <span class="btn btn--primary btn--lg download__btn is-disabled" role="button" aria-disabled="true" tabindex="-1">
               <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/>
               </svg>
               Windows
-            </a>
+            </span>
           </div>
-          <p class="download__note">Free to use — your data stays on your device, always.</p>
+
+          <form class="notify" id="notifyForm" novalidate>
+            <label class="notify__label" for="notifyEmail">
+              The apps aren't quite ready yet. Leave your email and we'll let you know the moment they are.
+            </label>
+            <div class="notify__row">
+              <input
+                class="notify__field"
+                type="email"
+                id="notifyEmail"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+              <button type="submit" class="btn btn--primary btn--lg notify__btn">Notify me</button>
+            </div>
+            <p class="notify__status" id="notifyStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <p class="download__note">No spam, ever — just a single heads-up when it's ready. Your data stays on your device, always.</p>
         </div>
       </div>
     </section>
@@ -1327,6 +1348,47 @@
 
         /* initial paint, with a one-time count-up on the future figure */
         render(200, 15, true);
+      })();
+
+      /* ── Notify-me signup (prints to server logs) ── */
+      (function () {
+        const form = document.getElementById("notifyForm");
+        const input = document.getElementById("notifyEmail");
+        const status = document.getElementById("notifyStatus");
+        const btn = form ? form.querySelector(".notify__btn") : null;
+        if (!form || !input || !status || !btn) return;
+
+        const setStatus = (msg, kind) => {
+          status.textContent = msg;
+          status.classList.remove("is-success", "is-error");
+          if (kind) status.classList.add("is-" + kind);
+        };
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = input.value.trim();
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setStatus("Please enter a valid email address.", "error");
+            input.focus();
+            return;
+          }
+          btn.disabled = true;
+          setStatus("Saving…", null);
+          try {
+            const res = await fetch("/notify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email }),
+            });
+            if (!res.ok) throw new Error("Request failed");
+            setStatus("Thanks! We'll email you the moment it's ready.", "success");
+            form.reset();
+          } catch (err) {
+            setStatus("Something went wrong — please try again.", "error");
+          } finally {
+            btn.disabled = false;
+          }
+        });
       })();
     </script>
   </body>

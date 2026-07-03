@@ -1562,6 +1562,103 @@ body::before {
   color: var(--muted);
 }
 
+/* ── Download: coming-soon / greyed state ── */
+.download__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.download__badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+.download__card--soon .download__actions {
+  opacity: 0.85;
+}
+.download__btn.is-disabled {
+  background: var(--surface-2);
+  color: var(--muted);
+  border-color: var(--border);
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+.download__btn.is-disabled:hover {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+/* ── Notify-me email capture ── */
+.notify {
+  margin-top: 1.75rem;
+  max-width: 32rem;
+}
+.notify__label {
+  display: block;
+  margin-bottom: 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.notify__row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.notify__field {
+  flex: 1 1 15rem;
+  min-width: 0;
+  padding: 0.78rem 0.95rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.notify__field::placeholder {
+  color: var(--muted);
+}
+.notify__field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.notify__btn {
+  flex-shrink: 0;
+}
+.notify__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.notify__status {
+  margin-top: 0.7rem;
+  min-height: 1.2em;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.notify__status.is-success {
+  color: var(--good);
+}
+.notify__status.is-error {
+  color: var(--bad);
+}
+
 /* ── Footer ── */
 .footer {
   position: relative;
@@ -2491,7 +2588,11 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
-  min-height: 11.5rem;
+  /* Reserve the height of the tallest phase (6 rows with split/transfer/
+     amortize controls) so the list — and therefore the whole
+     "transactions · actuals chart" window — stays a fixed size as rows are
+     added and removed across the animation, instead of shifting the page. */
+  min-height: 24.5rem;
 }
 .txn-demo__row {
   display: grid;
@@ -2619,7 +2720,6 @@ body::before {
   .app-demo__chart--forecast {
     min-height: 220px;
   }
-  .txn-demo { min-height: auto; }
 }
 
 /* cashflow grid reveal in hero window */
