@@ -456,7 +456,7 @@
           Understanding can't be <span>handed to you.</span>
         </p>
         <p class="philosophy__sub">
-          Some knowledge can't be handed to you — it has to be worked for. Your finances are the same. So we built a tool that rewards doing the work, not skipping it.
+          Some knowledge can't be handed to you — it has to be worked for. Your finances are the same. So I built a tool that rewards doing the work, not skipping it.
         </p>
       </div>
     </section>
@@ -838,8 +838,8 @@
         svg.innerHTML = html;
       }
 
-      function animateChart(svg, from, to, duration, onDone) {
-        const bounds = chartBounds([...from, ...to]);
+      function animateChart(svg, from, to, duration, onDone, boundsOverride) {
+        const bounds = boundsOverride || chartBounds([...from, ...to]);
         if (!svg || reduceMotion) {
           renderMiniChart(svg, to, bounds);
           if (onDone) onDone();
@@ -1036,6 +1036,18 @@
           });
         }
 
+        /* Fixed y-axis bounds spanning the widest reach of every assumption
+           the chart can land on (auto-cycle + interactive clicks). Locking the
+           scale keeps bars and the net line from re-scaling — and shifting
+           vertically — each time the parameters change. */
+        const G_MIN = 2, G_MAX = 6, I_MIN = 1.5, I_MAX = 5;
+        const FIXED_BOUNDS = chartBounds([
+          ...buildSeries(G_MAX, I_MIN), // largest income, smallest expenses
+          ...buildSeries(G_MIN, I_MAX), // smallest income, largest expenses
+          ...buildSeries(G_MAX, I_MAX),
+          ...buildSeries(G_MIN, I_MIN),
+        ]);
+
         function paintParams() {
           growthEl.textContent = growth.toFixed(1) + "%";
           inflationEl.textContent = inflation.toFixed(1) + "%";
@@ -1044,19 +1056,19 @@
         function updateChart(animate) {
           const next = buildSeries(growth, inflation);
           if (!chartFrom || !animate || reduceMotion) {
-            renderMiniChart(chartSvg, next);
+            renderMiniChart(chartSvg, next, FIXED_BOUNDS);
             chartFrom = next;
             return;
           }
           const prev = chartFrom;
           animateChart(chartSvg, prev, next, 700, () => {
             chartFrom = next;
-          });
+          }, FIXED_BOUNDS);
         }
 
         paintParams();
         chartFrom = buildSeries(growth, inflation);
-        renderMiniChart(chartSvg, chartFrom);
+        renderMiniChart(chartSvg, chartFrom, FIXED_BOUNDS);
 
         params.querySelectorAll("[data-param]").forEach((btn) => {
           btn.addEventListener("click", () => {
