@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+from datetime import datetime
+
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
 
@@ -11,6 +13,20 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/notify', methods=['POST'])
+def notify():
+    data = request.get_json(silent=True) or {}
+    email = (data.get('email') or '').strip()
+    if not email or '@' not in email:
+        return jsonify({'ok': False, 'error': 'invalid email'}), 400
+
+    # Not stored anywhere — just surfaced in the dev logs to copy manually.
+    timestamp = datetime.now().isoformat(timespec='seconds')
+    print(f"\n=== NOTIFY SIGNUP === {timestamp} === {email} ===\n", flush=True)
+
+    return jsonify({'ok': True})
 
 
 if __name__ == '__main__':
