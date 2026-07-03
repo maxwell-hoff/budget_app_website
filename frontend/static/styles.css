@@ -2491,7 +2491,11 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
-  min-height: 11.5rem;
+  /* Reserve the height of the tallest phase (6 rows with split/transfer/
+     amortize controls) so the list — and therefore the whole
+     "transactions · actuals chart" window — stays a fixed size as rows are
+     added and removed across the animation, instead of shifting the page. */
+  min-height: 24.5rem;
 }
 .txn-demo__row {
   display: grid;
@@ -2619,7 +2623,6 @@ body::before {
   .app-demo__chart--forecast {
     min-height: 220px;
   }
-  .txn-demo { min-height: auto; }
 }
 
 /* cashflow grid reveal in hero window */
