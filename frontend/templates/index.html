@@ -44,10 +44,10 @@
           <div class="hero__copy">
             <span class="kicker reveal-up d1">A personal budgeting app built for consequences, not categories</span>
             <h1 class="hero__title reveal-up d2">
-              Budgeting isn't about restriction. It's about tradeoffs through <em>time.</em>
+              Don't just track your money, understand where it's <em>taking you.</em>
             </h1>
             <p class="hero__tagline reveal-up d3">
-              Most budgeting apps show you what you spent. Workbench shows you what it <strong>compounds to.</strong> Change one assumption and watch the next five years shift in real time.
+              Upload a statement or connect your accounts. Build a forecast from what you actually spend, so your budget is grounded in reality — not a guess.
             </p>
             <div class="hero__actions reveal-up d4">
               <a href="#how-it-works" class="btn btn--primary btn--lg">See how it works</a>
@@ -194,8 +194,52 @@
                 <p class="flow-step__lead">First the history has to be honest — before anything can be projected.</p>
               </header>
               <div class="flow-step__content">
+              <article class="feature feature--hero">
+                <h3 class="feature__title">All Accounts in One Place</h3>
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
+                  </div>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo accounts-demo">
+                      <div class="accounts-demo__list">
+                        <table class="minitable minitable--accounts">
+                          <tbody id="accountsTableBody">
+                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
+                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
+                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
+                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
+                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
+                            </tr>
+                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
+                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
+                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
+                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
+                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="accounts-demo__txns">
+                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
+                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                </ul>
+              </article>
+
               <article class="feature feature--hero feature--reality">
-                <h3 class="feature__title">Numbers That Match Reality</h3>
+                <h3 class="feature__title">Split transactions</h3>
                 <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
@@ -204,7 +248,7 @@
                   <div class="shot__body shot__body--demo">
                     <div class="app-demo">
                       <div class="app-demo__txns">
-                        <div class="txn-demo" id="realityTxnList" role="list"></div>
+                        <div class="txn-demo txn-demo--h6" id="realityTxnList" role="list"></div>
                       </div>
                       <div class="app-demo__chart">
                         <div class="mini-chart-toolbar">
@@ -225,50 +269,41 @@
                   <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
                   <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your portion.</li>
                   <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
-                  <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
                 </ol>
               </article>
 
-              <article class="feature feature--compact">
-                <h3 class="feature__title">All Accounts in One Place</h3>
-                <div class="feature__shot" aria-hidden="true">
+              <article class="feature feature--hero feature--reality">
+                <h3 class="feature__title">Spread out big purchase over time</h3>
+                <div class="feature__shot feature__shot--demo" id="realityDemoShot2" aria-hidden="true" data-demo="reality-2">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">accounts — personal</span>
-                    <button type="button" class="shot__refresh" aria-label="Refresh accounts">
-                      <svg viewBox="0 0 16 16" aria-hidden="true">
-                        <path d="M13.65 2.35A7 7 0 1 0 14 8h-2a5 5 0 1 1-1.17-3.24L9 7h5V2l-1.35 1.35z" fill="currentColor"/>
-                      </svg>
-                    </button>
+                    <span class="shot__name">transactions · actuals chart</span>
                   </div>
-                  <div class="shot__body">
-                    <table class="minitable">
-                      <tbody>
-                        <tr>
-                          <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
-                          <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
-                        </tr>
-                        <tr>
-                          <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
-                          <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
-                        </tr>
-                        <tr>
-                          <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
-                          <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
-                        </tr>
-                        <tr>
-                          <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
-                          <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
-                        </tr>
-                        <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
-                      </tbody>
-                    </table>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo">
+                      <div class="app-demo__txns">
+                        <div class="txn-demo txn-demo--h5" id="realityTxnList2" role="list"></div>
+                      </div>
+                      <div class="app-demo__chart">
+                        <div class="mini-chart-toolbar">
+                          <span class="mini-chart-toolbar__label">Month</span>
+                          <span class="mini-chart-toolbar__status" id="realityChartStatus2"></span>
+                        </div>
+                        <svg class="mini-chart" id="realityChartSvg2" viewBox="0 0 560 220" aria-hidden="true"></svg>
+                        <div class="mini-chart-legend">
+                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <ul class="feature__list">
-                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
-                  <li>Plan as a household with a shared profile for you and your spouse.</li>
-                </ul>
+                <ol class="feature__list feature__list--steps" id="realitySteps2">
+                  <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
+                  <li data-step="transfer">Mark the dinner charge and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
+                  <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
+                </ol>
               </article>
               </div>
             </div>
@@ -694,7 +729,7 @@
       /* ── Per-sample looping behaviors ── */
       function startSampleLoops(shot) {
         /* Custom demos manage their own animation */
-        if (shot.dataset.demo === "reality" || shot.dataset.demo === "forecast") {
+        if (shot.dataset.demo === "reality" || shot.dataset.demo === "reality-2" || shot.dataset.demo === "forecast" || shot.dataset.demo === "accounts") {
           return;
         }
 
@@ -886,30 +921,178 @@
         requestAnimationFrame(tick);
       }
 
+      /* ── All Accounts demo ── */
+      (function initAccountsDemo() {
+        const shot = document.getElementById("accountsDemoShot");
+        const list = document.getElementById("accountsTxnList");
+        const tableBody = document.getElementById("accountsTableBody");
+        const shotName = document.getElementById("accountsShotName");
+        if (!shot || !list || !tableBody) return;
+
+        const ACCOUNT_ORDER = ["checking", "credit", "brokerage", "retirement"];
+        const ACCOUNTS = {
+          checking: {
+            label: "Chase Checking",
+            txns: [
+              { desc: "Payroll · ACME Corp · 06/14", amt: 3250 },
+              { desc: "Rent · Landlord · 06/01", amt: -1850 },
+              { desc: "Whole Foods · 06/12", amt: -142.38 },
+              { desc: "Venmo · Alex · 06/14", amt: 50 },
+              { desc: "Electric · ConEd · 06/08", amt: -96.40 },
+              { desc: "Coffee Lab · 06/15", amt: -6.75 },
+            ],
+          },
+          credit: {
+            label: "Sapphire Reserve",
+            txns: [
+              { desc: "Fine Dining · 06/14", amt: -200 },
+              { desc: "Apple Store · 06/15", amt: -1200 },
+              { desc: "Amazon · 06/09", amt: -84.19 },
+              { desc: "Shell Gas · 06/11", amt: -58.42 },
+              { desc: "Marriott · 06/06", amt: -312.00 },
+              { desc: "Spotify · 06/03", amt: -11.99 },
+            ],
+          },
+          brokerage: {
+            label: "Brokerage",
+            txns: [
+              { desc: "MSFT Dividend · 06/13", amt: 48.20 },
+              { desc: "Buy · VTI · 06/05", amt: -1500 },
+              { desc: "Sell · AAPL · 06/10", amt: 820.15 },
+              { desc: "Advisory Fee · 06/01", amt: -12.50 },
+              { desc: "ACH Deposit · 06/02", amt: 2000 },
+              { desc: "Interest · 06/30", amt: 3.88 },
+            ],
+          },
+          retirement: {
+            label: "401(k)",
+            txns: [
+              { desc: "Payroll Contribution · 06/14", amt: 875 },
+              { desc: "Employer Match · 06/14", amt: 437.50 },
+              { desc: "Rebalance · FXAIX · 06/07", amt: -220.00 },
+              { desc: "Bond Dividend · 06/20", amt: 62.10 },
+              { desc: "Plan Admin Fee · 06/01", amt: -4.25 },
+            ],
+          },
+        };
+
+        const accountRows = ACCOUNT_ORDER.map((key) =>
+          tableBody.querySelector(`tr[data-account="${key}"]`)
+        ).filter(Boolean);
+
+        let activeIdx = 0;
+        let cycleTimer = null;
+
+        function txnRowHtml(txn) {
+          const amtClass = txn.amt >= 0 ? "accounts-txn__amt--income" : "accounts-txn__amt--expense";
+          const sign = txn.amt >= 0 ? "+" : "−";
+          return `<div class="accounts-txn__row" role="listitem">
+            <span class="accounts-txn__desc">${txn.desc}</span>
+            <span class="accounts-txn__amt ${amtClass}">${sign}$${Math.abs(txn.amt).toFixed(2)}</span>
+          </div>`;
+        }
+
+        function showAccount(key) {
+          const account = ACCOUNTS[key];
+          if (!account) return;
+          const idx = ACCOUNT_ORDER.indexOf(key);
+          activeIdx = idx >= 0 ? idx : 0;
+
+          accountRows.forEach((row, i) => {
+            const on = i === activeIdx;
+            row.classList.toggle("is-active", on);
+            row.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+
+          if (shotName) shotName.textContent = "accounts — " + account.label;
+          list.classList.remove("is-switching");
+          list.innerHTML = account.txns.map(txnRowHtml).join("");
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => list.classList.add("is-switching"));
+          });
+        }
+
+        function nextAccount() {
+          if (!shot.classList.contains("is-live")) return;
+          activeIdx = (activeIdx + 1) % ACCOUNT_ORDER.length;
+          showAccount(ACCOUNT_ORDER[activeIdx]);
+        }
+
+        function startCycle() {
+          if (reduceMotion || cycleTimer) return;
+          cycleTimer = setInterval(nextAccount, 2800);
+        }
+
+        function stopCycle() {
+          if (!cycleTimer) return;
+          clearInterval(cycleTimer);
+          cycleTimer = null;
+        }
+
+        accountRows.forEach((row) => {
+          row.addEventListener("click", () => {
+            showAccount(row.dataset.account);
+            stopCycle();
+            startCycle();
+          });
+        });
+
+        const boot = () => {
+          showAccount(ACCOUNT_ORDER[activeIdx]);
+          startCycle();
+        };
+
+        if (shot.classList.contains("is-live")) boot();
+        else {
+          const obs = new MutationObserver(() => {
+            if (shot.classList.contains("is-live")) {
+              obs.disconnect();
+              boot();
+            }
+          });
+          obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
+        }
+      })();
+
       /* ── Numbers That Match Reality demo ── */
-      (function initRealityDemo() {
-        const shot = document.getElementById("realityDemoShot");
-        const list = document.getElementById("realityTxnList");
-        const steps = document.getElementById("realitySteps");
-        const chartSvg = document.getElementById("realityChartSvg");
-        const chartStatus = document.getElementById("realityChartStatus");
+      function initRealityDemo({
+        shotId,
+        listId,
+        stepsId,
+        chartSvgId,
+        chartStatusId,
+        variant,
+      }) {
+        const shot = document.getElementById(shotId);
+        const list = document.getElementById(listId);
+        const steps = document.getElementById(stepsId);
+        const chartSvg = document.getElementById(chartSvgId);
+        const chartStatus = document.getElementById(chartStatusId);
         if (!shot || !list || !chartSvg) return;
 
         const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const STEP_ORDER = ["unified", "split", "transfer", "amortize"];
+        const STEP_ORDER = variant === "split-transfer"
+          ? ["unified", "split", "transfer"]
+          : ["unified", "transfer", "amortize"];
+        const PHASE_WAIT = { unified: 2800, split: 2800, transfer: 3200, amortize: 3600 };
+        const PHASE_ANIM = { split: 900, transfer: 900, amortize: 1100 };
         const JUN = 1;
         const zeroMonth = (label) => ({ label, income: 0, expenses: 0, net: 0 });
 
         function chartForPhase(phase) {
           const data = REALITY_MONTHS.map(zeroMonth);
-          if (phase === "unified") {
-            return data;
-          }
-          if (phase === "split") {
+          if (variant === "split-transfer") {
+            if (phase === "unified" || phase === "split") {
+              data[JUN].income = 150;
+              data[JUN].expenses = -200;
+            } else if (phase === "transfer") {
+              data[JUN].expenses = -50;
+            }
+          } else if (phase === "unified") {
             data[JUN].income = 150;
             data[JUN].expenses = -1400;
           } else if (phase === "transfer") {
-            data[JUN].expenses = -1250;
+            data[JUN].expenses = -1200;
           } else if (phase === "amortize") {
             for (let i = JUN; i < data.length; i++) {
               data[i].expenses = i === JUN ? -150 : -100;
@@ -989,6 +1172,35 @@
           const amortizeActive = () =>
             allControls({ amortVal: "12 months", amortizeActive: true });
 
+          if (variant === "split-transfer") {
+            if (phase === "unified") {
+              return [
+                { id: "dinner", desc: "Dinner · 06/14", amt: -200, controls: idle() },
+                { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
+                { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
+                { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
+              ];
+            }
+            if (phase === "split") {
+              return [
+                { ...mutedDinner(splitFilled()), cls: "is-muted is-splitting" },
+                { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child", controls: idle() },
+                { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: idle() },
+                { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
+                { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
+                { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
+              ];
+            }
+            return [
+              mutedDinner(splitFilled()),
+              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
+              { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: splitFilled() },
+              { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+              { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+              { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+            ];
+          }
+
           if (phase === "unified") {
             return [
               { id: "dinner", desc: "Dinner · 06/14", amt: -200, controls: idle() },
@@ -998,35 +1210,17 @@
               { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
             ];
           }
-
-          if (phase === "split") {
-            return [
-              { ...mutedDinner(splitFilled()), cls: "is-muted is-splitting" },
-              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child", controls: idle() },
-              { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: idle() },
-              { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
-              { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
-              { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
-              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
-            ];
-          }
-
           if (phase === "transfer") {
             return [
-              mutedDinner(splitFilled()),
-              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
-              { id: "dinner-b", desc: "Dinner · tip", amt: -50, cls: "is-split-child", controls: splitFilled() },
+              { id: "dinner", desc: "Dinner · 06/14", amt: -200, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
             ];
           }
-
           return [
-            mutedDinner(splitFilled()),
-            { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
-            { id: "dinner-b", desc: "Dinner · tip", amt: -50, cls: "is-split-child", controls: splitFilled() },
+            { id: "dinner", desc: "Dinner · 06/14", amt: -200, cls: "is-selected is-transfer", controls: transferActive() },
             { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
             { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
             { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
@@ -1048,25 +1242,25 @@
           if (running || !shot.classList.contains("is-live")) return;
           running = true;
 
-          setActiveStep("unified");
-          paintRows(rowsForPhase("unified"));
-          renderMiniChart(chartSvg, chartForPhase("unified"));
-          await wait(2800);
+          const first = STEP_ORDER[0];
+          setActiveStep(first);
+          paintRows(rowsForPhase(first));
+          renderMiniChart(chartSvg, chartForPhase(first));
+          await wait(PHASE_WAIT[first]);
 
-          setActiveStep("split");
-          paintRows(rowsForPhase("split"));
-          animateChart(chartSvg, chartForPhase("unified"), chartForPhase("split"), 900);
-          await wait(2800);
-
-          setActiveStep("transfer");
-          paintRows(rowsForPhase("transfer"));
-          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 900);
-          await wait(3200);
-
-          setActiveStep("amortize");
-          paintRows(rowsForPhase("amortize"));
-          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 1100);
-          await wait(3600);
+          for (let i = 1; i < STEP_ORDER.length; i++) {
+            const phase = STEP_ORDER[i];
+            const prev = STEP_ORDER[i - 1];
+            setActiveStep(phase);
+            paintRows(rowsForPhase(phase));
+            animateChart(
+              chartSvg,
+              chartForPhase(prev),
+              chartForPhase(phase),
+              PHASE_ANIM[phase] || 900
+            );
+            await wait(PHASE_WAIT[phase]);
+          }
 
           running = false;
           if (shot.classList.contains("is-live")) runLoop();
@@ -1089,7 +1283,24 @@
           });
           obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
         }
-      })();
+      }
+
+      initRealityDemo({
+        shotId: "realityDemoShot",
+        listId: "realityTxnList",
+        stepsId: "realitySteps",
+        chartSvgId: "realityChartSvg",
+        chartStatusId: "realityChartStatus",
+        variant: "split-transfer",
+      });
+      initRealityDemo({
+        shotId: "realityDemoShot2",
+        listId: "realityTxnList2",
+        stepsId: "realitySteps2",
+        chartSvgId: "realityChartSvg2",
+        chartStatusId: "realityChartStatus2",
+        variant: "amortize",
+      });
 
       /* ── Fine-tuned Forecast demo ── */
       (function initForecastDemo() {
