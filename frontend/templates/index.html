@@ -222,6 +222,7 @@
                   </div>
                 </div>
                 <ol class="feature__list feature__list--steps" id="realitySteps">
+                  <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
                   <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your tip.</li>
                   <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
                   <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
@@ -891,15 +892,20 @@
         const list = document.getElementById("realityTxnList");
         const steps = document.getElementById("realitySteps");
         const chartSvg = document.getElementById("realityChartSvg");
+        const chartStatus = document.getElementById("realityChartStatus");
         if (!shot || !list || !chartSvg) return;
 
         const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const STEP_ORDER = ["unified", "split", "transfer", "amortize"];
         const JUN = 1;
         const zeroMonth = (label) => ({ label, income: 0, expenses: 0, net: 0 });
 
         function chartForPhase(phase) {
           const data = REALITY_MONTHS.map(zeroMonth);
-          if (phase === "initial" || phase === "split") {
+          if (phase === "unified") {
+            return data;
+          }
+          if (phase === "split") {
             data[JUN].income = 150;
             data[JUN].expenses = -1400;
           } else if (phase === "transfer") {
@@ -917,13 +923,19 @@
 
         function setActiveStep(step) {
           if (!steps) return;
+          const activeIdx = step ? STEP_ORDER.indexOf(step) : -1;
           steps.querySelectorAll("[data-step]").forEach((li) => {
+            const idx = STEP_ORDER.indexOf(li.dataset.step);
             li.classList.toggle("is-active", step && li.dataset.step === step);
-            li.classList.toggle("is-done", step && li.dataset.step !== step && (
-              (step === "transfer" && li.dataset.step === "split") ||
-              (step === "amortize" && (li.dataset.step === "split" || li.dataset.step === "transfer"))
-            ));
+            li.classList.toggle("is-done", activeIdx >= 0 && idx >= 0 && idx < activeIdx);
           });
+          if (chartStatus) {
+            chartStatus.textContent = step === "unified"
+              ? "Chase · Sapphire · Venmo"
+              : step
+                ? "Income · Expenses · Net Income"
+                : "";
+          }
         }
 
         function rowHtml(row) {
@@ -944,44 +956,70 @@
         const transferCtl = (on) =>
           `<span class="txn-demo__ctl txn-demo__transfer">Transfer<span class="flagbox${on ? " is-on" : ""}"></span></span>`;
 
-        const laptopRow = (amortizeActive) => ({
-          id: "laptop",
-          desc: "Apple Store · 06/15",
-          amt: -1200,
-          controls: ctl("Amortize", amortizeActive ? "12 months" : "—", amortizeActive) + transferCtl(false),
-        });
+        function allControls({
+          splitVal = "—",
+          splitActive = false,
+          transferOn = false,
+          amortVal = "—",
+          amortizeActive = false,
+        } = {}) {
+          return (
+            ctl("Split", splitVal, splitActive) +
+            transferCtl(transferOn) +
+            ctl("Amortize", amortVal, amortizeActive)
+          );
+        }
 
-        const rowsInitial = [
-          { id: "dinner", desc: "Fine Dining · 06/14", amt: -200 },
-          { id: "v1", desc: "Venmo · Alex", amt: 50 },
-          { id: "v2", desc: "Venmo · Sam", amt: 50 },
-          { id: "v3", desc: "Venmo · Jordan", amt: 50 },
-          laptopRow(false),
-        ];
+        function rowsForPhase(phase) {
+          const idle = () => allControls();
+          const splitActive = () => allControls({ splitVal: "2 parts", splitActive: true });
+          const transferActive = () => allControls({ transferOn: true });
+          const splitTransferActive = () =>
+            allControls({ splitVal: "2 parts", splitActive: true, transferOn: true });
+          const amortizeActive = () =>
+            allControls({ amortVal: "12 months", amortizeActive: true });
 
-        const rowsSplit = [
-          { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-splitting", controls: ctl("Split", "2 parts", true) + transferCtl(false) },
-          { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: ctl("Split", "2 parts", true) },
-          { id: "v1", desc: "Venmo · Alex", amt: 50, controls: transferCtl(false) },
-          { id: "v2", desc: "Venmo · Sam", amt: 50, controls: transferCtl(false) },
-          { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: transferCtl(false) },
-          laptopRow(false),
-        ];
+          if (phase === "unified") {
+            return [
+              { id: "dinner", desc: "Fine Dining · 06/14", amt: -200, controls: idle() },
+              { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
+              { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
+              { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
+              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
+            ];
+          }
 
-        const rowsTransfer = rowsSplit.map((r) => {
-          const sel = ["dinner-a", "v1", "v2", "v3"].includes(r.id);
-          return {
-            ...r,
-            cls: [r.cls, sel ? "is-selected is-transfer" : ""].filter(Boolean).join(" "),
-            controls: r.controls && sel
-              ? r.controls.replace('class="flagbox"', 'class="flagbox is-on"')
-              : r.controls,
-          };
-        });
+          if (phase === "split") {
+            return [
+              { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-splitting", controls: splitActive() },
+              { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+              { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
+              { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
+              { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
+              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
+            ];
+          }
 
-        const rowsAmortize = rowsTransfer.map((r) =>
-          r.id === "laptop" ? laptopRow(true) : r
-        );
+          if (phase === "transfer") {
+            return [
+              { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-selected is-transfer", controls: splitTransferActive() },
+              { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+              { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+              { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+              { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
+            ];
+          }
+
+          return [
+            { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-selected is-transfer", controls: splitTransferActive() },
+            { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+            { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+            { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+            { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
+            { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: amortizeActive() },
+          ];
+        }
 
         function paintRows(rows) {
           list.innerHTML = rows.map(rowHtml).join("");
@@ -997,33 +1035,34 @@
           if (running || !shot.classList.contains("is-live")) return;
           running = true;
 
-          setActiveStep(null);
-          paintRows(rowsInitial);
-          renderMiniChart(chartSvg, chartForPhase("initial"));
-          await wait(1100);
+          setActiveStep("unified");
+          paintRows(rowsForPhase("unified"));
+          renderMiniChart(chartSvg, chartForPhase("unified"));
+          await wait(2800);
 
           setActiveStep("split");
-          paintRows(rowsSplit);
-          await wait(1400);
+          paintRows(rowsForPhase("split"));
+          animateChart(chartSvg, chartForPhase("unified"), chartForPhase("split"), 900);
+          await wait(2800);
 
           setActiveStep("transfer");
-          paintRows(rowsTransfer);
-          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 450);
-          await wait(1600);
+          paintRows(rowsForPhase("transfer"));
+          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 900);
+          await wait(3200);
 
           setActiveStep("amortize");
-          paintRows(rowsAmortize);
-          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 550);
-          await wait(1800);
+          paintRows(rowsForPhase("amortize"));
+          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 1100);
+          await wait(3600);
 
           running = false;
           if (shot.classList.contains("is-live")) runLoop();
         }
 
         const boot = () => {
-          setActiveStep(null);
-          paintRows(rowsInitial);
-          renderMiniChart(chartSvg, chartForPhase("initial"));
+          setActiveStep("unified");
+          paintRows(rowsForPhase("unified"));
+          renderMiniChart(chartSvg, chartForPhase("unified"));
           if (!reduceMotion) runLoop();
         };
 
