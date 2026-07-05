@@ -223,7 +223,7 @@
                 </div>
                 <ol class="feature__list feature__list--steps" id="realitySteps">
                   <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
-                  <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your tip.</li>
+                  <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your portion.</li>
                   <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
                   <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
                 </ol>
@@ -953,35 +953,45 @@
 
         const ctl = (label, val, active) =>
           `<span class="txn-demo__ctl">${label}<span class="txn-demo__ctl-val${active ? " is-active" : ""}">${val}</span></span>`;
+        const splitCtl = (value = "", active = false) =>
+          `<span class="txn-demo__ctl txn-demo__split">Split<input type="text" class="txn-demo__split-input${active ? " is-active" : ""}" value="${value}" placeholder="150, 50" readonly tabindex="-1" aria-label="Split amounts" /></span>`;
         const transferCtl = (on) =>
           `<span class="txn-demo__ctl txn-demo__transfer">Transfer<span class="flagbox${on ? " is-on" : ""}"></span></span>`;
 
         function allControls({
-          splitVal = "—",
+          splitVal = "",
           splitActive = false,
           transferOn = false,
           amortVal = "—",
           amortizeActive = false,
         } = {}) {
           return (
-            ctl("Split", splitVal, splitActive) +
+            splitCtl(splitVal, splitActive) +
             transferCtl(transferOn) +
             ctl("Amortize", amortVal, amortizeActive)
           );
         }
 
+        const mutedDinner = (controls) => ({
+          id: "dinner",
+          desc: "Dinner · 06/14",
+          amt: -200,
+          cls: "is-muted",
+          controls,
+        });
+
         function rowsForPhase(phase) {
           const idle = () => allControls();
-          const splitActive = () => allControls({ splitVal: "2 parts", splitActive: true });
+          const splitFilled = (val = "150, 50") => allControls({ splitVal: val, splitActive: true });
           const transferActive = () => allControls({ transferOn: true });
           const splitTransferActive = () =>
-            allControls({ splitVal: "2 parts", splitActive: true, transferOn: true });
+            allControls({ splitVal: "150, 50", splitActive: true, transferOn: true });
           const amortizeActive = () =>
             allControls({ amortVal: "12 months", amortizeActive: true });
 
           if (phase === "unified") {
             return [
-              { id: "dinner", desc: "Fine Dining · 06/14", amt: -200, controls: idle() },
+              { id: "dinner", desc: "Dinner · 06/14", amt: -200, controls: idle() },
               { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
               { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
               { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
@@ -991,8 +1001,9 @@
 
           if (phase === "split") {
             return [
-              { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-splitting", controls: splitActive() },
-              { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+              { ...mutedDinner(splitFilled()), cls: "is-muted is-splitting" },
+              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child", controls: idle() },
+              { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: idle() },
               { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
               { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
               { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
@@ -1002,8 +1013,9 @@
 
           if (phase === "transfer") {
             return [
-              { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-selected is-transfer", controls: splitTransferActive() },
-              { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+              mutedDinner(splitFilled()),
+              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
+              { id: "dinner-b", desc: "Dinner · tip", amt: -50, cls: "is-split-child", controls: splitFilled() },
               { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
               { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
@@ -1012,8 +1024,9 @@
           }
 
           return [
-            { id: "dinner-a", desc: "Fine Dining · 06/14", amt: -150, cls: "is-selected is-transfer", controls: splitTransferActive() },
-            { id: "dinner-b", desc: "Fine Dining · tip", amt: -50, controls: splitActive() },
+            mutedDinner(splitFilled()),
+            { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
+            { id: "dinner-b", desc: "Dinner · tip", amt: -50, cls: "is-split-child", controls: splitFilled() },
             { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
             { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
             { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
