@@ -316,7 +316,7 @@
                           <span class="mini-chart-toolbar__label">Year</span>
                           <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
                         </div>
-                        <svg class="mini-chart" id="forecastChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
+                        <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
                         <div class="mini-chart-legend">
                           <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
                           <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
@@ -715,8 +715,8 @@
           if (!reduceMotion) {
             setTimeout(() => {
               refreshAccounts();
-              setInterval(refreshAccounts, 4800);
-            }, 2200);
+              setInterval(refreshAccounts, 2400);
+            }, 1100);
           }
         }
 
@@ -734,8 +734,8 @@
           };
           setTimeout(() => {
             cycle();
-            setInterval(cycle, 2000);
-          }, 1100);
+            setInterval(cycle, 1000);
+          }, 550);
         }
 
         /* Advanced accounting: toggle the Transfer flag on/off
@@ -746,8 +746,8 @@
         if (flag) {
           setTimeout(() => {
             flag.classList.add("is-on");
-            setInterval(() => flag.classList.toggle("is-on"), 2600);
-          }, 900);
+            setInterval(() => flag.classList.toggle("is-on"), 1300);
+          }, 450);
         }
 
         /* Guided setup (hero + feature card): cycle the selected answer */
@@ -760,8 +760,8 @@
           };
           setTimeout(() => {
             cycleOpt();
-            setInterval(cycleOpt, 2100);
-          }, 1300);
+            setInterval(cycleOpt, 1050);
+          }, 650);
         }
       }
 
@@ -806,12 +806,19 @@
         return { yMin: yMin - pad, yMax: yMax + pad };
       }
 
+      function miniChartSize(svg) {
+        const vb = svg?.viewBox?.baseVal;
+        const W = vb?.width > 0 ? vb.width : 560;
+        const H = vb?.height > 0 ? vb.height : 220;
+        return { W, H };
+      }
+
       function renderMiniChart(svg, series, bounds) {
         if (!svg || !series?.length) return;
         const { yMin, yMax } = bounds || chartBounds(series);
-        const W = 560;
-        const H = 220;
-        const pad = { top: 16, right: 12, bottom: 28, left: 36 };
+        const { W, H } = miniChartSize(svg);
+        const scale = H / 220;
+        const pad = { top: 16 * scale, right: 12, bottom: 28 * scale, left: 36 };
         const plotW = W - pad.left - pad.right;
         const plotH = H - pad.top - pad.bottom;
         const zeroY = pad.top + ((yMax - 0) / (yMax - yMin)) * plotH;
@@ -820,6 +827,8 @@
         const slot = plotW / n;
         const barW = Math.min(18, slot * 0.32);
         const gap = (slot - barW * 2) / 3;
+        const labelSize = 9;
+        const axisSize = 8;
 
         const fmtK = (v) => {
           const abs = Math.abs(v);
@@ -841,7 +850,7 @@
           if (row.expenses < 0) {
             html += `<rect x="${x0 + barW + gap}" y="${zeroY}" width="${barW}" height="${expH}" fill="${CHART_COLORS.expense}"/>`;
           }
-          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8}" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="${CHART_COLORS.axis}">${n <= 8 || i % 2 === 0 || i === n - 1 ? row.label : ""}</text>`;
+          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8 * scale}" text-anchor="middle" font-family="Inter,sans-serif" font-size="${labelSize}" fill="${CHART_COLORS.axis}">${n <= 8 || i % 2 === 0 || i === n - 1 ? row.label : ""}</text>`;
         }
 
         let lineD = "";
@@ -852,9 +861,9 @@
         });
         html += `<path d="${lineD}" fill="none" stroke="${CHART_COLORS.net}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
 
-        html += `<text x="4" y="${pad.top + 4}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">${fmtK(yMax)}</text>`;
-        html += `<text x="4" y="${zeroY + 3}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">$0</text>`;
-        html += `<text x="4" y="${H - pad.bottom}" font-family="Inter,sans-serif" font-size="8" fill="${CHART_COLORS.axis}">${fmtK(yMin)}</text>`;
+        html += `<text x="4" y="${pad.top + 4 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">${fmtK(yMax)}</text>`;
+        html += `<text x="4" y="${zeroY + 3 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">$0</text>`;
+        html += `<text x="4" y="${H - pad.bottom + 10 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">${fmtK(yMin)}</text>`;
 
         svg.innerHTML = html;
       }
@@ -991,21 +1000,21 @@
           setActiveStep(null);
           paintRows(rowsInitial);
           renderMiniChart(chartSvg, chartForPhase("initial"));
-          await wait(2200);
+          await wait(1100);
 
           setActiveStep("split");
           paintRows(rowsSplit);
-          await wait(2800);
+          await wait(1400);
 
           setActiveStep("transfer");
           paintRows(rowsTransfer);
-          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 900);
-          await wait(3200);
+          animateChart(chartSvg, chartForPhase("split"), chartForPhase("transfer"), 450);
+          await wait(1600);
 
           setActiveStep("amortize");
           paintRows(rowsAmortize);
-          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 1100);
-          await wait(3600);
+          animateChart(chartSvg, chartForPhase("transfer"), chartForPhase("amortize"), 550);
+          await wait(1800);
 
           running = false;
           if (shot.classList.contains("is-live")) runLoop();
@@ -1082,7 +1091,7 @@
             return;
           }
           const prev = chartFrom;
-          animateChart(chartSvg, prev, next, 700, () => {
+          animateChart(chartSvg, prev, next, 350, () => {
             chartFrom = next;
           }, FIXED_BOUNDS);
         }
@@ -1125,18 +1134,18 @@
         setTimeout(() => {
           if (shot.classList.contains("is-live")) {
             autoCycle();
-            setInterval(autoCycle, 3200);
+            setInterval(autoCycle, 1600);
           } else {
             const obs = new MutationObserver(() => {
               if (shot.classList.contains("is-live")) {
                 obs.disconnect();
                 autoCycle();
-                setInterval(autoCycle, 3200);
+                setInterval(autoCycle, 1600);
               }
             });
             obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
           }
-        }, 2400);
+        }, 1200);
       })();
 
       /* ── Hero scenario tabs: click to switch (manual) ── */
