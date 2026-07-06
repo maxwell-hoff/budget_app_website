@@ -181,9 +181,9 @@
         </div>
 
         <!-- The loop: full-width vertical steps, each with room to breathe -->
-        <div class="flow__track on-scroll" id="features" data-stagger>
+        <div class="flow__track" id="features">
 
-          <article class="flow-step">
+          <article class="flow-step on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
               <span class="flow-step__num">1</span>
             </div>
@@ -308,7 +308,7 @@
             </div>
           </article>
 
-          <article class="flow-step">
+          <article class="flow-step on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
               <span class="flow-step__num">2</span>
             </div>
@@ -370,7 +370,7 @@
             </div>
           </article>
 
-          <article class="flow-step">
+          <article class="flow-step on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
               <span class="flow-step__num">3</span>
             </div>
@@ -441,7 +441,7 @@
             </div>
           </article>
 
-          <article class="flow-step flow-step--payoff">
+          <article class="flow-step flow-step--payoff on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
               <span class="flow-step__num">4</span>
             </div>
@@ -648,7 +648,7 @@
               }
             });
           },
-          { threshold: 0.18 }
+          { threshold: 0.08, rootMargin: "120px 0px 0px 0px" }
         );
         revealEls.forEach((el) => io.observe(el));
       }
@@ -720,7 +720,7 @@
               }
             });
           },
-          { threshold: 0.35 }
+          { threshold: 0.12, rootMargin: "80px 0px 0px 0px" }
         );
         liveEls.forEach((el) => liveObserver.observe(el));
       }
