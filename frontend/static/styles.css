@@ -3028,4 +3028,148 @@ body::before {
 .setup.is-live .setup__option:nth-child(2) { transition-delay: 0.20s; }
 .setup.is-live .setup__option:nth-child(3) { transition-delay: 0.30s; }
 
-/* ── Guided s
+/* ── Guided setup — compact feature shot ── */
+.setupmini { display: flex; flex-direction: column; }
+.setupmini__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+.setupmini__step {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.setupmini__count {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--muted);
+}
+.setupmini__bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+.setupmini__fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+.feature__shot.is-live .setupmini__fill { width: 40%; }
+.setupmini__q {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.55rem;
+}
+.setupmini__opts { display: flex; flex-direction: column; gap: 0.35rem; }
+.setupmini__opt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  transition: border-color var(--t-normal), background var(--t-normal), color var(--t-normal);
+}
+.setupmini__opt.is-active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--ink);
+  font-weight: 600;
+}
+.setupmini__radio {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--surface-1);
+  position: relative;
+}
+.setupmini__opt.is-active .setupmini__radio { border-color: var(--accent); }
+.setupmini__opt.is-active .setupmini__radio::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 720px) {
+  .nav__links a:not(.btn) { display: none; }
+  .kpis { grid-template-columns: repeat(3, 1fr); }
+  .wrap { width: min(var(--maxw), calc(100% - 1.75rem)); }
+}
+
+@media (max-width: 420px) {
+  .kpi__value { font-size: 0.92rem; }
+}
+
+/* ============================================================
+   Reduced motion — kill all the moving parts
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-up,
+  .window,
+  .chart-line--draw,
+  .chart-area,
+  .chart-bar {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .branch__halo,
+  .branch__futurehalo { animation: none !important; }
+  .ticker__track { animation: none; }
+  .on-scroll,
+  .on-scroll[data-stagger] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .feature:hover { transform: none; }
+
+  .feature__shot .minitable tbody tr,
+  .feature__shot .privacy-row,
+  .feature__shot .paramgrid > *,
+  .feature__shot .txnrow > *,
+  .cfgrid__row,
+  .txnlist__row:not(.txnlist__row--head) {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .feature__shot *,
+  .flagbox,
+  .flagbox::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .setup .setup__option {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .setup__fill,
+  .setupmini__fill {
+    transition: none !important;
+  }
+}
