@@ -2684,6 +2684,7 @@ body::before {
 }
 .txn-demo--h6 { min-height: 24.5rem; }
 .txn-demo--h5 { min-height: 20.5rem; }
+.txn-demo--h1 { min-height: 5.5rem; }
 .txn-demo__row {
   display: grid;
   grid-template-columns: 1fr auto;

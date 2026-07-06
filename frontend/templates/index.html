@@ -6,7 +6,7 @@
     <title>Workbench Budgeting — Figure out what your budget should actually be</title>
     <meta
       name="description"
-      content="Workbench Budgeting turns your real spending into a living forecast, so you can see what today's overspending will cost you years from now — and arrive at a budget that's actually yours. A guided setup walks you in from zero in about an hour, and your data stays local on your device."
+      content="Workbench Budgeting turns your real spending into a living forecast, so you can see what today's overspending will cost you years from now — and arrive at a budget that's actually yours. A guided setup walks you in from zero in about 10 minutes, and your data stays local on your device."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -176,7 +176,7 @@
             From messy transactions to a number you trust — and the tools that get you there.
           </h2>
           <p class="section__lead">
-            A guided setup gets you from zero to real numbers in about an hour. From there, it's a loop — clean up, project forward, test tradeoffs, land on your number.
+            A guided setup gets you from zero to real numbers in about 10 minutes. From there, it's a loop — clean up, project forward, test tradeoffs, land on your number.
           </p>
         </div>
 
@@ -266,8 +266,8 @@
                   </div>
                 </div>
                 <ol class="feature__list feature__list--steps" id="realitySteps">
-                  <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
-                  <li data-step="split">Split a charge so your share is separate from what friends reimbursed — $150 for the group meal, $50 for your portion.</li>
+                  <li data-step="unified">You and three friends go out to dinner for $200. You split it four ways. You pay for the bill and they each venmo you $50.</li>
+                  <li data-step="split">Within the app, split the charge so your share is separate from what friends reimbursed — $150 for the other three, $50 for yours.</li>
                   <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
                 </ol>
               </article>
@@ -282,7 +282,7 @@
                   <div class="shot__body shot__body--demo">
                     <div class="app-demo">
                       <div class="app-demo__txns">
-                        <div class="txn-demo txn-demo--h5" id="realityTxnList2" role="list"></div>
+                        <div class="txn-demo txn-demo--h1" id="realityTxnList2" role="list"></div>
                       </div>
                       <div class="app-demo__chart">
                         <div class="mini-chart-toolbar">
@@ -301,7 +301,6 @@
                 </div>
                 <ol class="feature__list feature__list--steps" id="realitySteps2">
                   <li data-step="unified">See all your transactions in one place — checking, credit cards, Venmo, and more.</li>
-                  <li data-step="transfer">Mark the dinner charge and three Venmo payments as transfers — income and expenses drop, net income stays the same.</li>
                   <li data-step="amortize">Amortize the $1,200 laptop over 12 months — one heavy month becomes $100/mo and the trend smooths out.</li>
                 </ol>
               </article>
@@ -1073,7 +1072,7 @@
         const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const STEP_ORDER = variant === "split-transfer"
           ? ["unified", "split", "transfer"]
-          : ["unified", "transfer", "amortize"];
+          : ["unified", "amortize"];
         const PHASE_WAIT = { unified: 2800, split: 2800, transfer: 3200, amortize: 3600 };
         const PHASE_ANIM = { split: 900, transfer: 900, amortize: 1100 };
         const JUN = 1;
@@ -1089,9 +1088,6 @@
               data[JUN].expenses = -50;
             }
           } else if (phase === "unified") {
-            data[JUN].income = 150;
-            data[JUN].expenses = -1400;
-          } else if (phase === "transfer") {
             data[JUN].expenses = -1200;
           } else if (phase === "amortize") {
             for (let i = JUN; i < data.length; i++) {
@@ -1201,31 +1197,17 @@
             ];
           }
 
+          const laptopRow = (controls) => ({
+            id: "laptop",
+            desc: "Apple Store · 06/15",
+            amt: -1200,
+            controls,
+          });
+
           if (phase === "unified") {
-            return [
-              { id: "dinner", desc: "Dinner · 06/14", amt: -200, controls: idle() },
-              { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
-              { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
-              { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
-              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
-            ];
+            return [laptopRow(idle())];
           }
-          if (phase === "transfer") {
-            return [
-              { id: "dinner", desc: "Dinner · 06/14", amt: -200, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: idle() },
-            ];
-          }
-          return [
-            { id: "dinner", desc: "Dinner · 06/14", amt: -200, cls: "is-selected is-transfer", controls: transferActive() },
-            { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-            { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-            { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-            { id: "laptop", desc: "Apple Store · 06/15", amt: -1200, controls: amortizeActive() },
-          ];
+          return [laptopRow(amortizeActive())];
         }
 
         function paintRows(rows) {
