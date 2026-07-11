@@ -47,7 +47,7 @@
               Overwhelmed by your finances? It's not you, it's <em>your tools.</em>
             </h1>
             <p class="hero__tagline reveal-up d3">
-              Even the best budgeting apps have the same problem: they're built for categorizing, not deciding. Workbench is focused on how big your budget should be, not how it's sliced up. With Workbench, you forecast your future, then work backward to what you should budget today.
+              Even the best budgeting apps have the same problem: they're built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up. With Workbench, you forecast your future, then work backward to what you should budget today.
             </p>
             <div class="hero__actions reveal-up d4">
               <a href="#download" class="btn btn--primary btn--lg">Download</a>
@@ -171,7 +171,7 @@
               <div class="flow-step__content">
               <article class="feature feature--hero">
                 <h3 class="feature__title">All Accounts in One Place</h3>
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step1-guided-setup">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
@@ -229,7 +229,7 @@
               <div class="flow-step__content">
               <article class="feature feature--hero">
                 <h3 class="feature__title">All Accounts in One Place</h3>
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-accounts">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
@@ -273,7 +273,7 @@
 
               <article class="feature feature--hero feature--reality">
                 <h3 class="feature__title">Split transactions</h3>
-                <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality">
+                <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality" data-video="step2-split-transactions">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">transactions · actuals chart</span>
@@ -307,7 +307,7 @@
 
               <article class="feature feature--hero feature--reality">
                 <h3 class="feature__title">Spread out big purchases over time</h3>
-                <div class="feature__shot feature__shot--demo" id="realityDemoShot2" aria-hidden="true" data-demo="reality-2">
+                <div class="feature__shot feature__shot--demo" id="realityDemoShot2" aria-hidden="true" data-demo="reality-2" data-video="step2-spread-purchases">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">transactions · actuals chart</span>
@@ -354,7 +354,7 @@
               <div class="flow-step__content">
               <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Fine-tuned Forecasting</h3>
-                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast">
+                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step3-forecast">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">forecast · projection chart</span>
@@ -416,7 +416,7 @@
               <div class="flow-step__content flow-step__content--duo">
               <article class="feature">
                 <h3 class="feature__title">Scenario Planning</h3>
-                <div class="feature__shot" aria-hidden="true">
+                <div class="feature__shot" aria-hidden="true" data-video="step4-scenarios">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">scenarios</span>
@@ -447,7 +447,7 @@
 
               <article class="feature">
                 <h3 class="feature__title">Budget vs. Actual Insights</h3>
-                <div class="feature__shot" aria-hidden="true">
+                <div class="feature__shot" aria-hidden="true" data-video="step4-budget-vs-actual">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name">variance — june</span>
@@ -506,7 +506,7 @@
               <div class="flow-step__content">
               <article class="feature feature--hero">
                 <h3 class="feature__title">All Accounts in One Place</h3>
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step6-track">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
@@ -1724,6 +1724,71 @@
           } finally {
             btn.disabled = false;
           }
+        });
+      })();
+
+      /* ── Auto-swap how-it-works mockups for screen recordings ──
+         Drop a file into frontend/static/videos/ named to match the
+         data-video attribute (e.g. step3-forecast.mp4) and it replaces the
+         animated mockup automatically. If the file isn't there, the mockup
+         stays untouched — so you can add recordings one at a time. */
+      (function () {
+        const shots = document.querySelectorAll("[data-video]");
+        if (!shots.length) return;
+
+        // Only decode/play videos while they're on screen.
+        const playObserver =
+          "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                (entries) => {
+                  entries.forEach((entry) => {
+                    const v = entry.target;
+                    if (entry.isIntersecting) {
+                      const p = v.play();
+                      if (p) p.catch(() => {});
+                    } else {
+                      v.pause();
+                    }
+                  });
+                },
+                { threshold: 0.25 }
+              )
+            : null;
+
+        shots.forEach((shot) => {
+          const name = shot.getAttribute("data-video");
+          if (!name) return;
+
+          const video = document.createElement("video");
+          video.className = "shot__video";
+          video.muted = true;
+          video.loop = true;
+          video.playsInline = true;
+          video.setAttribute("playsinline", "");
+          video.setAttribute("muted", "");
+          video.preload = "metadata";
+          video.src = "/static/videos/" + name + ".mp4";
+
+          video.addEventListener(
+            "loadeddata",
+            () => {
+              shot.classList.add("has-video");
+              shot.appendChild(video);
+              if (playObserver) {
+                playObserver.observe(video);
+              } else {
+                video.autoplay = true;
+                const p = video.play();
+                if (p) p.catch(() => {});
+              }
+            },
+            { once: true }
+          );
+
+          // No matching file (or it can't load) → leave the mockup in place.
+          video.addEventListener("error", () => {}, { once: true });
+
+          video.load();
         });
       })();
     </script>
