@@ -144,30 +144,6 @@
       </div>
     </header>
 
-    <!-- ── Ticker strip ── -->
-    <!-- <div class="ticker" aria-hidden="true">
-      <div class="ticker__track">
-        <span class="ticker__item">Budgets based on your future — not rules of thumb someone else invented</span>
-        <span class="ticker__item">Connect your accounts via Plaid — your data stays on your machine</span>
-        <span class="ticker__item">See the five-year cost of this month's choices</span>
-        <span class="ticker__item">Split transactions, amortize purchases, flag transfers</span>
-        <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
-        <span class="ticker__item">Compare three spending scenarios side by side</span>
-        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
-        <span class="ticker__item">Catch what's quietly draining you — before it compounds</span> -->
-        <!-- duplicate for seamless loop -->
-        <!-- <span class="ticker__item">Budgets based on your future — not rules of thumb someone else invented</span>
-        <span class="ticker__item">Connect your accounts via Plaid — your data stays on your machine</span>
-        <span class="ticker__item">See the five-year cost of this month's choices</span>
-        <span class="ticker__item">Split transactions, amortize purchases, flag transfers</span>
-        <span class="ticker__item">For people who outgrew Mint, YNAB &amp; Monarch</span>
-        <span class="ticker__item">Compare three spending scenarios side by side</span>
-        <span class="ticker__item">Arrive at your budget — don't get handed one</span>
-        <span class="ticker__item">Catch what's quietly draining you — before it compounds</span>
-      </div>
-    </div> -->
-
-    <!-- ── The fix: how Workbench works × the tools (the solution reveal) ── -->
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
         <div class="section__head on-scroll">
@@ -180,7 +156,6 @@
           </p>
         </div>
 
-        <!-- The loop: full-width vertical steps, each with room to breathe -->
         <div class="flow__track" id="features">
 
           <article class="flow-step on-scroll">
@@ -190,6 +165,64 @@
             <div class="flow-step__body">
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 1</span>
+                <h3 class="flow-step__title">Optional: Guided setup</h3>
+                <p class="flow-step__lead">A series of questions that will pre-populate your many inputs</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero">
+                <h3 class="feature__title">All Accounts in One Place</h3>
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
+                  </div>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo accounts-demo">
+                      <div class="accounts-demo__list">
+                        <table class="minitable minitable--accounts">
+                          <tbody id="accountsTableBody">
+                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
+                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
+                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
+                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
+                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
+                            </tr>
+                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
+                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
+                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
+                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
+                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="accounts-demo__txns">
+                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
+                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                </ul>
+              </article>
+              </div>
+            </div>
+          </article>
+
+          <article class="flow-step on-scroll">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">2</span>
+            </div>
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 2</span>
                 <h3 class="flow-step__title">Clean up what really happened</h3>
                 <p class="flow-step__lead">First the history has to be honest — before anything can be projected.</p>
               </header>
@@ -310,11 +343,11 @@
 
           <article class="flow-step on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
-              <span class="flow-step__num">2</span>
+              <span class="flow-step__num">3</span>
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <span class="flow-step__kicker">Step 2</span>
+                <span class="flow-step__kicker">Step 3</span>
                 <h3 class="flow-step__title">Project it forward</h3>
                 <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p>
               </header>
@@ -372,11 +405,11 @@
 
           <article class="flow-step on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
-              <span class="flow-step__num">3</span>
+              <span class="flow-step__num">4</span>
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <span class="flow-step__kicker">Step 3</span>
+                <span class="flow-step__kicker">Step 4</span>
                 <h3 class="flow-step__title">Test the tradeoffs</h3>
                 <p class="flow-step__lead">Put each path side by side and watch what it costs you years out.</p>
               </header>
@@ -443,24 +476,77 @@
 
           <article class="flow-step flow-step--payoff on-scroll">
             <div class="flow-step__rail" aria-hidden="true">
-              <span class="flow-step__num">4</span>
+              <span class="flow-step__num">5</span>
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <span class="flow-step__kicker">Step 4</span>
-                <h3 class="flow-step__title">Land on your number</h3>
-                <p class="flow-step__lead">Not a guess, not a rule of thumb — the figure your own plan requires.</p>
+                <span class="flow-step__kicker">Step 5</span>
+                <h3 class="flow-step__title">Set a working number</h3>
+                <p class="flow-step__lead">Not a rule you're locked into — a starting point</p>
               </header>
               <div class="payoff payoff--wide">
-                <!-- <p class="payoff__desc">
-                  The loop closes here. Because you built it yourself, you understand exactly why
-                  it's this number — and what it costs to break it.
-                </p> -->
                 <div class="loop__number">
                   <span class="loop__number-label">Your monthly budget</span>
                   <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
-                  <!-- <span class="loop__number-note">Derived from your data — not a 50/30/20 rule.</span> -->
                 </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="flow-step on-scroll">
+            <div class="flow-step__rail" aria-hidden="true">
+              <span class="flow-step__num">6</span>
+            </div>
+            <div class="flow-step__body">
+              <header class="flow-step__head">
+                <span class="flow-step__kicker">Step 6</span>
+                <h3 class="flow-step__title">Track it, then adjust</h3>
+                <p class="flow-step__lead">Compare it to what actually happened. When life shifts, feed it back into the forecast.</p>
+              </header>
+              <div class="flow-step__content">
+              <article class="feature feature--hero">
+                <h3 class="feature__title">All Accounts in One Place</h3>
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
+                  </div>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo accounts-demo">
+                      <div class="accounts-demo__list">
+                        <table class="minitable minitable--accounts">
+                          <tbody id="accountsTableBody">
+                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
+                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
+                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
+                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
+                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
+                            </tr>
+                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
+                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
+                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
+                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
+                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="accounts-demo__txns">
+                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
+                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                </ul>
+              </article>
               </div>
             </div>
           </article>
