@@ -2147,6 +2147,21 @@ body::before {
 }
 .shot__body { padding: 0.7rem; }
 
+/* ── Screen-recording replacement for how-it-works mockups ──
+   When a matching video is found in /static/videos/, JS adds .has-video
+   and appends .shot__video; the animated mockup markup stays hidden as a
+   fallback so anything without a recording still renders. */
+.feature__shot.has-video {
+  padding: 0;
+  background: #000;
+}
+.feature__shot.has-video > *:not(.shot__video) { display: none; }
+.shot__video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* tabs row used in a few shots */
 .shot__tabs {
   display: flex;
