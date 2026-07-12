@@ -170,7 +170,7 @@
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero">
-                <h3 class="feature__title">All Accounts in One Place</h3>
+                <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3>
                 <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step1-guided-setup">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
@@ -230,6 +230,50 @@
               <article class="feature feature--hero">
                 <h3 class="feature__title">All Accounts in One Place</h3>
                 <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-accounts">
+                  <div class="shot__bar">
+                    <span class="dots"><span></span><span></span><span></span></span>
+                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
+                  </div>
+                  <div class="shot__body shot__body--demo">
+                    <div class="app-demo accounts-demo">
+                      <div class="accounts-demo__list">
+                        <table class="minitable minitable--accounts">
+                          <tbody id="accountsTableBody">
+                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
+                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
+                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
+                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
+                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
+                            </tr>
+                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
+                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
+                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
+                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
+                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
+                            </tr>
+                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="accounts-demo__txns">
+                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <ul class="feature__list">
+                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
+                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                </ul>
+              </article>
+
+              <article class="feature feature--hero">
+                <h3 class="feature__title">Categorize Transactions</h3>
+                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-categorize">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
                     <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
@@ -1151,6 +1195,19 @@
         const chartStatus = document.getElementById(chartStatusId);
         if (!shot || !list || !chartSvg) return;
 
+        // When a screen recording replaces this mockup, the step bullets can't
+        // stay in sync with the video — so keep them visible but static.
+        const videoActive = () => shot.dataset.videoActive === "1";
+        const clearSteps = () => {
+          if (steps) {
+            steps.querySelectorAll("[data-step]").forEach((li) =>
+              li.classList.remove("is-active", "is-done")
+            );
+          }
+          if (chartStatus) chartStatus.textContent = "";
+        };
+        shot.addEventListener("video:active", clearSteps);
+
         const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const STEP_ORDER = variant === "split-transfer"
           ? ["unified", "split", "transfer"]
@@ -1303,7 +1360,7 @@
         }
 
         async function runLoop() {
-          if (running || !shot.classList.contains("is-live")) return;
+          if (running || !shot.classList.contains("is-live") || videoActive()) return;
           running = true;
 
           const first = STEP_ORDER[0];
@@ -1313,6 +1370,7 @@
           await wait(PHASE_WAIT[first]);
 
           for (let i = 1; i < STEP_ORDER.length; i++) {
+            if (videoActive()) { running = false; clearSteps(); return; }
             const phase = STEP_ORDER[i];
             const prev = STEP_ORDER[i - 1];
             setActiveStep(phase);
@@ -1327,10 +1385,11 @@
           }
 
           running = false;
-          if (shot.classList.contains("is-live")) runLoop();
+          if (shot.classList.contains("is-live") && !videoActive()) runLoop();
         }
 
         const boot = () => {
+          if (videoActive()) { clearSteps(); return; }
           setActiveStep("unified");
           paintRows(rowsForPhase("unified"));
           renderMiniChart(chartSvg, chartForPhase("unified"));
@@ -1773,6 +1832,8 @@
             "loadeddata",
             () => {
               shot.classList.add("has-video");
+              shot.dataset.videoActive = "1";
+              shot.dispatchEvent(new CustomEvent("video:active"));
               shot.appendChild(video);
               if (playObserver) {
                 playObserver.observe(video);
