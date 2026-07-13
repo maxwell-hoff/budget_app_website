@@ -342,15 +342,15 @@
                     </div>
                   </div>
                 </div>
-                <ol class="feature__list feature__list--steps" id="realitySteps">
-                  <li data-step="unified">You and three friends go out to dinner for $200. You pay and they each Venmo you $50.</li>
-                  <li data-step="split">Split the charge — $150 for the group share, $50 for yours.</li>
-                  <li data-step="transfer">Mark the $150 share and three Venmo payments as transfers — net income doesn't move.</li>
-                </ol>
+                <ul class="feature__list">
+                  <li>You and three friends go out to dinner for $200. You pay and they each Venmo you $50.</li>
+                  <li>Split the charge — $150 for the group share, $50 for yours.</li>
+                  <li>Mark the $100 share and two Venmo payments as transfers — net income doesn't move.</li>
+                </ul>
               </article>
 
               <article class="feature feature--hero feature--reality">
-                <h3 class="feature__title">Spread out big purchases over time</h3>
+                <h3 class="feature__title">Spread out big purchases and income spikes over time</h3>
                 <div class="feature__shot feature__shot--demo" id="realityDemoShot2" aria-hidden="true" data-demo="reality-2" data-video="step2-amortize">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
@@ -376,10 +376,9 @@
                     </div>
                   </div>
                 </div>
-                <ol class="feature__list feature__list--steps" id="realitySteps2">
-                  <li data-step="unified">All your transactions in one place.</li>
-                  <li data-step="amortize">Amortize a $1,200 laptop over 12 months instead of one spike.</li>
-                </ol>
+                <ul class="feature__list">
+                  <li>For example, spread out a yearly bonus to all 12 months instead of one spike.</li>
+                </ul>
               </article>
               </div>
             </div>
@@ -1792,6 +1791,21 @@
               shot.dataset.videoActive = "1";
               shot.dispatchEvent(new CustomEvent("video:active"));
               shot.appendChild(video);
+
+              // Recordings are tiny on phones — let a tap open them fullscreen.
+              const openFullscreen = () => {
+                if (video.requestFullscreen) video.requestFullscreen();
+                else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+                else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+              };
+              video.addEventListener("click", openFullscreen);
+
+              const zoom = document.createElement("span");
+              zoom.className = "shot__zoom";
+              zoom.setAttribute("aria-hidden", "true");
+              zoom.textContent = "\u2922 Tap to enlarge";
+              shot.appendChild(zoom);
+
               if (playObserver) {
                 playObserver.observe(video);
               } else {
