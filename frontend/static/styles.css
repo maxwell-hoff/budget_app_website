@@ -2154,12 +2154,58 @@ body::before {
 .feature__shot.has-video {
   padding: 0;
   background: #000;
+  position: relative;
 }
-.feature__shot.has-video > *:not(.shot__video) { display: none; }
+.feature__shot.has-video > *:not(.shot__video):not(.shot__zoom) { display: none; }
 .shot__video {
   display: block;
   width: 100%;
   height: auto;
+  cursor: zoom-in;
+}
+
+/* Guided-setup clip is a short, wide strip — half the height of a standard
+   16:10 clip. Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
+.feature__shot[data-video="step1-guided-setup"].has-video .shot__video {
+  aspect-ratio: 16 / 5;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Tap-to-enlarge hint — recordings are small on phones, so let people
+   open them fullscreen. Only shown on touch / small screens. */
+.shot__zoom {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  display: none;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: rgba(10, 12, 24, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+@media (max-width: 720px), (hover: none) {
+  .shot__zoom { display: inline-flex; }
+  /* Break the recording out of the card padding so it's as wide as possible. */
+  .flow .feature .feature__shot.has-video {
+    margin-left: -1.35rem;
+    margin-right: -1.35rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  .flow .feature--hero .feature__shot.has-video {
+    margin-left: -1.45rem;
+    margin-right: -1.45rem;
+  }
 }
 
 /* tabs row used in a few shots */
