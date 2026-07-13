@@ -81,6 +81,7 @@
               </div>
 
               <div class="branch__stage">
+                <div class="branch__mag" id="branchMag" aria-hidden="true"></div>
                 <svg class="branch__svg" viewBox="0 0 560 320">
                   <!-- timeline: Tonight → spent (near-term), break, then 1–60 years -->
                   <line class="branch__axis" x1="95" y1="288" x2="142" y2="288" />
@@ -1520,6 +1521,7 @@
         const yearLab = document.getElementById("branchYearLab");
         const dream = document.getElementById("branchDream");
         const futureAmt = document.getElementById("branchFutureAmt");
+        const mag = document.getElementById("branchMag");
 
         /* geometry (viewBox units) */
         const NX = 95;                   // decision point x (left of centre)
@@ -1609,6 +1611,12 @@
           /* outcome callout */
           dream.textContent = dreamFor(fv);
 
+          if (mag && active) {
+            mag.textContent = active === "node"
+              ? "$" + os.toLocaleString() + " / mo"
+              : yr + (yr === 1 ? " year" : " years");
+          }
+
           if (animateAmt && !reduceMotion) {
             const start = performance.now();
             const dur = 1100;
@@ -1637,6 +1645,7 @@
         };
         const grab = (which, handle) => (e) => {
           active = which;
+          if (mag) mag.classList.add("is-visible");
           try { svg.setPointerCapture(e.pointerId); } catch (_) {}
           if (which === "node") render(yToOs(ptY(e)), yrState);
           else render(osState, xToYr(ptX(e)));
@@ -1651,6 +1660,7 @@
         });
         const release = (e) => {
           active = null;
+          if (mag) mag.classList.remove("is-visible");
           try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
         };
         svg.addEventListener("pointerup", release);
