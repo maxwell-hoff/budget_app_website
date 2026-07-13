@@ -2157,7 +2157,7 @@ body::before {
   position: relative;
 }
 .feature__shot.has-video > *:not(.shot__video):not(.shot__zoom) { display: none; }
-/* Standard clip shape is 16:20 (portrait) — record these at 16:20
+/* Standard clip shape is 16:14 (portrait) — record these at 16:14
    (e.g. 1080x1350) so they fill the card without cropping. */
 .shot__video {
   display: block;
@@ -2171,7 +2171,7 @@ body::before {
 /* Guided-setup clip is the exception: a short, wide strip.
    Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
 .feature__shot[data-video="step1-guided-setup"].has-video .shot__video {
-  aspect-ratio: 16 / 5;
+  aspect-ratio: 16 / 8;
   object-fit: cover;
 }
 
@@ -3182,6 +3182,97 @@ body::before {
 
 @media (max-width: 420px) {
   .kpi__value { font-size: 0.92rem; }
+}
+
+/* ============================================================
+   How-it-works: mobile width overhaul
+   Flatten nested card-in-card nesting to reclaim horizontal space.
+   Steps are separated by the rail; sub-features use a left accent
+   bar and thin dividers instead of nested padding.
+   ============================================================ */
+@media (max-width: 720px) {
+  .flow > .wrap {
+    width: min(var(--maxw), calc(100% - 1.75rem));
+  }
+
+  .flow__track {
+    gap: 1.25rem;
+  }
+
+  .flow .flow-step__body {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .flow .flow-step--payoff .flow-step__body {
+    background: transparent;
+  }
+
+  .flow .flow-step__head {
+    padding: 0 0 0.55rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .flow .flow-step__content {
+    gap: 0;
+  }
+
+  .flow .feature,
+  .flow .feature--hero {
+    padding: 0.6rem 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+
+  .flow .flow-step__content > .feature + .feature {
+    border-top: 1px solid var(--border);
+  }
+
+  .flow .flow-step__content > .feature:last-child {
+    padding-bottom: 0;
+  }
+
+  .flow .feature__title {
+    padding-left: 0.55rem;
+    border-left: 3px solid var(--accent);
+    font-size: 0.95rem;
+  }
+
+  .flow .feature__shot,
+  .flow .feature .feature__shot.has-video,
+  .flow .feature--hero .feature__shot.has-video {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .flow .feature__shot--demo .shot__body--demo {
+    padding: 0.5rem;
+  }
+
+  .flow .feature .shot__body {
+    padding: 0.45rem;
+  }
+
+  .flow .feature__list {
+    margin-top: 0.5rem;
+  }
+
+  .flow .feature__list li {
+    font-size: 0.84rem;
+    padding-left: 1rem;
+  }
+
+  .flow__privacy {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 /* ============================================================
