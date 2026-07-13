@@ -210,3 +210,4 @@ __marimo__/
 # Max adds
 .DS_Store
 frontend/.DS_Store
+frontend/static/favicon-1024.png
