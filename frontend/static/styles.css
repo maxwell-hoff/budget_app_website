@@ -2157,18 +2157,21 @@ body::before {
   position: relative;
 }
 .feature__shot.has-video > *:not(.shot__video):not(.shot__zoom) { display: none; }
+/* Standard clip shape is 16:20 (portrait) — record these at 16:20
+   (e.g. 1080x1350) so they fill the card without cropping. */
 .shot__video {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 16 / 14;
+  object-fit: cover;
   cursor: zoom-in;
 }
 
-/* Guided-setup clip is a short, wide strip — half the height of a standard
-   16:10 clip. Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
+/* Guided-setup clip is the exception: a short, wide strip.
+   Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
 .feature__shot[data-video="step1-guided-setup"].has-video .shot__video {
   aspect-ratio: 16 / 5;
-  height: auto;
   object-fit: cover;
 }
 
