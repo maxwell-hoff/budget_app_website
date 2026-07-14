@@ -37,6 +37,151 @@
       </div>
     </nav> 
 
+    <!-- ── Skippable intro overlay (purely visual; page content below renders normally) ── -->
+    <div id="wbIntro" class="wb-intro" role="presentation" aria-hidden="true">
+      <div class="wb-intro__mark">
+        <svg class="wb-intro__svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Branches (drawn in via stroke-dash) — same geometry as the favicon -->
+          <path class="wb-intro__branch wb-intro__branch--spent"
+                d="M7 16 C12 16 14 8 21 8" fill="none"
+                stroke="#64748b" stroke-width="2.5" stroke-linecap="round" pathLength="1"/>
+          <path class="wb-intro__branch wb-intro__branch--future"
+                d="M7 16 C13 16 18 23 26 23" fill="none"
+                stroke="#38bdf8" stroke-width="3" stroke-linecap="round" pathLength="1"/>
+          <!-- Three dots (the nav mark, enlarged) -->
+          <circle class="wb-intro__dot wb-intro__dot--1" cx="7"  cy="16" r="3"   fill="#38bdf8"/>
+          <circle class="wb-intro__dot wb-intro__dot--2" cx="21" cy="8"  r="2.5" fill="#64748b"/>
+          <circle class="wb-intro__dot wb-intro__dot--3" cx="26" cy="23" r="3"   fill="#38bdf8"/>
+        </svg>
+      </div>
+      <p class="wb-intro__title"><span>Workbench&nbsp;Budgeting</span></p>
+    </div>
+
+    <style>
+      .wb-intro {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.4rem;
+        background: #f4f5f7;
+        opacity: 1;
+        transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      /* Smooth auto fade-out at the end of the sequence */
+      .wb-intro.is-leaving { opacity: 0; }
+
+      .wb-intro__mark { width: clamp(96px, 22vw, 148px); }
+      .wb-intro__svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+      /* Dots pop in first, gently and staggered — no overshoot */
+      .wb-intro__dot {
+        opacity: 0;
+        transform: scale(0.2);
+        transform-origin: center;
+        transform-box: fill-box;
+        animation: wbIntroDot 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .wb-intro__dot--1 { animation-delay: 0.05s; }
+      .wb-intro__dot--2 { animation-delay: 0.18s; }
+      .wb-intro__dot--3 { animation-delay: 0.31s; }
+      @keyframes wbIntroDot { to { opacity: 1; transform: scale(1); } }
+
+      /* Branches grow outward via stroke-draw once the dots are set */
+      .wb-intro__branch {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: wbIntroDraw 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      .wb-intro__branch--spent  { animation-delay: 0.5s; }
+      .wb-intro__branch--future { animation-delay: 0.62s; }
+      @keyframes wbIntroDraw { to { stroke-dashoffset: 0; } }
+
+      /* Title fades + rises after the branches finish drawing.
+         Formatting matches the .nav__brand app name: Inter 700, uppercase,
+         wide letter-spacing — with an accent underline. */
+      .wb-intro__title {
+        margin: 0;
+        opacity: 0;
+        transform: translateY(16px);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-weight: 700;
+        font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #1a1a2e;
+        animation: wbIntroTitle 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.55s forwards;
+      }
+      .wb-intro__title span {
+        display: inline-block;
+        padding-bottom: 0.02em;
+        border-bottom: 2px solid #38bdf8;
+      }
+      @keyframes wbIntroTitle { to { opacity: 1; transform: translateY(0); } }
+
+      /* Safety net: if JS never runs, honour reduced motion by hiding the overlay */
+      @media (prefers-reduced-motion: reduce) {
+        .wb-intro { display: none !important; }
+      }
+    </style>
+
+    <script>
+      (function () {
+        var overlay = document.getElementById("wbIntro");
+        if (!overlay) return;
+
+        var reduceMotion = window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var alreadySeen = false;
+        try { alreadySeen = sessionStorage.getItem("wbIntroSeen") === "1"; } catch (e) {}
+
+        // Skip entirely: reduced motion, or already played this session.
+        // Runs during parse (before the hero paints), so there is no flash.
+        if (reduceMotion || alreadySeen) {
+          overlay.remove();
+          return;
+        }
+        try { sessionStorage.setItem("wbIntroSeen", "1"); } catch (e) {}
+
+        var events = ["pointerdown", "touchstart", "mousedown", "keydown", "wheel", "scroll"];
+        var fadeTimer;
+
+        function cleanup() {
+          clearTimeout(fadeTimer);
+          events.forEach(function (evt) {
+            window.removeEventListener(evt, onSkip, true);
+          });
+        }
+
+        // Auto-completion: smooth fade-out, then remove.
+        function finish() {
+          cleanup();
+          overlay.classList.add("is-leaving");
+          overlay.addEventListener("transitionend", function () {
+            overlay.remove();
+          }, { once: true });
+          // Fallback removal in case transitionend never fires.
+          setTimeout(function () { if (overlay.parentNode) overlay.remove(); }, 800);
+        }
+
+        // User skip: reveal instantly, no partial state.
+        function onSkip() {
+          cleanup();
+          overlay.remove();
+        }
+
+        events.forEach(function (evt) {
+          window.addEventListener(evt, onSkip, { capture: true, passive: true });
+        });
+
+        // Begin auto fade-out after the title has held ~0.75s (~2.65s in).
+        fadeTimer = setTimeout(finish, 2650);
+      })();
+    </script>
+
     <!-- ── Hero (the Why — problem stated left, problem illustrated right) ── -->
     <header class="hero" id="top">
       <div class="wrap">
@@ -158,11 +303,8 @@
         <div class="section__head on-scroll">
           <span class="kicker">How it works</span>
           <h2 class="section__title">
-            From messy transactions to a monthly budget you actually feel good about.
-          </h2>
-          <p class="section__lead">
             Rather than being handed a budget, you build one. Here's the loop.
-          </p>
+          </h2>
         </div>
 
         <div class="flow__track" id="features">
@@ -174,8 +316,8 @@
             <div class="flow-step__body">
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 1</span>
-                <h3 class="flow-step__title">Optional: Guided setup</h3>
-                <p class="flow-step__lead">A series of questions that will pre-populate your many inputs</p>
+                <h3 class="flow-step__title">Guided setup</h3>
+                <p class="flow-step__lead">A series of questions that will pre-populate your forecasts</p>
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero">
@@ -217,8 +359,7 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
-                  <li>Plan as a household with a shared profile for you and your spouse.</li>
+                  <li>Completely private. The data never leaves your machine.</li>
                 </ul>
               </article>
               </div>
@@ -233,7 +374,7 @@
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 2</span>
                 <h3 class="flow-step__title">Clean up what really happened</h3>
-                <p class="flow-step__lead">First the history has to be honest — before anything can be projected.</p>
+                <p class="flow-step__lead">Transactions have a lot of noise. Removing that noise makes it easier to forecast.</p>
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero">
@@ -274,10 +415,10 @@
                     </div>
                   </div>
                 </div>
-                <ul class="feature__list">
+                <!-- <ul class="feature__list">
                   <li>See your real net worth in one number — every account, every institution, in one place.</li>
                   <li>Plan as a household with a shared profile for you and your spouse.</li>
-                </ul>
+                </ul> -->
               </article>
 
               <article class="feature feature--hero">
@@ -318,10 +459,10 @@
                     </div>
                   </div>
                 </div>
-                <ul class="feature__list">
+                <!-- <ul class="feature__list">
                   <li>See your real net worth in one number — every account, every institution, in one place.</li>
                   <li>Plan as a household with a shared profile for you and your spouse.</li>
-                </ul>
+                </ul> -->
               </article>
 
               <article class="feature feature--hero feature--reality">
@@ -352,9 +493,9 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>You and three friends go out to dinner for $200. You pay and they each Venmo you $50.</li>
-                  <li>Split the charge — $150 for the group share, $50 for yours.</li>
-                  <li>Mark the $100 share and two Venmo payments as transfers — net income doesn't move.</li>
+                  <li>You and three friends go out to dinner for $150. You pay and they each Venmo you $50.</li>
+                  <li>Split the charge — $100 for the group share, $50 for yours.</li>
+                  <li>Mark the $100 share and two Venmo payments as transfers — what's left is your $50 expense.</li>
                 </ul>
               </article>
 
@@ -386,7 +527,7 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>For example, spread out a yearly bonus to all 12 months instead of one spike.</li>
+                  <li>For example, spread out a yearly bonus to all 12 months so the month you receive it is not misleading.</li>
                 </ul>
               </article>
               </div>
@@ -492,8 +633,8 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>See exactly what a choice costs: here, buying the house lands $88k below saving aggressively over five years.</li>
-                  <li>Line every path up side by side and decide with your eyes open.</li>
+                  <li>Compare buying a house vs. renting one.</li>
+                  <li>Compare how a car purchase effects when you'll be able to retire.</li>
                 </ul>
               </article>
 
@@ -519,7 +660,7 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>Catch the categories quietly draining you, and trace each overage back to the transaction that caused it.</li>
+                  <li>Compare those plans versus your actual spending.</li>
                 </ul>
               </article>
               </div>
@@ -552,8 +693,8 @@
             <div class="flow-step__body">
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 6</span>
-                <h3 class="flow-step__title">Track it, then adjust</h3>
-                <p class="flow-step__lead">Compare it to what actually happened. When life shifts, feed it back into the forecast.</p>
+                <h3 class="flow-step__title">Track, then adjust</h3>
+                <p class="flow-step__lead">When life shifts, feed it back into the forecast.</p>
               </header>
               <div class="flow-step__content">
               </div>
@@ -597,12 +738,10 @@
         <div class="section__head on-scroll">
           <span class="kicker">Pricing</span>
           <h2 class="section__title">
-            Free to use. $8.99 a month if you want easy bank account syncing.
+            Free to use. $8.99/month for easy bank account syncing.
           </h2>
           <p class="section__lead">
-            The most similarly capable budgeting tool I found before building this 
-            cost $250 a month. Workbench is free — with one paid option for people
-            who'd rather not upload a bank statement each month.
+            Similar tools cost $250 a month.
           </p>
         </div>
 
@@ -613,8 +752,7 @@
               <span class="pricing__tier-tag">always</span>
             </header>
             <p class="pricing__tier-body">
-              Every feature on this page — scenario planning, forecasting, variance analysis,
-              transaction tools. Upload statements manually; nothing requires a subscription to unlock.
+              All features. Upload statements manually; nothing requires a subscription to unlock.
             </p>
           </article>
 
@@ -626,7 +764,7 @@
               <span class="pricing__tier-tag">auto-refresh</span>
             </header>
             <p class="pricing__tier-body">
-              Connects your accounts via Plaid so transactions sync automatically — no manual exports. Plaid charges per connection, and this covers it. (My fiancée also pointed out three years of nights and weekends deserved something.)
+              Automatic bank account syncing.
             </p>
           </article>
         </div>
@@ -643,7 +781,7 @@
       <div class="wrap">
         <div class="download__card download__card--soon on-scroll">
           <span class="download__badge">Coming soon</span>
-          <span class="kicker">Get started</span>
+          <!-- <span class="kicker">Get started</span> -->
           <h2 class="download__title">See what your current path is actually costing you</h2>
           <p class="download__sub">
             Free to use. Load the demo data or import your own, and see where your current path actually leads.
@@ -692,7 +830,7 @@
       <div class="wrap proof__inner on-scroll">
         <span class="kicker">One person. Ten years.</span>
         <p class="proof__quote">
-          Workbench started as a spreadsheet built on a Mint export, because nothing else did what I needed. Ten years and a few hundred iterations later, it's an app — built by one person, in the Midwest. I still use it every month. I'm building the next chapter in public at @GardenStudio__.
+          Workbench started as a spreadsheet built on a Mint export, because nothing else did what I needed. Ten years and a few hundred iterations later, it's an app. I'm building the next chapter in public at @GardenStudio__.
         </p>
         <div class="proof__meta">
           <a class="proof__link" href="https://x.com/GardenStudio__" target="_blank" rel="noopener noreferrer">Follow the build in public &rarr;</a>
