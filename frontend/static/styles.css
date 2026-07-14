@@ -53,6 +53,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 52px;
 }
 
 body {
@@ -250,40 +251,35 @@ body::before {
 /* ============================================================
    Hero
    ============================================================ */
+/* Screen one fills the first view: the headline stands alone, centered,
+   with a scroll cue inviting the next screen. Nav is 52px, sticky. */
 .hero {
   position: relative;
   z-index: 1;
-  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem);
-}
-
-.hero__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(2rem, 4vw, 3.5rem);
+  min-height: calc(100vh - 52px);
+  min-height: calc(100svh - 52px);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 5vh, 3.5rem) 0 clamp(4rem, 10vh, 6rem);
 }
 
-@media (min-width: 940px) {
-  .hero__grid {
-    grid-template-columns: 1.05fr 1fr;
-  }
-}
-
-/* Condensed hero (Why-only): a single constrained text column,
-   left-aligned within the standard page container so its left edge
-   matches the nav and the sections below it. */
-.hero__copy {
-  max-width: 780px;
+.hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .hero__title {
-  margin-top: 1rem;
-  font-size: clamp(1.85rem, 3.9vw, 2.95rem);
-  line-height: 1.14;
-  letter-spacing: -0.022em;
+  margin: 0;
+  font-size: clamp(2.4rem, 6.4vw, 4.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   font-weight: 800;
   color: var(--ink);
   text-wrap: balance;
+  max-width: 16ch;
 }
 /* Underline highlight that wraps cleanly across lines */
 .hero__title em {
@@ -297,11 +293,60 @@ body::before {
   box-decoration-break: clone;
 }
 
+/* Scroll cue anchored to the bottom of the first screen */
+.hero__cue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: color var(--t-fast);
+}
+.hero__cue:hover { color: var(--accent); }
+.hero__cue-arrow {
+  width: 1.15rem;
+  height: 1.15rem;
+  animation: heroCueBob 1.8s ease-in-out infinite;
+}
+@keyframes heroCueBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ── Screen two: the promise + the download, revealed on scroll ── */
+.hero-detail {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 52px);
+  min-height: calc(100svh - 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 8vh, 5rem) 0;
+}
+.hero-detail__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 660px;
+}
+
 .hero__tagline {
-  margin-top: 1.25rem;
-  max-width: 56ch;
+  margin: 0;
   color: var(--ink-muted);
-  font-size: clamp(0.98rem, 1.4vw, 1.06rem);
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  line-height: 1.5;
+  text-wrap: balance;
 }
 .hero__tagline strong {
   color: var(--ink);
@@ -309,10 +354,11 @@ body::before {
 }
 
 .hero__actions {
-  margin-top: 1.75rem;
+  margin-top: 2rem;
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .btn__os-icon {
   width: 1.05rem;
@@ -320,44 +366,33 @@ body::before {
   flex-shrink: 0;
 }
 .hero__platform-note {
-  margin-top: 0.6rem;
+  margin-top: 0.9rem;
   font-size: 0.75rem;
   color: var(--muted);
 }
 
-.hero__trust {
-  margin-top: 1.4rem;
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-.hero__trust span {
+.hero-detail__more {
+  margin-top: clamp(2.5rem, 7vh, 4.5rem);
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-}
-.hero__trust span::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  background: var(--good);
-  border-radius: 50%;
-}
-.hero__buildlink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.78rem;
-  font-weight: 600;
   color: var(--accent);
   text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   border-bottom: 1px solid var(--accent-line);
-  transition: border-color var(--t-fast);
+  padding-bottom: 3px;
+  transition: border-color var(--t-fast), gap var(--t-fast);
 }
-.hero__buildlink:hover {
+.hero-detail__more:hover {
   border-bottom-color: var(--accent);
+  gap: 0.6rem;
+}
+.hero-detail__more-arrow {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 /* Reveal animation for hero text */
@@ -374,250 +409,6 @@ body::before {
 
 @keyframes revealUp {
   to { opacity: 1; transform: translateY(0); }
-}
-
-/* ============================================================
-   Hero visualization — the interactive branching path
-   One decision tonight forks into two futures: the money
-   spent-and-gone, or what it becomes in five years. Drag the
-   decision point along the overspend spectrum to change the
-   future it leads to.
-   ============================================================ */
-.hero__viz {
-  width: 100%;
-  max-width: 640px;
-}
-
-.branch {
-  margin: 0;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-pop);
-  padding: 1rem 1.15rem 0.9rem;
-}
-.branch__head {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.3rem;
-}
-
-.branch__stage { position: relative; }
-.branch__svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-  touch-action: none;
-}
-
-/* timeline + the spectrum track */
-.branch__axis { stroke: var(--border-strong); stroke-width: 1; }
-.branch__axis--future { stroke: var(--accent); stroke-width: 1.25; opacity: 0.55; }
-.branch__break {
-  fill: none;
-  stroke: var(--border-strong);
-  stroke-width: 1;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.branch__axlab--yrstart {
-  font-size: 10px;
-  fill: var(--accent);
-  opacity: 0.85;
-}
-.branch__track { stroke: var(--border); stroke-width: 2; stroke-linecap: round; }
-.branch__axlab {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  fill: var(--muted);
-}
-.branch__hintlab {
-  font-family: var(--font-sans);
-  font-size: 9.5px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  fill: var(--muted);
-}
-
-/* the two diverging paths */
-.branch__path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.branch__path--present { stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 5 4; }
-.branch__path--future { stroke: var(--accent); stroke-width: 2.75; }
-
-.branch__dot--present { fill: var(--border-strong); }
-.branch__dot--future { fill: var(--accent); }
-
-/* the draggable decision point */
-.branch__nodewrap { cursor: grab; outline: none; }
-.branch__nodewrap:active { cursor: grabbing; }
-.branch__node {
-  fill: var(--accent);
-  stroke: #fff;
-  stroke-width: 2;
-  transition: r 0.12s ease;
-}
-.branch__nodewrap:hover .branch__node { r: 10; }
-.branch__nodewrap:focus-visible .branch__node {
-  stroke: #fff;
-  filter: drop-shadow(0 0 0 2px var(--accent));
-}
-.branch__halo,
-.branch__futurehalo {
-  fill: rgba(0, 58, 112, 0.13);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: branchPulse 2.4s ease-in-out infinite;
-}
-.branch__futurehalo { animation-delay: 1.2s; }
-@keyframes branchPulse {
-  0%, 100% { opacity: 0.9; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(1.35); }
-}
-
-/* the horizon (future) handle, dragged along the timeline */
-.branch__futurewrap { cursor: grab; outline: none; }
-.branch__futurewrap:active { cursor: grabbing; }
-.branch__dot--future { stroke: #fff; stroke-width: 2; }
-.branch__futurewrap:hover .branch__dot--future { r: 7; }
-.branch__futurewrap:focus-visible .branch__dot--future {
-  stroke: #fff;
-  filter: drop-shadow(0 0 0 2px var(--accent));
-}
-.branch__yeartick { stroke: var(--accent); stroke-width: 1.5; }
-.branch__yearlab {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 11px;
-  font-weight: 600;
-  fill: var(--accent);
-}
-
-/* labels */
-.branch__lbl-node {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 15px;
-  fill: var(--ink);
-}
-.branch__lbl-present {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  fill: var(--muted);
-}
-.branch__lbl-dream {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 17px;
-  fill: var(--ink);
-}
-.branch__lbl-future {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 13px;
-  fill: var(--accent);
-}
-
-.branch__mag {
-  position: absolute;
-  top: 0.4rem;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.3rem 0.7rem;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #fff;
-  background: var(--accent);
-  border-radius: 4px;
-  box-shadow: 0 3px 12px rgba(0, 58, 112, 0.35);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.12s ease;
-  z-index: 5;
-  white-space: nowrap;
-}
-.branch__mag.is-visible {
-  opacity: 1;
-}
-.branch__mag::after {
-  content: "";
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
-}
-
-.branch__hint {
-  margin: 0.55rem 0 0;
-  font-size: 0.78rem;
-  color: var(--muted);
-  text-align: center;
-}
-.branch__hint strong { color: var(--ink); font-weight: 600; }
-
-/* Segmented controls above the branching graph */
-.branch__controls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
-.branch__control-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-.branch__control-label {
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.branch__segmented {
-  display: flex;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.branch__seg {
-  flex: 1;
-  appearance: none;
-  border: none;
-  background: var(--surface-2);
-  font-family: inherit;
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--muted);
-  padding: 0.4rem 0.3rem;
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
-  border-right: 1px solid var(--border);
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.branch__seg:last-child { border-right: none; }
-.branch__seg:hover { color: var(--ink); background: var(--surface-1); }
-.branch__seg.is-active {
-  color: #fff;
-  background: var(--accent);
-  border-right-color: var(--accent);
-}
-.branch__seg.is-active + .branch__seg { border-left-color: var(--accent); }
-@media (max-width: 480px) {
-  .branch__controls { flex-direction: column; gap: 0.5rem; }
-  .branch__seg { font-size: 0.58rem; padding: 0.35rem 0.2rem; }
 }
 
 /* ── The product window (replaces the old video) ── */
@@ -3325,6 +3116,7 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal-up,
+  .hero__cue-arrow,
   .window,
   .chart-line--draw,
   .chart-area,
@@ -3334,8 +3126,6 @@ body::before {
     transform: none !important;
     stroke-dashoffset: 0 !important;
   }
-  .branch__halo,
-  .branch__futurehalo { animation: none !important; }
   .ticker__track { animation: none; }
   .on-scroll,
   .on-scroll[data-stagger] > * {
