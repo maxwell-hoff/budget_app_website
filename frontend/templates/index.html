@@ -205,12 +205,12 @@
               </a>
             </div>
             <p class="hero__platform-note">Desktop app — available for macOS &amp; Windows</p>
-            <a class="hero__more" href="#how-it-works">
+            <!-- <a class="hero__more" href="#how-it-works">
               See how it works
               <svg class="hero__more-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-            </a>
+            </a> -->
           </div>
         </div>
         <span class="hero__cue" aria-hidden="true">
@@ -531,61 +531,52 @@
                 <h3 class="flow-step__title">Test the tradeoffs</h3>
                 <p class="flow-step__lead">Side by side comparison of different scenarios</p>
               </header>
-              <div class="flow-step__content flow-step__content--duo">
-              <article class="feature">
+              <div class="flow-step__content">
+              <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Scenario Planning</h3>
-                <div class="feature__shot" aria-hidden="true" data-video="step4-scenarios">
+                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-scenarios">
                   <div class="shot__bar">
                     <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">scenarios</span>
+                    <span class="shot__name">forecast · projection chart</span>
                   </div>
-                  <div class="shot__body">
-                    <div class="shot__tabs">
-                      <span class="shot__tab is-active">Base</span>
-                      <span class="shot__tab">Aggressive Save</span>
-                      <span class="shot__tab">Home Purchase</span>
+                  <div class="shot__body shot__body--demo">
+                    <div class="forecast-demo forecast-demo--wide">
+                      <div class="forecast-demo__params">
+                        <p class="forecast-demo__params-title">Parameters</p>
+                        <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
+                          <span class="paramgrid__label">Annual growth</span>
+                          <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
+                            <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Frequency</span>
+                          <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
+                          <span class="paramgrid__label">Inflation</span>
+                          <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
+                            <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
+                          </button>
+                          <span class="paramgrid__label">Project until</span>
+                          <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                        </div>
+                        <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
+                      </div>
+                      <div class="app-demo__chart app-demo__chart--forecast">
+                        <div class="mini-chart-toolbar">
+                          <span class="mini-chart-toolbar__label">Year</span>
+                          <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
+                        </div>
+                        <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
+                        <div class="mini-chart-legend">
+                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
+                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
+                        </div>
+                      </div>
                     </div>
-                    <table class="minitable">
-                      <thead>
-                        <tr><th>Scenario</th><th class="num">5-Yr Bal.</th><th class="num">Δ vs Base</th></tr>
-                      </thead>
-                      <tbody>
-                        <tr><td>Base</td><td class="num" data-count="184320" data-prefix="$">$0</td><td class="num">—</td></tr>
-                        <tr><td>Aggressive Save</td><td class="num" data-count="241060" data-prefix="$">$0</td><td class="num pos" data-count="56740" data-prefix="+$">+$0</td></tr>
-                        <tr><td>Home Purchase</td><td class="num" data-count="96180" data-prefix="$">$0</td><td class="num neg" data-count="88140" data-prefix="−$">−$0</td></tr>
-                      </tbody>
-                    </table>
                   </div>
                 </div>
                 <ul class="feature__list">
                   <li>Compare buying a house vs. renting one.</li>
                   <li>Compare how a car purchase effects when you'll be able to retire.</li>
-                </ul>
-              </article>
-
-              <article class="feature">
-                <h3 class="feature__title">Budget vs. Actual Insights</h3>
-                <div class="feature__shot" aria-hidden="true" data-video="step4-budget-vs-actual">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">variance — june</span>
-                  </div>
-                  <div class="shot__body">
-                    <table class="minitable">
-                      <thead>
-                        <tr><th>Category</th><th class="num">Budget</th><th class="num">Actual</th><th class="num">Δ</th></tr>
-                      </thead>
-                      <tbody>
-                        <tr><td>Groceries</td><td class="num" data-count="600" data-prefix="$">$0</td><td class="num" data-count="742" data-prefix="$">$0</td><td class="num neg" data-count="142" data-prefix="+$">+$0</td></tr>
-                        <tr><td>Dining</td><td class="num" data-count="200" data-prefix="$">$0</td><td class="num" data-count="150" data-prefix="$">$0</td><td class="num pos" data-count="50" data-prefix="−$">−$0</td></tr>
-                        <tr><td>Transport</td><td class="num" data-count="180" data-prefix="$">$0</td><td class="num" data-count="205" data-prefix="$">$0</td><td class="num neg" data-count="25" data-prefix="+$">+$0</td></tr>
-                        <tr class="is-total"><td>Total</td><td class="num" data-count="980" data-prefix="$">$0</td><td class="num" data-count="1097" data-prefix="$">$0</td><td class="num neg pulse" data-count="117" data-prefix="+$">+$0</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <ul class="feature__list">
-                  <li>Compare those plans versus your actual spending.</li>
                 </ul>
               </article>
               </div>
@@ -622,6 +613,52 @@
                 <p class="flow-step__lead">When life shifts, feed it back into the forecast.</p>
               </header>
               <div class="flow-step__content">
+                <article class="feature feature--hero feature--forecast">
+                  <h3 class="feature__title">Budget vs. Actual Insights</h3>
+                  <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-budget-vs-actual">
+                    <div class="shot__bar">
+                      <span class="dots"><span></span><span></span><span></span></span>
+                      <span class="shot__name">forecast · projection chart</span>
+                    </div>
+                    <div class="shot__body shot__body--demo">
+                      <div class="forecast-demo forecast-demo--wide">
+                        <div class="forecast-demo__params">
+                          <p class="forecast-demo__params-title">Parameters</p>
+                          <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
+                            <span class="paramgrid__label">Annual growth</span>
+                            <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
+                              <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
+                            </button>
+                            <span class="paramgrid__label">Frequency</span>
+                            <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
+                            <span class="paramgrid__label">Inflation</span>
+                            <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
+                              <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
+                            </button>
+                            <span class="paramgrid__label">Project until</span>
+                            <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
+                          </div>
+                          <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
+                        </div>
+                        <div class="app-demo__chart app-demo__chart--forecast">
+                          <div class="mini-chart-toolbar">
+                            <span class="mini-chart-toolbar__label">Year</span>
+                            <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
+                          </div>
+                          <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
+                          <div class="mini-chart-legend">
+                            <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
+                            <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
+                            <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ul class="feature__list">
+                    <li>Compare those plans versus your actual spending.</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </article>
