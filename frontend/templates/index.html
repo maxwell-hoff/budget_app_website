@@ -182,46 +182,45 @@
       })();
     </script>
 
-    <!-- ── Hero · screen one: the headline, alone ── -->
+    <!-- ── Hero — the headline holds center; the promise + download reveal
+         beneath it on scroll, so the headline itself never moves ── -->
     <header class="hero" id="top">
-      <div class="wrap hero__inner">
-        <h1 class="hero__title reveal-up d2">
-          Overwhelmed by your finances? It's not you, it's <em>your tools.</em>
-        </h1>
-      </div>
-      <a class="hero__cue" href="#hero-detail" aria-label="Scroll down to learn more">
-        <span>Scroll</span>
-        <svg class="hero__cue-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </header>
-
-    <!-- ── Hero · screen two: the promise + the download ── -->
-    <section class="hero-detail" id="hero-detail" aria-label="What Workbench does">
-      <div class="wrap hero-detail__inner on-scroll">
-        <p class="hero__tagline">
-          Most budgeting apps are built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up.
-        </p>
-        <div class="hero__actions">
-          <a href="#download" class="btn btn--primary btn--lg">
-            <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/></svg>
-            macOS
-          </a>
-          <a href="#download" class="btn btn--primary btn--lg">
-            <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/></svg>
-            Windows
-          </a>
+      <div class="hero__stage">
+        <div class="wrap hero__stage-inner">
+          <h1 class="hero__title reveal-up d2">
+            Overwhelmed by your finances? It's not you, it's <em>your tools.</em>
+          </h1>
+          <div class="hero__detail">
+            <p class="hero__tagline">
+              Most budgeting apps are built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up.
+            </p>
+            <div class="hero__actions">
+              <a href="#download" class="btn btn--primary btn--lg">
+                <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/></svg>
+                macOS
+              </a>
+              <a href="#download" class="btn btn--primary btn--lg">
+                <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/></svg>
+                Windows
+              </a>
+            </div>
+            <p class="hero__platform-note">Desktop app — available for macOS &amp; Windows</p>
+            <a class="hero__more" href="#how-it-works">
+              See how it works
+              <svg class="hero__more-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
         </div>
-        <p class="hero__platform-note">Desktop app — available for macOS &amp; Windows</p>
-        <a class="hero-detail__more" href="#how-it-works">
-          See how it works
-          <svg class="hero-detail__more-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <span class="hero__cue" aria-hidden="true">
+          <span>Scroll</span>
+          <svg class="hero__cue-arrow" viewBox="0 0 24 24" fill="none">
             <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </a>
+        </span>
       </div>
-    </section>
+    </header>
 
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
@@ -1558,6 +1557,39 @@
             obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
           }
         }, 1200);
+      })();
+
+      /* ── Hero reveal ──
+         Keep the headline centered while the promise + download reveal in the
+         space beneath it. The hero pins for one extra screen of scroll; a
+         little scrolling flips the reveal on. Falls back to a plain stacked
+         hero when JS is off or motion is reduced. */
+      (function () {
+        const hero = document.querySelector(".hero");
+        if (!hero || reduceMotion) return;
+
+        hero.classList.add("is-pinnable");
+
+        let ticking = false;
+        const sync = () => {
+          ticking = false;
+          const scrollable = hero.offsetHeight - window.innerHeight;
+          const progress =
+            scrollable > 0 ? -hero.getBoundingClientRect().top / scrollable : 0;
+          hero.classList.toggle("is-revealed", progress > 0.08);
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(sync);
+            }
+          },
+          { passive: true }
+        );
+        window.addEventListener("resize", sync, { passive: true });
+        sync();
       })();
 
       /* ── Notify-me signup (prints to server logs) ── */
