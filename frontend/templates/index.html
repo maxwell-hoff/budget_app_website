@@ -182,121 +182,46 @@
       })();
     </script>
 
-    <!-- ── Hero (the Why — problem stated left, problem illustrated right) ── -->
+    <!-- ── Hero · screen one: the headline, alone ── -->
     <header class="hero" id="top">
-      <div class="wrap">
-        <div class="hero__grid">
-          <div class="hero__copy">
-            <!-- <span class="kicker reveal-up d1">Budgeting built for consequences, not categories</span> -->
-            <h1 class="hero__title reveal-up d2">
-              Overwhelmed by your finances? It's not you, it's <em>your tools.</em>
-            </h1>
-            <p class="hero__tagline reveal-up d3">
-              Even the best budgeting apps have the same problem: they're built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up. With Workbench, you forecast your future, then work backward to what you should budget today.
-            </p>
-            <div class="hero__actions reveal-up d4">
-              <a href="#download" class="btn btn--primary btn--lg">
-                <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/></svg>
-                macOS
-              </a>
-              <a href="#download" class="btn btn--primary btn--lg">
-                <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/></svg>
-                Windows
-              </a>
-            </div>
-            <p class="hero__platform-note reveal-up d4">Desktop app — available for macOS &amp; Windows</p>
-          </div>
-
-          <!-- The problem made visible: what a monthly overspend quietly compounds to.
-               Three levels so the reader finds their own number — no categories,
-               no scolding; the future label does the emotional work. -->
-          <div class="hero__viz reveal-up d3">
-            <figure class="branch">
-              <figcaption class="branch__head">One choice tonight · many futures</figcaption>
-
-              <div class="branch__controls">
-                <div class="branch__control-group">
-                  <span class="branch__control-label">How you invest the savings</span>
-                  <div class="branch__segmented" id="branchRisk">
-                    <button class="branch__seg" data-value="low">Low risk</button>
-                    <button class="branch__seg is-active" data-value="med">Medium risk</button>
-                    <button class="branch__seg" data-value="high">High risk</button>
-                  </div>
-                </div>
-                <div class="branch__control-group">
-                  <span class="branch__control-label">Return results</span>
-                  <div class="branch__segmented" id="branchLuck">
-                    <button class="branch__seg" data-value="bad">Bad luck</button>
-                    <button class="branch__seg is-active" data-value="normal">Normal</button>
-                    <button class="branch__seg" data-value="good">Good luck</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="branch__stage">
-                <div class="branch__mag" id="branchMag" aria-hidden="true"></div>
-                <svg class="branch__svg" viewBox="0 0 560 320">
-                  <!-- timeline: Tonight → spent (near-term), break, then 1–60 years -->
-                  <line class="branch__axis" x1="95" y1="288" x2="142" y2="288" />
-                  <path class="branch__break" d="M144 288 L148 284 L152 288 L156 284 L160 288" />
-                  <line class="branch__axis branch__axis--future" x1="168" y1="288" x2="505" y2="288" />
-                  <line class="branch__axis" x1="95" y1="283" x2="95" y2="293" />
-                  <line class="branch__axis" x1="168" y1="283" x2="168" y2="293" />
-                  <line class="branch__axis" x1="505" y1="283" x2="505" y2="293" />
-                  <text class="branch__axlab" x="95" y="306" text-anchor="start">Tonight</text>
-                  <text class="branch__axlab branch__axlab--yrstart" x="168" y="306" text-anchor="middle">1 year</text>
-                  <text class="branch__axlab" x="505" y="306" text-anchor="end">60 years</text>
-
-                  <!-- the spectrum the decision point slides along (vertical = amount) -->
-                  <line class="branch__track" x1="95" y1="70" x2="95" y2="230" />
-                  <text class="branch__hintlab" x="95" y="60" text-anchor="middle">$300</text>
-                  <text class="branch__hintlab" x="95" y="246" text-anchor="middle">$50</text>
-
-                  <!-- the two diverging paths (recomputed as you drag) -->
-                  <path id="branchPresent" class="branch__path branch__path--present" d="M95 202 C120 202 130 76 150 76" />
-                  <path id="branchFuture" class="branch__path branch__path--future" d="M95 202 C187 202 208 252 300 252" />
-
-                  <!-- near-term branch: the money is just gone (constant) -->
-                  <circle class="branch__dot branch__dot--present" cx="150" cy="76" r="4" />
-                  <text class="branch__lbl-present" x="162" y="72" text-anchor="start">spent — and gone by Friday</text>
-
-                  <!-- moving horizon marker under the future dot -->
-                  <line id="branchYearTick" class="branch__yeartick" x1="300" y1="284" x2="300" y2="292" />
-                  <text id="branchYearLab" class="branch__yearlab" x="300" y="278" text-anchor="middle">15 years</text>
-
-                  <!-- future outcome callout (fixed; updates as you drag) -->
-                  <text id="branchDream" class="branch__lbl-dream" x="548" y="58" text-anchor="end">a car that won't worry you</text>
-                  <text id="branchFutureAmt" class="branch__lbl-future" x="548" y="80" text-anchor="end">$8,600</text>
-
-                  <!-- the draggable decision point (vertical = how much) -->
-                  <g id="branchNode" class="branch__nodewrap" role="slider" tabindex="0"
-                     aria-label="Monthly savings" aria-orientation="vertical"
-                     aria-valuemin="50" aria-valuemax="300" aria-valuenow="200"
-                     aria-valuetext="$200">
-                    <circle id="branchHalo" class="branch__halo" cx="95" cy="202" r="16" />
-                    <circle id="branchNodeDot" class="branch__node" cx="95" cy="202" r="9" />
-                    <text id="branchNodeVal" class="branch__lbl-node" x="79" y="207" text-anchor="end">$200</text>
-                  </g>
-
-                  <!-- the draggable horizon point (horizontal = how far ahead) -->
-                  <g id="branchFutureHandle" class="branch__futurewrap" role="slider" tabindex="0"
-                     aria-label="Time horizon in years" aria-orientation="horizontal"
-                     aria-valuemin="1" aria-valuemax="60" aria-valuenow="15"
-                     aria-valuetext="15 years from now">
-                    <circle id="branchFutureHalo" class="branch__futurehalo" cx="300" cy="252" r="16" />
-                    <circle id="branchDotFuture" class="branch__dot branch__dot--future" cx="300" cy="252" r="6" />
-                  </g>
-                </svg>
-              </div>
-
-              <p class="branch__hint">
-                <strong>Drag the dots.</strong> How much you save instead — and how far ahead you look.
-              </p>
-            </figure>
-          </div>
-        </div>
+      <div class="wrap hero__inner">
+        <h1 class="hero__title reveal-up d2">
+          Overwhelmed by your finances? It's not you, it's <em>your tools.</em>
+        </h1>
       </div>
+      <a class="hero__cue" href="#hero-detail" aria-label="Scroll down to learn more">
+        <span>Scroll</span>
+        <svg class="hero__cue-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </header>
+
+    <!-- ── Hero · screen two: the promise + the download ── -->
+    <section class="hero-detail" id="hero-detail" aria-label="What Workbench does">
+      <div class="wrap hero-detail__inner on-scroll">
+        <p class="hero__tagline">
+          Most budgeting apps are built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up.
+        </p>
+        <div class="hero__actions">
+          <a href="#download" class="btn btn--primary btn--lg">
+            <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="currentColor"/></svg>
+            macOS
+          </a>
+          <a href="#download" class="btn btn--primary btn--lg">
+            <svg class="btn__os-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5L10.5 4.5V11.5H3V5.5M10.5 12.5V19.5L3 18.4V12.5M11.5 4.35L21 2.5V11.5H11.5V4.35M21 12.5V21.5L11.5 19.65V12.5H21Z" fill="currentColor"/></svg>
+            Windows
+          </a>
+        </div>
+        <p class="hero__platform-note">Desktop app — available for macOS &amp; Windows</p>
+        <a class="hero-detail__more" href="#how-it-works">
+          See how it works
+          <svg class="hero-detail__more-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </section>
 
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
@@ -495,7 +420,7 @@
                 <ul class="feature__list">
                   <li>You and three friends go out to dinner for $150. You pay and they each Venmo you $50.</li>
                   <li>Split the charge — $100 for the group share, $50 for yours.</li>
-                  <li>Mark the $100 share and two Venmo payments as transfers — what's left is your $50 expense.</li>
+                  <li>Mark the $100 share and two Venmo payments as transfers — only the true expense is left: your $50 portion.</li>
                 </ul>
               </article>
 
@@ -527,7 +452,8 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>For example, spread out a yearly bonus to all 12 months so the month you receive it is not misleading.</li>
+                  <li>Spread out a bonus to all 12 months</li>
+                  <li>Spread out a home renovation over several years</li>
                 </ul>
               </article>
               </div>
@@ -542,7 +468,7 @@
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 3</span>
                 <h3 class="flow-step__title">Project it forward</h3>
-                <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p>
+                <!-- <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p> -->
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero feature--forecast">
@@ -588,8 +514,8 @@
                   </div>
                 </div>
                 <ul class="feature__list">
-                  <li>See what a 3% raise does to your five-year balance — before you count on it.</li>
-                  <li>Model rising rent, inflation, or a new expense and watch it ripple through every month ahead.</li>
+                  <li>Forecast a raise, a child, a home purchase, etc.</li>
+                  <li>Forecast as high-level or fine-tuned as you like</li>
                 </ul>
               </article>
               </div>
@@ -604,7 +530,7 @@
               <header class="flow-step__head">
                 <span class="flow-step__kicker">Step 4</span>
                 <h3 class="flow-step__title">Test the tradeoffs</h3>
-                <p class="flow-step__lead">Put each path side by side and watch what it costs you years out.</p>
+                <p class="flow-step__lead">Side by side comparison of different scenarios</p>
               </header>
               <div class="flow-step__content flow-step__content--duo">
               <article class="feature">
@@ -707,9 +633,7 @@
         <div class="flow__privacy on-scroll">
           <span class="flow__privacy-icon" aria-hidden="true">&#128274;</span>
           <p class="flow__privacy-text">
-            <strong>And all of it runs locally.</strong> Your finances never touch someone else's
-            server — encrypted and stored on your device. Nothing to breach, nothing to sell, no
-            account to lock you out.
+            <strong>And all of it runs locally.</strong> Your finances and data never leave your machine.
           </p>
           <span class="flow__privacy-chips" aria-hidden="true">
             <span class="privacy-row__status status-on">On device</span>
@@ -752,7 +676,7 @@
               <span class="pricing__tier-tag">always</span>
             </header>
             <p class="pricing__tier-body">
-              All features. Upload statements manually; nothing requires a subscription to unlock.
+              Upload statements manually.
             </p>
           </article>
 
@@ -770,8 +694,7 @@
         </div>
 
         <p class="pricing__note on-scroll">
-          Cancel any time. Downgrading to free keeps all your data and all your features — you
-          just go back to manual uploads.
+          Cancel any time. Downgrading to free keeps all your data.
         </p>
       </div>
     </section>
@@ -783,9 +706,9 @@
           <span class="download__badge">Coming soon</span>
           <!-- <span class="kicker">Get started</span> -->
           <h2 class="download__title">See what your current path is actually costing you</h2>
-          <p class="download__sub">
+          <!-- <p class="download__sub">
             Free to use. Load the demo data or import your own, and see where your current path actually leads.
-          </p>
+          </p> -->
           <div class="download__actions" aria-hidden="true">
             <span class="btn btn--primary btn--lg download__btn is-disabled" role="button" aria-disabled="true" tabindex="-1">
               <svg class="download__os-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -803,7 +726,7 @@
 
           <form class="notify" id="notifyForm" novalidate>
             <label class="notify__label" for="notifyEmail">
-              The app isn't quite ready yet. Leave your email and we'll let you know the moment they are.
+              The app isn't quite ready yet. Leave your email and we'll let you know when it is.
             </label>
             <div class="notify__row">
               <input
@@ -820,7 +743,7 @@
             <p class="notify__status" id="notifyStatus" role="status" aria-live="polite"></p>
           </form>
 
-          <p class="download__note">No spam, ever — just a single heads-up when it's ready. Your data stays on your device, always.</p>
+          <p class="download__note">No spam, ever — just a single heads-up when it's ready.</p>
         </div>
       </div>
     </section>
@@ -1635,226 +1558,6 @@
             obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
           }
         }, 1200);
-      })();
-
-      /* ── Hero scenario tabs: click to switch (manual) ── */
-      const heroTabs = document.querySelectorAll(".window__tab");
-      heroTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          heroTabs.forEach((t) => t.classList.remove("is-active"));
-          tab.classList.add("is-active");
-        });
-      });
-
-      /* ── Interactive branching path (hero) ──
-         One decision tonight forks into two futures. Drag vertically for how
-         much you let slip each month, and horizontally for how far ahead you
-         look; the future it leads to changes in real time. */
-      (function () {
-        const svg = document.querySelector(".branch__svg");
-        const node = document.getElementById("branchNode");
-        const fHandle = document.getElementById("branchFutureHandle");
-        if (!svg || !node || !fHandle) return;
-
-        const nodeDot = document.getElementById("branchNodeDot");
-        const halo = document.getElementById("branchHalo");
-        const nodeVal = document.getElementById("branchNodeVal");
-        const pPresent = document.getElementById("branchPresent");
-        const pFuture = document.getElementById("branchFuture");
-        const dotFuture = document.getElementById("branchDotFuture");
-        const fHalo = document.getElementById("branchFutureHalo");
-        const yearTick = document.getElementById("branchYearTick");
-        const yearLab = document.getElementById("branchYearLab");
-        const dream = document.getElementById("branchDream");
-        const futureAmt = document.getElementById("branchFutureAmt");
-        const mag = document.getElementById("branchMag");
-
-        /* geometry (viewBox units) */
-        const NX = 95;                   // decision point x (left of centre)
-        const Y_TOP = 70, Y_BOT = 230;   // top = largest investment
-        const OS_MIN = 50, OS_MAX = 300, OS_STEP = 1;
-        const X_NOW = 95;                // "Tonight"
-        const X_YR_START = 168;          // year 1 begins after the spent dot + axis break
-        const X_END = 505;               // 60 years
-        const YR_MIN = 1, YR_MAX = 60, YR_STEP = 1;
-        const PRESENT = { x: 150, y: 76 };
-        const FUT_Y = 252;
-
-        const RATES = {
-          low:  { bad: 0.01, normal: 0.03, good: 0.05 },
-          med:  { bad: 0.00, normal: 0.07, good: 0.13 },
-          high: { bad:-0.05, normal: 0.11, good: 0.20 },
-        };
-        const getR = () => {
-          const risk = document.querySelector("#branchRisk .branch__seg.is-active").dataset.value;
-          const luck = document.querySelector("#branchLuck .branch__seg.is-active").dataset.value;
-          return RATES[risk][luck] / 12;
-        };
-
-        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-        const factor = (months) => Math.pow(1 + getR(), months);
-
-        const osToY = (os) =>
-          Y_BOT - ((os - OS_MIN) / (OS_MAX - OS_MIN)) * (Y_BOT - Y_TOP);
-        const yToOs = (y) => {
-          const frac = (Y_BOT - clamp(y, Y_TOP, Y_BOT)) / (Y_BOT - Y_TOP);
-          return clamp(Math.round((OS_MIN + frac * (OS_MAX - OS_MIN)) / OS_STEP) * OS_STEP, OS_MIN, OS_MAX);
-        };
-        const yrToX = (yr) =>
-          X_YR_START + ((yr - 1) / (YR_MAX - 1)) * (X_END - X_YR_START);
-        const xToYr = (x) => {
-          const yr = 1 + ((clamp(x, X_YR_START, X_END) - X_YR_START) / (X_END - X_YR_START)) * (YR_MAX - 1);
-          return clamp(Math.round(yr / YR_STEP) * YR_STEP, YR_MIN, YR_MAX);
-        };
-
-        const curve = (ny, ex, ey) => {
-          const k = 0.45;
-          const c1x = NX + (ex - NX) * k;
-          const c2x = ex - (ex - NX) * k;
-          return `M${NX} ${ny} C${c1x.toFixed(1)} ${ny} ${c2x.toFixed(1)} ${ey} ${ex} ${ey}`;
-        };
-        const dreamFor = (fv) =>
-          fv < 75 ? "a few really good books"
-          : fv < 150 ? "a nice dinner for two"
-          : fv < 350 ? "a new pair of kicks"
-          : fv < 800 ? "a weekend getaway"
-          : fv < 2000 ? "that vacation you've been dreaming of"
-          : fv < 6000 ? "a home office upgrade"
-          : "the start of something bigger";
-        const money = (v) => "$" + v.toLocaleString();
-
-        let osState = 200, yrState = 15;
-
-        const render = (os, yr, animateAmt) => {
-          osState = os;
-          yrState = yr;
-          const ny = osToY(os);
-          const fx = yrToX(yr);
-          const fv = Math.round(os * factor(yr * 12));
-
-          /* decision point (vertical handle) */
-          nodeDot.setAttribute("cy", ny);
-          halo.setAttribute("cy", ny);
-          nodeVal.setAttribute("y", ny + 5);
-          nodeVal.textContent = "$" + os.toLocaleString();
-          node.setAttribute("aria-valuenow", os);
-          node.setAttribute("aria-valuetext", "$" + os.toLocaleString());
-
-          /* paths */
-          pPresent.setAttribute("d", curve(ny, PRESENT.x, PRESENT.y));
-          pFuture.setAttribute("d", curve(ny, fx, FUT_Y));
-
-          /* horizon point (horizontal handle) */
-          dotFuture.setAttribute("cx", fx);
-          fHalo.setAttribute("cx", fx);
-          yearTick.setAttribute("x1", fx);
-          yearTick.setAttribute("x2", fx);
-          yearLab.setAttribute("x", fx);
-          yearLab.textContent = yr + (yr === 1 ? " year" : " years");
-          fHandle.setAttribute("aria-valuenow", yr);
-          fHandle.setAttribute("aria-valuetext", yr + (yr === 1 ? " year" : " years") + " from now");
-
-          /* outcome callout */
-          dream.textContent = dreamFor(fv);
-
-          if (mag && active) {
-            mag.textContent = active === "node"
-              ? "$" + os.toLocaleString() + " / mo"
-              : yr + (yr === 1 ? " year" : " years");
-          }
-
-          if (animateAmt && !reduceMotion) {
-            const start = performance.now();
-            const dur = 1100;
-            const step = (now) => {
-              const t = Math.min((now - start) / dur, 1);
-              const eased = 1 - Math.pow(1 - t, 3);
-              futureAmt.textContent = money(Math.round(fv * eased));
-              if (t < 1) requestAnimationFrame(step);
-              else futureAmt.textContent = money(fv);
-            };
-            requestAnimationFrame(step);
-          } else {
-            futureAmt.textContent = money(fv);
-          }
-        };
-
-        /* pointer drag — which handle grabbed decides the axis */
-        let active = null; // 'node' | 'future'
-        const ptX = (e) => {
-          const r = svg.getBoundingClientRect();
-          return ((e.clientX - r.left) / r.width) * 560;
-        };
-        const ptY = (e) => {
-          const r = svg.getBoundingClientRect();
-          return ((e.clientY - r.top) / r.height) * 320;
-        };
-        const grab = (which, handle) => (e) => {
-          active = which;
-          if (mag) mag.classList.add("is-visible");
-          try { svg.setPointerCapture(e.pointerId); } catch (_) {}
-          if (which === "node") render(yToOs(ptY(e)), yrState);
-          else render(osState, xToYr(ptX(e)));
-          e.preventDefault();
-          if (typeof handle.focus === "function") handle.focus();
-        };
-        node.addEventListener("pointerdown", grab("node", node));
-        fHandle.addEventListener("pointerdown", grab("future", fHandle));
-        svg.addEventListener("pointermove", (e) => {
-          if (active === "node") render(yToOs(ptY(e)), yrState);
-          else if (active === "future") render(osState, xToYr(ptX(e)));
-        });
-        const release = (e) => {
-          active = null;
-          if (mag) mag.classList.remove("is-visible");
-          try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
-        };
-        svg.addEventListener("pointerup", release);
-        svg.addEventListener("pointercancel", release);
-
-        /* keyboard — vertical slider (overspend) */
-        node.addEventListener("keydown", (e) => {
-          let os = osState;
-          switch (e.key) {
-            case "ArrowUp": case "ArrowRight": os += OS_STEP; break;
-            case "ArrowDown": case "ArrowLeft": os -= OS_STEP; break;
-            case "PageUp": os += OS_STEP * 5; break;
-            case "PageDown": os -= OS_STEP * 5; break;
-            case "Home": os = OS_MIN; break;
-            case "End": os = OS_MAX; break;
-            default: return;
-          }
-          e.preventDefault();
-          render(clamp(os, OS_MIN, OS_MAX), yrState);
-        });
-
-        /* keyboard — horizontal slider (horizon) */
-        fHandle.addEventListener("keydown", (e) => {
-          let yr = yrState;
-          switch (e.key) {
-            case "ArrowRight": case "ArrowUp": yr += YR_STEP; break;
-            case "ArrowLeft": case "ArrowDown": yr -= YR_STEP; break;
-            case "Home": yr = YR_MIN; break;
-            case "End": yr = YR_MAX; break;
-            default: return;
-          }
-          e.preventDefault();
-          render(osState, clamp(yr, YR_MIN, YR_MAX));
-        });
-
-        /* segmented control clicks */
-        document.querySelectorAll(".branch__segmented").forEach((group) => {
-          group.addEventListener("click", (e) => {
-            const btn = e.target.closest(".branch__seg");
-            if (!btn || btn.classList.contains("is-active")) return;
-            group.querySelectorAll(".branch__seg").forEach((b) => b.classList.remove("is-active"));
-            btn.classList.add("is-active");
-            render(osState, yrState);
-          });
-        });
-
-        /* initial paint, with a one-time count-up on the future figure */
-        render(200, 15, true);
       })();
 
       /* ── Notify-me signup (prints to server logs) ── */
