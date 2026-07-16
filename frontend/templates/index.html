@@ -41,15 +41,22 @@
     <div id="wbIntro" class="wb-intro" role="presentation" aria-hidden="true">
       <div class="wb-intro__mark">
         <svg class="wb-intro__svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="wbIntroFuture" x1="7" y1="16" x2="26" y2="23" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#003a70"/>
+              <stop offset="0.55" stop-color="#0a5fae"/>
+              <stop offset="1" stop-color="#38bdf8"/>
+            </linearGradient>
+          </defs>
           <!-- Branches (drawn in via stroke-dash) — same geometry as the favicon -->
           <path class="wb-intro__branch wb-intro__branch--spent"
                 d="M7 16 C12 16 14 8 21 8" fill="none"
                 stroke="#64748b" stroke-width="2.5" stroke-linecap="round" pathLength="1"/>
           <path class="wb-intro__branch wb-intro__branch--future"
                 d="M7 16 C13 16 18 23 26 23" fill="none"
-                stroke="#38bdf8" stroke-width="3" stroke-linecap="round" pathLength="1"/>
+                stroke="url(#wbIntroFuture)" stroke-width="3" stroke-linecap="round" pathLength="1"/>
           <!-- Three dots (the nav mark, enlarged) -->
-          <circle class="wb-intro__dot wb-intro__dot--1" cx="7"  cy="16" r="3"   fill="#38bdf8"/>
+          <circle class="wb-intro__dot wb-intro__dot--1" cx="7"  cy="16" r="3"   fill="#0a5fae"/>
           <circle class="wb-intro__dot wb-intro__dot--2" cx="21" cy="8"  r="2.5" fill="#64748b"/>
           <circle class="wb-intro__dot wb-intro__dot--3" cx="26" cy="23" r="3"   fill="#38bdf8"/>
         </svg>
@@ -66,25 +73,73 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.4rem;
-        background: #f4f5f7;
+        gap: 1.7rem;
+        /* Mirrors the page background so the splash dissolves into the hero */
+        background:
+          radial-gradient(120% 75% at 50% 10%, rgba(10, 95, 174, 0.13), transparent 58%),
+          radial-gradient(80% 55% at 50% 100%, rgba(0, 58, 112, 0.07), transparent 60%),
+          #eef0f4;
         opacity: 1;
-        transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        transition:
+          opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
       }
-      /* Smooth auto fade-out at the end of the sequence */
-      .wb-intro.is-leaving { opacity: 0; }
+      /* Faint engineering-paper grid, matched to the page and masked to the center */
+      .wb-intro::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right, rgba(20, 20, 43, 0.045) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(20, 20, 43, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 46%, #000 18%, transparent 74%);
+        mask-image: radial-gradient(ellipse 85% 65% at 50% 46%, #000 18%, transparent 74%);
+      }
 
-      .wb-intro__mark { width: clamp(96px, 22vw, 148px); }
+      /* Cinematic exit: fade + gentle scale-up + a whisper of blur */
+      .wb-intro.is-leaving {
+        opacity: 0;
+        transform: scale(1.04);
+        filter: blur(4px);
+      }
+
+      .wb-intro__mark {
+        position: relative;
+        width: clamp(104px, 22vw, 156px);
+        opacity: 0;
+        transform: scale(0.86);
+        animation: wbIntroMark 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      @keyframes wbIntroMark { to { opacity: 1; transform: scale(1); } }
+      /* Soft glow halo blooms behind the mark as the branches draw */
+      .wb-intro__mark::before {
+        content: "";
+        position: absolute;
+        inset: -28%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.30), rgba(10, 95, 174, 0.12) 45%, transparent 70%);
+        opacity: 0;
+        transform: scale(0.7);
+        animation: wbIntroHalo 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+        z-index: -1;
+      }
+      @keyframes wbIntroHalo { to { opacity: 1; transform: scale(1); } }
+
       .wb-intro__svg { display: block; width: 100%; height: auto; overflow: visible; }
 
-      /* Dots pop in first, gently and staggered — no overshoot */
+      /* Dots pop in first, staggered, with a gentle overshoot for life */
       .wb-intro__dot {
         opacity: 0;
         transform: scale(0.2);
         transform-origin: center;
         transform-box: fill-box;
-        animation: wbIntroDot 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: wbIntroDot 0.5s cubic-bezier(0.34, 1.32, 0.56, 1) forwards;
       }
+      .wb-intro__dot--1,
+      .wb-intro__dot--3 { filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.55)); }
       .wb-intro__dot--1 { animation-delay: 0.05s; }
       .wb-intro__dot--2 { animation-delay: 0.18s; }
       .wb-intro__dot--3 { animation-delay: 0.31s; }
@@ -94,33 +149,41 @@
       .wb-intro__branch {
         stroke-dasharray: 1;
         stroke-dashoffset: 1;
-        animation: wbIntroDraw 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: wbIntroDraw 0.95s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
       .wb-intro__branch--spent  { animation-delay: 0.5s; }
-      .wb-intro__branch--future { animation-delay: 0.62s; }
+      .wb-intro__branch--future {
+        animation-delay: 0.62s;
+        filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.5));
+      }
       @keyframes wbIntroDraw { to { stroke-dashoffset: 0; } }
 
       /* Title fades + rises after the branches finish drawing.
-         Formatting matches the .nav__brand app name: Inter 700, uppercase,
-         wide letter-spacing — with an accent underline. */
+         Formatting matches the hero headline — Inter 800, tight tracking,
+         title-case — with a proportional accent underline that draws itself in. */
       .wb-intro__title {
         margin: 0;
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(18px);
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-weight: 700;
-        font-size: clamp(1.05rem, 2.4vw, 1.4rem);
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #1a1a2e;
-        animation: wbIntroTitle 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.55s forwards;
+        font-weight: 800;
+        font-size: clamp(1.9rem, 5.2vw, 3.1rem);
+        letter-spacing: -0.03em;
+        line-height: 1.04;
+        color: #14142b;
+        animation: wbIntroTitle 0.75s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
       }
       .wb-intro__title span {
         display: inline-block;
-        padding-bottom: 0.02em;
-        border-bottom: 2px solid #38bdf8;
+        padding-bottom: 0.06em;
+        background-image: linear-gradient(90deg, #003a70, #38bdf8);
+        background-repeat: no-repeat;
+        background-position: 0 92%;
+        background-size: 0% 0.14em;
+        animation: wbIntroUnderline 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.8s forwards;
       }
       @keyframes wbIntroTitle { to { opacity: 1; transform: translateY(0); } }
+      @keyframes wbIntroUnderline { to { background-size: 100% 0.14em; } }
 
       /* Safety net: if JS never runs, honour reduced motion by hiding the overlay */
       @media (prefers-reduced-motion: reduce) {
@@ -164,7 +227,7 @@
             overlay.remove();
           }, { once: true });
           // Fallback removal in case transitionend never fires.
-          setTimeout(function () { if (overlay.parentNode) overlay.remove(); }, 800);
+          setTimeout(function () { if (overlay.parentNode) overlay.remove(); }, 1000);
         }
 
         // User skip: reveal instantly, no partial state.
@@ -177,8 +240,8 @@
           window.addEventListener(evt, onSkip, { capture: true, passive: true });
         });
 
-        // Begin auto fade-out after the title has held ~0.75s (~2.65s in).
-        fadeTimer = setTimeout(finish, 2650);
+        // Begin auto fade-out after the underline settles and holds (~2.9s in).
+        fadeTimer = setTimeout(finish, 2900);
       })();
     </script>
 
