@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
@@ -159,17 +159,17 @@
       @keyframes wbIntroDraw { to { stroke-dashoffset: 0; } }
 
       /* Title fades + rises after the branches finish drawing.
-         Formatting matches the hero headline — Inter 800, tight tracking,
-         title-case — with a proportional accent underline that draws itself in. */
+         Formatting matches the hero headline — Source Serif 4, title-case —
+         with a proportional accent underline that draws itself in. */
       .wb-intro__title {
         margin: 0;
         opacity: 0;
         transform: translateY(18px);
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-weight: 800;
+        font-family: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+        font-weight: 700;
         font-size: clamp(1.9rem, 5.2vw, 3.1rem);
-        letter-spacing: -0.03em;
-        line-height: 1.04;
+        letter-spacing: -0.02em;
+        line-height: 1.06;
         color: #14142b;
         animation: wbIntroTitle 0.75s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
       }
