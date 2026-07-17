@@ -26,7 +26,17 @@
           Workbench&nbsp;Budgeting
         </a>
         <span class="nav__spacer"></span>
-        <div class="nav__links">
+        <button
+          class="nav__toggle"
+          id="navToggle"
+          type="button"
+          aria-label="Open menu"
+          aria-controls="navLinks"
+          aria-expanded="false"
+        >
+          <span class="nav__toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <div class="nav__links" id="navLinks">
           <a href="/#features">Features</a>
           <a href="/#philosophy">Philosophy</a>
           <a href="/about" aria-current="page">About</a>
@@ -136,6 +146,40 @@
       document.getElementById("year").textContent = new Date().getFullYear();
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* ── Mobile nav toggle (hamburger → expanding menu) ── */
+      (function () {
+        const nav = document.querySelector(".nav");
+        const toggle = document.getElementById("navToggle");
+        const links = document.getElementById("navLinks");
+        if (!nav || !toggle || !links) return;
+
+        const setOpen = (open) => {
+          nav.classList.toggle("is-open", open);
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        };
+
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setOpen(!nav.classList.contains("is-open"));
+        });
+        links.addEventListener("click", (e) => {
+          if (e.target.closest("a")) setOpen(false);
+        });
+        document.addEventListener("click", (e) => {
+          if (nav.classList.contains("is-open") && !nav.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") setOpen(false);
+        });
+
+        const wide = window.matchMedia("(min-width: 821px)");
+        const onChange = () => { if (wide.matches) setOpen(false); };
+        if (wide.addEventListener) wide.addEventListener("change", onChange);
+        else if (wide.addListener) wide.addListener(onChange);
+      })();
+
       const revealEls = document.querySelectorAll(".on-scroll");
       if (reduceMotion || !("IntersectionObserver" in window)) {
         revealEls.forEach((el) => el.classList.add("in-view"));
