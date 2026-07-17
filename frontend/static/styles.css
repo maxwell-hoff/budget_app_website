@@ -397,6 +397,9 @@ body::before {
   z-index: 1;
   min-height: calc(100vh - 52px);
   min-height: calc(100svh - 52px);
+  /* Shared width for the headline + detail so their left edges align while
+     the whole block stays centered on the page (finance-deck ragged-right). */
+  --hero-w: min(700px, 90vw);
 }
 
 .hero__stage {
@@ -405,16 +408,16 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  text-align: left;
   min-height: calc(100vh - 52px);
   min-height: calc(100svh - 52px);
   padding: clamp(1.5rem, 5vh, 3.5rem) 0 clamp(4rem, 10vh, 6rem);
 }
-.hero__stage::before {
+.hero__stage-inner::before {
   content: "";
   position: absolute;
-  top: 42%;
-  left: 50%;
+  top: 48%;
+  left: calc(var(--hero-w) / 2);
   width: min(760px, 92vw);
   height: min(560px, 70vh);
   transform: translate(-50%, -50%);
@@ -428,18 +431,20 @@ body::before {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .hero__title {
   margin: 0;
+  width: var(--hero-w);
+  max-width: 100%;
   font-size: clamp(2.5rem, 6.6vw, 4.8rem);
   line-height: 1.06;
   letter-spacing: -0.02em;
   font-weight: 700;
   color: var(--ink);
-  text-wrap: balance;
-  max-width: 16ch;
+  text-align: left;
+  text-wrap: pretty;
 }
 /* Underline highlight that wraps cleanly across lines */
 .hero__title em {
@@ -460,8 +465,10 @@ body::before {
   margin-top: clamp(1.75rem, 4vh, 2.75rem);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: min(660px, 90vw);
+  align-items: flex-start;
+  text-align: left;
+  width: var(--hero-w);
+  max-width: 100%;
 }
 
 .hero__tagline {
@@ -481,7 +488,7 @@ body::before {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .btn__os-icon {
   width: 1.05rem;
@@ -561,17 +568,17 @@ body::before {
 .hero.is-pinnable .hero__detail {
   position: absolute;
   top: calc(100% + clamp(1.5rem, 4vh, 2.75rem));
-  left: 50%;
+  left: 0;
   margin-top: 0;
   opacity: 0;
-  transform: translateX(-50%) translateY(26px);
+  transform: translateY(26px);
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .hero.is-pinnable.is-revealed .hero__detail {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 .hero.is-pinnable .hero__cue {
   display: inline-flex;
