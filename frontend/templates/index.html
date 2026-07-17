@@ -27,7 +27,17 @@
           Workbench&nbsp;Budgeting
         </a>
         <span class="nav__spacer"></span>
-        <div class="nav__links">
+        <button
+          class="nav__toggle"
+          id="navToggle"
+          type="button"
+          aria-label="Open menu"
+          aria-controls="navLinks"
+          aria-expanded="false"
+        >
+          <span class="nav__toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <div class="nav__links" id="navLinks">
           <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
           <a href="#pricing">Pricing</a>
@@ -255,7 +265,7 @@
           </h1>
           <div class="hero__detail">
             <p class="hero__tagline">
-              Most budgeting apps are built for categorizing, not deciding. Workbench is focused on how big your budget should be, not just how it's sliced up.
+              Most budgeting apps are built for categorizing, not deciding. Workbench focuses on how big your budget should be, not just how it's sliced up.
             </p>
             <div class="hero__actions">
               <a href="#download" class="btn btn--primary btn--lg">
@@ -361,7 +371,7 @@
               <header class="flow-step__head">
                 <!-- <span class="flow-step__kicker">Step 2</span> -->
                 <h3 class="flow-step__title">Clean up what really happened</h3>
-                <p class="flow-step__lead">Transactions have a lot of noise. Removing that noise makes it easier to forecast.</p>
+                <p class="flow-step__lead">Transactions have a lot of noise. Removing that noise makes it easier to understand your situation.</p>
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero">
@@ -530,7 +540,7 @@
               <header class="flow-step__head">
                 <!-- <span class="flow-step__kicker">Step 3</span> -->
                 <h3 class="flow-step__title">Project it forward</h3>
-                <!-- <p class="flow-step__lead">Carry those clean actuals ahead and see where this path lands.</p> -->
+                <p class="flow-step__lead">Because knowing where you're going will inform you what you should budget today.</p>
               </header>
               <div class="flow-step__content">
               <article class="feature feature--hero feature--forecast">
@@ -764,7 +774,7 @@
             Free to use. $8.99/month for easy bank account syncing.
           </h2>
           <p class="section__lead">
-            Similar tools cost $250 a month.
+            Similarly capabable tools I found cost $250 a month.
           </p>
         </div>
 
@@ -775,7 +785,7 @@
               <span class="pricing__tier-tag">always</span>
             </header>
             <p class="pricing__tier-body">
-              Upload statements manually.
+              Upload statements manually. All other features included.
             </p>
           </article>
 
@@ -842,7 +852,7 @@
             <p class="notify__status" id="notifyStatus" role="status" aria-live="polite"></p>
           </form>
 
-          <p class="download__note">No spam, ever — just a single heads-up when it's ready.</p>
+          <p class="download__note">No spam, just a single heads-up when it's ready.</p>
         </div>
       </div>
     </section>
@@ -884,6 +894,42 @@
       document.getElementById("year").textContent = new Date().getFullYear();
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* ── Mobile nav toggle (hamburger → expanding menu) ── */
+      (function () {
+        const nav = document.querySelector(".nav");
+        const toggle = document.getElementById("navToggle");
+        const links = document.getElementById("navLinks");
+        if (!nav || !toggle || !links) return;
+
+        const setOpen = (open) => {
+          nav.classList.toggle("is-open", open);
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        };
+
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setOpen(!nav.classList.contains("is-open"));
+        });
+
+        // Close after tapping a link, clicking outside, or pressing Escape.
+        links.addEventListener("click", (e) => {
+          if (e.target.closest("a")) setOpen(false);
+        });
+        document.addEventListener("click", (e) => {
+          if (nav.classList.contains("is-open") && !nav.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") setOpen(false);
+        });
+
+        // Reset when the viewport grows back to the full-width nav.
+        const wide = window.matchMedia("(min-width: 821px)");
+        const onChange = () => { if (wide.matches) setOpen(false); };
+        if (wide.addEventListener) wide.addEventListener("change", onChange);
+        else if (wide.addListener) wide.addListener(onChange);
+      })();
 
       /* ── Scroll reveal ── */
       const revealEls = document.querySelectorAll(".on-scroll");

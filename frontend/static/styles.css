@@ -161,6 +161,18 @@ body::before {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset,
     0 8px 24px -12px rgba(0, 0, 0, 0.6);
 }
+/* Accent gradient hairline — the same navy→sky motif used across the page */
+.nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-bright) 30%, #38bdf8 50%, var(--accent) 70%, transparent);
+  opacity: 0.85;
+  pointer-events: none;
+}
 
 .nav__inner {
   display: flex;
@@ -174,10 +186,11 @@ body::before {
   align-items: center;
   gap: 0.7rem;
   color: #f6f8ff;
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
   font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 1.05rem;
+  letter-spacing: -0.005em;
 }
 
 .nav__dots {
@@ -205,25 +218,91 @@ body::before {
   align-items: center;
 }
 
-.nav__links a {
-  color: rgba(255, 255, 255, 0.72);
+.nav__links a:not(.btn) {
+  position: relative;
+  color: rgba(255, 255, 255, 0.74);
   text-decoration: none;
-  font-size: 0.72rem;
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  font-size: 0.94rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   padding: 0.4rem 0.7rem;
   border-radius: var(--radius-sm);
-  transition: color var(--t-fast), background var(--t-fast);
+  transition: color var(--t-normal);
 }
-.nav__links a:hover {
+/* Animated accent underline — mirrors the hero/intro underline motif */
+.nav__links a:not(.btn)::after {
+  content: "";
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 0.12rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-bright), #38bdf8);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--t-normal);
+}
+.nav__links a:not(.btn):hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+}
+.nav__links a:not(.btn):hover::after,
+.nav__links a:not(.btn):focus-visible::after,
+.nav__links a:not(.btn)[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+.nav__links a:not(.btn)[aria-current="page"] {
+  color: #fff;
 }
 
 .nav__cta {
   margin-left: 0.4rem;
 }
+
+/* ── Mobile menu toggle (hamburger → X) — hidden until the bar gets tight ── */
+.nav__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.nav__toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.nav__toggle:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+.nav__toggle-bars {
+  position: relative;
+  width: 20px;
+  height: 14px;
+}
+.nav__toggle-bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: #f6f8ff;
+  transition: transform var(--t-normal), opacity var(--t-fast);
+}
+.nav__toggle-bars span:nth-child(1) { top: 0; }
+.nav__toggle-bars span:nth-child(2) { top: 6px; }
+.nav__toggle-bars span:nth-child(3) { top: 12px; }
+.nav.is-open .nav__toggle-bars span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav.is-open .nav__toggle-bars span:nth-child(2) { opacity: 0; }
+.nav.is-open .nav__toggle-bars span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 /* ============================================================
    Buttons (mirrors app)
@@ -1677,10 +1756,11 @@ body::before {
   align-items: center;
   gap: 0.6rem;
   color: #f6f8ff;
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.74rem;
+  letter-spacing: -0.005em;
+  font-size: 1rem;
 }
 .footer__end {
   display: flex;
@@ -3177,10 +3257,83 @@ body::before {
 /* ============================================================
    Responsive
    ============================================================ */
+
+/* ── Mobile / narrow navigation: collapse links into an expanding panel ── */
+@media (max-width: 820px) {
+  .nav__toggle {
+    display: inline-flex;
+  }
+
+  .nav__links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.2rem;
+    padding: 0.55rem 1.25rem 1.1rem;
+    background: linear-gradient(180deg, var(--titlebar-2), var(--titlebar));
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 22px 40px -18px rgba(0, 0, 0, 0.75);
+    /* Collapsed state */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.24s;
+  }
+
+  .nav.is-open .nav__links {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .nav__links a:not(.btn) {
+    display: block;
+    padding: 0.72rem 0.7rem;
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    transition: color var(--t-fast), background var(--t-fast);
+  }
+  .nav__links a:not(.btn):last-of-type {
+    border-bottom: none;
+  }
+  /* Stacked items read better with a fill than a centered underline */
+  .nav__links a:not(.btn)::after {
+    display: none;
+  }
+  .nav__links a:not(.btn):hover,
+  .nav__links a:not(.btn)[aria-current="page"] {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  .nav__cta {
+    margin-left: 0;
+    margin-top: 0.6rem;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 720px) {
-  .nav__links a:not(.btn) { display: none; }
   .kpis { grid-template-columns: repeat(3, 1fr); }
   .wrap { width: min(var(--maxw), calc(100% - 1.75rem)); }
+}
+
+@media (max-width: 480px) {
+  .nav__brand {
+    font-size: 0.95rem;
+    letter-spacing: -0.005em;
+    gap: 0.5rem;
+  }
 }
 
 @media (max-width: 420px) {
