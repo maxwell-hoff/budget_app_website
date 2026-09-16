@@ -432,6 +432,11 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  /* Push the hero block above dead-center so the "Desktop app" note
+     has breathing room above the fold on normal-height viewports. */
+  margin-top: auto;
+  margin-bottom: auto;
+  transform: translateY(-8vh);
 }
 
 .hero__title {
