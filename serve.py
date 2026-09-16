@@ -1,8 +1,18 @@
+import os
 from datetime import datetime
+from pathlib import Path
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, abort
 
 app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
+
+DOWNLOADS_DIR = Path(__file__).resolve().parent / 'frontend' / 'static' / 'downloads'
+
+PLATFORM_FOLDERS = {
+    'mac-arm': 'mac-arm',
+    'mac-x64': 'mac-x64',
+    'windows': 'windows',
+}
 
 
 @app.route('/')
@@ -13,6 +23,24 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/download/<platform>')
+def download(platform):
+    folder_name = PLATFORM_FOLDERS.get(platform)
+    if not folder_name:
+        abort(404)
+
+    folder = DOWNLOADS_DIR / folder_name
+    if not folder.is_dir():
+        abort(404)
+
+    files = [f for f in folder.iterdir() if f.is_file() and not f.name.startswith('.')]
+    if not files:
+        abort(404)
+
+    target = files[0]
+    return send_from_directory(folder, target.name, as_attachment=True)
 
 
 @app.route('/notify', methods=['POST'])
