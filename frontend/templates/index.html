@@ -202,6 +202,17 @@
     </style>
 
     <script>
+      /* How-it-works steps start collapsed, but only when we can open them
+         again. Flagged here so the collapsed state is in place on first
+         paint — without JS, or with reduced motion, the steps stay open. */
+      (function () {
+        var reduceMotion = window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!reduceMotion) {
+          document.documentElement.classList.add("js-accordion");
+        }
+      })();
+
       (function () {
         var overlay = document.getElementById("wbIntro");
         if (!overlay) return;
@@ -261,7 +272,7 @@
       <div class="hero__stage">
         <div class="wrap hero__stage-inner">
           <h1 class="hero__title reveal-up d2">
-            Finally understand the consequences of breaking your budget.
+            Finally <em>understand</em> the tradeoffs of breaking your budget.
           </h1>
           <div class="hero__detail">
             <p class="hero__tagline">
@@ -301,7 +312,7 @@
         <div class="section__head on-scroll">
           <span class="kicker">How it works</span>
           <h2 class="section__title">
-            Rather than being handed a budget, you build one. Here's the loop.
+            Rather than being handed a budget, you build one. Here's how.
           </h2>
         </div>
 
@@ -317,7 +328,12 @@
                 <h3 class="flow-step__title">Guided setup</h3>
                 <p class="flow-step__lead">A series of questions that will pre-populate your forecasts</p>
               </header>
-              <div class="flow-step__content">
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel1" aria-label="Show details for guided setup">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel1">
               <article class="feature feature--hero">
                 <!-- <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3> -->
                 <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step1-guided-setup">
@@ -374,7 +390,12 @@
                 <h3 class="flow-step__title">Clean up what really happened</h3>
                 <p class="flow-step__lead">Transactions have a lot of noise. Removing that noise makes it easier to understand your situation.</p>
               </header>
-              <div class="flow-step__content">
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel2" aria-label="Show details for cleaning up what really happened">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel2">
               <article class="feature feature--hero">
                 <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3>
                 <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-accounts">
@@ -543,7 +564,12 @@
                 <h3 class="flow-step__title">Project it forward</h3>
                 <p class="flow-step__lead">Because knowing where you're going will inform you what you should budget today.</p>
               </header>
-              <div class="flow-step__content">
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel3" aria-label="Show details for projecting it forward">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel3">
               <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Fine-tuned Forecasting</h3>
                 <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step3-forecast">
@@ -605,7 +631,12 @@
                 <h3 class="flow-step__title">Test the tradeoffs</h3>
                 <p class="flow-step__lead">Side by side comparison of different scenarios because life can go in many different directions.</p>
               </header>
-              <div class="flow-step__content">
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel4" aria-label="Show details for testing the tradeoffs">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel4">
               <article class="feature feature--hero feature--forecast">
                 <h3 class="feature__title">Scenario Planning</h3>
                 <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-scenarios">
@@ -667,10 +698,17 @@
                 <h3 class="flow-step__title">Set a working number</h3>
                 <p class="flow-step__lead">Not a rule you're locked into — a starting point</p>
               </header>
-              <div class="payoff payoff--wide">
-                <div class="loop__number">
-                  <span class="loop__number-label">Your monthly budget</span>
-                  <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel5" aria-label="Show details for setting a working number">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel5">
+                <div class="payoff payoff--wide">
+                  <div class="loop__number">
+                    <span class="loop__number-label">Your monthly budget</span>
+                    <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -686,7 +724,12 @@
                 <h3 class="flow-step__title">Track, then adjust</h3>
                 <p class="flow-step__lead">When life shifts, feed it back into the forecast.</p>
               </header>
-              <div class="flow-step__content">
+              <button class="flow-step__toggle" type="button" aria-expanded="false" aria-controls="flowPanel6" aria-label="Show details for tracking and adjusting">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="flow-step__content" id="flowPanel6">
                 <article class="feature feature--hero feature--forecast">
                   <h3 class="feature__title">Budget vs. Actual Insights</h3>
                   <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-budget-vs-actual">
@@ -916,8 +959,12 @@
         else if (wide.addListener) wide.addListener(onChange);
       })();
 
-      /* ── Scroll reveal ── */
-      const revealEls = document.querySelectorAll(".on-scroll");
+      /* ── Scroll reveal ──
+         How-it-works feature cards are observed alongside .on-scroll so a
+         tall step animates card by card rather than all at once. */
+      const revealEls = document.querySelectorAll(
+        ".on-scroll, .flow-step__content > .feature"
+      );
       if (reduceMotion || !("IntersectionObserver" in window)) {
         revealEls.forEach((el) => el.classList.add("in-view"));
       } else {
@@ -930,10 +977,154 @@
               }
             });
           },
-          { threshold: 0.08, rootMargin: "120px 0px 0px 0px" }
+          { threshold: 0.06, rootMargin: "0px 0px -7% 0px" }
         );
         revealEls.forEach((el) => io.observe(el));
       }
+
+      /* ── How it works: folded steps that open as you reach them ──
+         The steps read as a list first, then each one unfolds when its
+         header crosses the trigger line. Only one opens per frame: an
+         opening step pushes the next header back down the page, which is
+         what stops all six unfolding the moment the section appears. */
+      (function () {
+        if (!document.documentElement.classList.contains("js-accordion")) return;
+        const track = document.getElementById("features");
+        if (!track) return;
+
+        const steps = Array.from(track.querySelectorAll(".flow-step"));
+        // Where a step counts as "reached", as a fraction of viewport
+        // height. High enough that most of the list is readable before the
+        // first one unfolds; low enough that the unfold stays in view.
+        const TRIGGER = 0.32;
+        const supportsInert = "inert" in HTMLElement.prototype;
+        let queued = false;
+        let holdUntil = 0;
+
+        const panelOf = (step) => step.querySelector(".flow-step__content");
+
+        function setExpanded(step, open) {
+          const toggle = step.querySelector(".flow-step__toggle");
+          if (toggle) toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          const panel = panelOf(step);
+          // Closed panels keep their place in the DOM, so take them out of
+          // the tab order too.
+          if (panel && supportsInert) panel.inert = !open;
+        }
+
+        function openStep(step, instant) {
+          if (step.classList.contains("is-open")) return;
+          const panel = panelOf(step);
+          setExpanded(step, true);
+          if (!panel) {
+            step.classList.add("is-open");
+            return;
+          }
+
+          // Paged or flung past: unfold with no animation and hand back the
+          // height it added above the reader, so the view doesn't lurch.
+          if (instant) {
+            const doc = document.documentElement;
+            const before = doc.scrollHeight;
+            step.classList.add("is-instant", "is-open");
+            panel.style.height = "";
+            window.scrollBy({ top: doc.scrollHeight - before, behavior: "instant" });
+            requestAnimationFrame(() => step.classList.remove("is-instant"));
+            return;
+          }
+
+          const height = panel.scrollHeight;
+          panel.classList.add("is-animating");
+          panel.style.height = "0px";
+          step.classList.add("is-open");
+          void panel.offsetHeight; // commit the closed height before animating
+          panel.style.height = height + "px";
+        }
+
+        function closeStep(step) {
+          const panel = panelOf(step);
+          setExpanded(step, false);
+          if (!panel) {
+            step.classList.remove("is-open");
+            return;
+          }
+          panel.classList.add("is-animating");
+          panel.style.height = panel.scrollHeight + "px";
+          void panel.offsetHeight;
+          step.classList.remove("is-open");
+          panel.style.height = "0px";
+        }
+
+        function advance() {
+          if (Date.now() < holdUntil) return;
+          const line = window.innerHeight * TRIGGER;
+          for (const step of steps) {
+            if (step.classList.contains("is-open")) continue;
+            const head = step.querySelector(".flow-step__head");
+            if (head.getBoundingClientRect().top > line) return; // not reached
+            const panel = panelOf(step);
+            const passed = !!panel && panel.getBoundingClientRect().bottom < 0;
+            openStep(step, passed);
+            if (passed) schedule(); // no transition to chain off
+            return;
+          }
+        }
+
+        function schedule() {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(() => {
+            queued = false;
+            advance();
+          });
+        }
+
+        steps.forEach((step) => {
+          setExpanded(step, false);
+
+          const panel = panelOf(step);
+          if (panel) {
+            panel.addEventListener("transitionend", (event) => {
+              if (event.target !== panel || event.propertyName !== "height") return;
+              panel.classList.remove("is-animating");
+              panel.style.height = ""; // hand the height back to the content
+              schedule();
+            });
+          }
+
+          const toggle = step.querySelector(".flow-step__toggle");
+          if (toggle) {
+            toggle.addEventListener("click", () => {
+              if (step.classList.contains("is-open")) closeStep(step);
+              else openStep(step);
+            });
+          }
+
+          // The whole folded row is a click target; the button above carries
+          // the keyboard and screen-reader affordance.
+          const body = step.querySelector(".flow-step__body");
+          if (body) {
+            body.addEventListener("click", (event) => {
+              if (step.classList.contains("is-open")) return;
+              if (event.target.closest(".flow-step__toggle")) return;
+              openStep(step);
+            });
+          }
+        });
+
+        // In-page links smooth-scroll to a position measured before we move
+        // anything, so sit still until the jump has landed.
+        const hold = () => { holdUntil = Date.now() + 1400; };
+        document.addEventListener("click", (event) => {
+          const link = event.target.closest('a[href^="#"]');
+          if (link && link.getAttribute("href").length > 1) hold();
+        }, true);
+        if (location.hash.length > 1) hold();
+
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", schedule);
+        schedule();
+      })();
 
       /* ── Count-up numbers (KPIs, tables, params) — decimal aware ── */
       const counters = document.querySelectorAll("[data-count]");

@@ -432,6 +432,11 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  /* Push the hero block above dead-center so the "Desktop app" note
+     has breathing room above the fold on normal-height viewports. */
+  margin-top: auto;
+  margin-bottom: auto;
+  transform: translateY(-8vh);
 }
 
 .hero__title {
@@ -1957,6 +1962,241 @@ body::before {
 .on-scroll[data-stagger].in-view > *:nth-child(6) { transition-delay: 0.32s; }
 
 /* ============================================================
+   How it works — staged reveal
+   A step can be several screens tall, so revealing it as one block
+   means most of the motion happens off-screen. Instead the rail,
+   connector, header and each feature card animate on their own.
+   ============================================================ */
+
+/* The step itself is only a container — its parts do the moving. */
+.flow-step.on-scroll {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.flow-step__num {
+  position: relative;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.4s ease,
+    transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.flow-step.in-view .flow-step__num {
+  opacity: 1;
+  transform: scale(1);
+}
+.flow-step__num::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+}
+.flow-step.in-view .flow-step__num::after {
+  animation: flowNumPulse 1.1s ease-out 0.3s 1;
+}
+@keyframes flowNumPulse {
+  from { opacity: 0.5; transform: scale(0.9); }
+  to { opacity: 0; transform: scale(1.55); }
+}
+
+.flow-step:not(:last-child) .flow-step__rail::after {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+}
+.flow-step.in-view .flow-step__rail::after {
+  transform: scaleY(1);
+}
+
+/* The rail runs the height of its step so the numbers read as one
+   timeline rather than six disconnected badges. The gradient settles to
+   a hairline after the first few rem, so a tall step isn't a hard rule. */
+@media (min-width: 901px) {
+  .flow-step__rail {
+    align-self: stretch;
+  }
+  .flow-step:not(:last-child) .flow-step__rail::after {
+    background: linear-gradient(to bottom, var(--accent) 0,
+      var(--accent-line) 3rem, var(--accent-line) 100%);
+  }
+}
+
+/* Below 900px the rail is horizontal, so it draws sideways. */
+@media (max-width: 900px) {
+  .flow-step:not(:last-child) .flow-step__rail::after {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .flow-step.in-view .flow-step__rail::after {
+    transform: scaleX(1);
+  }
+}
+
+.flow-step__body {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.06s,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.06s,
+    padding var(--t-normal), box-shadow var(--t-normal),
+    border-color var(--t-normal);
+}
+.flow-step.in-view .flow-step__body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flow-step__head > * {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.flow-step.in-view .flow-step__head > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.flow-step.in-view .flow-step__head > *:nth-child(1) { transition-delay: 0.22s; }
+.flow-step.in-view .flow-step__head > *:nth-child(2) { transition-delay: 0.32s; }
+.flow-step.in-view .flow-step__head > *:nth-child(3) { transition-delay: 0.42s; }
+
+/* Each feature card is observed separately (see index.html). */
+.flow-step__content > .feature:not(.in-view) {
+  opacity: 0;
+  transform: translateY(28px) scale(0.99);
+}
+.flow-step__content > .feature {
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color var(--t-normal);
+}
+
+/* ============================================================
+   How it works — collapsed steps
+   Every step starts as a compact row so the whole sequence reads as
+   a list up front; the step you scroll to opens itself. Gated on
+   .js-accordion so the steps stay open without JS (see index.html).
+   ============================================================ */
+
+.flow-step__toggle { display: none; }
+
+.js-accordion .flow-step__body { position: relative; }
+
+.js-accordion .flow-step__toggle {
+  position: absolute;
+  top: 1.3rem;
+  right: 1.35rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    color var(--t-normal), background var(--t-normal),
+    border-color var(--t-normal);
+}
+.js-accordion .flow-step__toggle svg {
+  width: 14px;
+  height: 14px;
+}
+.js-accordion .flow-step__toggle:hover {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border-color: var(--accent-line);
+}
+.js-accordion .flow-step__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.js-accordion .flow-step.is-open .flow-step__toggle {
+  transform: rotate(180deg);
+}
+
+/* The panel. JS drives the pixel height; CSS owns the resting states. */
+.js-accordion .flow-step__content {
+  overflow: hidden;
+  transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease 0.1s;
+}
+.js-accordion .flow-step:not(.is-open) .flow-step__content {
+  height: 0;
+  opacity: 0;
+}
+.js-accordion .flow-step.is-open .flow-step__content {
+  overflow: visible;
+}
+.js-accordion .flow-step__content.is-animating {
+  overflow: hidden;
+  will-change: height;
+}
+/* Unfolding off-screen: no transitions, so the height the step adds can be
+   measured and handed straight back to the scroll position. */
+.js-accordion .flow-step.is-instant,
+.js-accordion .flow-step.is-instant * {
+  transition: none !important;
+}
+
+/* Closed: the divider under the header has nothing to divide. */
+.js-accordion .flow-step__head {
+  transition: padding-bottom var(--t-normal), margin-bottom var(--t-normal),
+    border-color var(--t-normal);
+}
+.js-accordion .flow-step:not(.is-open) .flow-step__head {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom-color: transparent;
+}
+.js-accordion .flow-step__title {
+  padding-right: 2.75rem;
+}
+
+/* The open step's marker carries a wider halo than the ones waiting. */
+.js-accordion .flow-step__num {
+  transition: opacity 0.4s ease,
+    transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow var(--t-normal);
+}
+.js-accordion .flow-step:not(.is-open) .flow-step__num {
+  box-shadow: 0 0 0 3px var(--accent-subtle),
+    0 3px 8px -3px rgba(0, 58, 112, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+@media (min-width: 721px) {
+  .js-accordion .flow__track {
+    gap: 1.5rem;
+  }
+  .js-accordion .flow-step:not(.is-open) .flow-step__body {
+    padding: 1.15rem 1.35rem 1.2rem;
+    cursor: pointer;
+  }
+  .js-accordion .flow-step:not(.is-open) .flow-step__body:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-line);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@media (max-width: 720px) {
+  .js-accordion .flow-step__toggle {
+    top: 0;
+    right: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .js-accordion .flow-step__title {
+    padding-right: 2.25rem;
+  }
+}
+
+/* ============================================================
    App-faithful recreations
    (mirrors the real Actuals screen + feature screens)
    ============================================================ */
@@ -3461,6 +3701,17 @@ body::before {
     transform: none !important;
     transition: none !important;
   }
+  .flow-step__num,
+  .flow-step:not(:last-child) .flow-step__rail::after,
+  .flow-step__body,
+  .flow-step__head > *,
+  .flow-step__content > .feature,
+  .flow-step__content > .feature:not(.in-view) {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .flow-step__num::after { display: none; }
   .feature:hover { transform: none; }
 
   .feature__shot .minitable tbody tr,
