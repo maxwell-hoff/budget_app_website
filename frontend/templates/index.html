@@ -324,7 +324,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 1</span> -->
                 <h3 class="flow-step__title">Guided setup</h3>
                 <p class="flow-step__lead">A series of questions that will pre-populate your forecasts</p>
               </header>
@@ -334,48 +333,40 @@
                 </svg>
               </button>
               <div class="flow-step__content" id="flowPanel1">
-              <article class="feature feature--hero">
-                <!-- <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3> -->
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step1-guided-setup">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="app-demo accounts-demo">
-                      <div class="accounts-demo__list">
-                        <table class="minitable minitable--accounts">
-                          <tbody id="accountsTableBody">
-                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
-                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
-                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
-                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
-                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
-                            </tr>
-                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
-                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
-                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
-                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
-                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
-                          </tbody>
-                        </table>
+                <article class="feature feature--viz">
+                  <div class="viz" role="img" aria-label="A setup question asks for your primary source of income; your answer fills in your forecast.">
+                    <div class="viz-card viz-q v-in">
+                      <div class="viz-q__top">
+                        <span class="viz-label">Question 7 of 29</span>
+                        <span class="viz-q__bar"><span></span></span>
                       </div>
-                      <div class="accounts-demo__txns">
-                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
-                      </div>
+                      <p class="viz-q__ask">What's your primary source of income?</p>
+                      <ul class="viz-q__opts">
+                        <li class="viz-q__opt viz-q__opt--pick"><span class="viz-q__radio"></span>Salary (W-2)</li>
+                        <li class="viz-q__opt"><span class="viz-q__radio"></span>Freelance or contract</li>
+                        <li class="viz-q__opt"><span class="viz-q__radio"></span>Business owner</li>
+                      </ul>
+                    </div>
+                    <span class="viz-arrow v-in" style="--d: 0.75s"></span>
+                    <div class="viz-card viz-mini v-in" style="--d: 0.85s">
+                      <span class="viz-label">Your forecast</span>
+                      <svg class="viz-mini__chart v-wipe" style="--d: 1.05s" viewBox="0 0 220 96" aria-hidden="true">
+                        <defs>
+                          <linearGradient id="vizGradSetup" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#0a5fae" stop-opacity="0.2"/>
+                            <stop offset="1" stop-color="#0a5fae" stop-opacity="0"/>
+                          </linearGradient>
+                        </defs>
+                        <path fill="url(#vizGradSetup)" d="M6,80 C30,76 45,73 60,70 S95,60 110,56 S140,45 160,40 S200,26 214,22 L214,94 L6,94 Z"/>
+                        <path class="viz-stroke viz-stroke--navy" d="M6,80 C30,76 45,73 60,70 S95,60 110,56 S140,45 160,40 S200,26 214,22"/>
+                      </svg>
+                      <span class="viz-mini__note v-in" style="--d: 1.6s">Pre-filled from your answers</span>
                     </div>
                   </div>
-                </div>
-                <ul class="feature__list">
-                  <li>Completely private. The data never leaves your machine.</li>
-                </ul>
-              </article>
+                  <ul class="feature__list">
+                    <li>Completely private. The data never leaves your machine.</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </article>
@@ -386,7 +377,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 2</span> -->
                 <h3 class="flow-step__title">Clean up what really happened</h3>
                 <p class="flow-step__lead">Transactions have a lot of noise. Removing that noise makes it easier to understand your situation.</p>
               </header>
@@ -396,160 +386,159 @@
                 </svg>
               </button>
               <div class="flow-step__content" id="flowPanel2">
-              <article class="feature feature--hero">
-                <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3>
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-accounts">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="app-demo accounts-demo">
-                      <div class="accounts-demo__list">
-                        <table class="minitable minitable--accounts">
-                          <tbody id="accountsTableBody">
-                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
-                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
-                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
-                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
-                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
-                            </tr>
-                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
-                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
-                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
-                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
-                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div class="accounts-demo__txns">
-                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
-                      </div>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">All Accounts, Transactions, and Balances in One Place</h3>
+                  <div class="viz" role="img" aria-label="Four accounts at three institutions add up to one net worth figure of $177,609.">
+                    <div class="viz-card viz-accts">
+                      <span class="viz-label">Accounts</span>
+                      <ul class="viz-rows">
+                        <li class="viz-row v-in" style="--d: 0.1s">
+                          <span class="viz-mono" style="--c: #003a70">C</span>
+                          <span class="viz-row__name">Checking<small>Chase</small></span>
+                          <span class="viz-row__amt">$8,420</span>
+                        </li>
+                        <li class="viz-row v-in" style="--d: 0.22s">
+                          <span class="viz-mono" style="--c: #2f6fb3">C</span>
+                          <span class="viz-row__name">Credit card<small>Chase</small></span>
+                          <span class="viz-row__amt">&minus;$1,240</span>
+                        </li>
+                        <li class="viz-row v-in" style="--d: 0.34s">
+                          <span class="viz-mono" style="--c: #0d6e3f">F</span>
+                          <span class="viz-row__name">Brokerage<small>Fidelity</small></span>
+                          <span class="viz-row__amt">$96,310</span>
+                        </li>
+                        <li class="viz-row v-in" style="--d: 0.46s">
+                          <span class="viz-mono" style="--c: #5b6b82">S</span>
+                          <span class="viz-row__name">401(k)<small>Schwab</small></span>
+                          <span class="viz-row__amt">$74,119</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <span class="viz-arrow v-in" style="--d: 0.75s"></span>
+                    <div class="viz-card viz-total v-in" style="--d: 0.85s">
+                      <span class="viz-label">Net worth</span>
+                      <span class="viz-total__value" data-count="177609" data-prefix="$">$0</span>
+                      <span class="viz-total__note">4 accounts &middot; 3 institutions</span>
                     </div>
                   </div>
-                </div>
-                <!-- <ul class="feature__list">
-                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
-                  <li>Plan as a household with a shared profile for you and your spouse.</li>
-                </ul> -->
-              </article>
+                </article>
 
-              <article class="feature feature--hero">
-                <h3 class="feature__title">Categorize Transactions</h3>
-                <div class="feature__shot feature__shot--demo" id="accountsDemoShot" aria-hidden="true" data-demo="accounts" data-video="step2-categorize">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name" id="accountsShotName">accounts — Chase Checking</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="app-demo accounts-demo">
-                      <div class="accounts-demo__list">
-                        <table class="minitable minitable--accounts">
-                          <tbody id="accountsTableBody">
-                            <tr data-account="checking" class="is-active" tabindex="0" role="button" aria-pressed="true">
-                              <td>Chase Checking<span class="acct-sub">Chase · Checking</span></td>
-                              <td class="num" data-count="8420.13" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="credit" tabindex="0" role="button" aria-pressed="false">
-                              <td>Sapphire Reserve<span class="acct-sub">Chase · Credit</span></td>
-                              <td class="num neg" data-count="1240.55" data-decimals="2" data-prefix="−$">−$0.00</td>
-                            </tr>
-                            <tr data-account="brokerage" tabindex="0" role="button" aria-pressed="false">
-                              <td>Brokerage<span class="acct-sub">Fidelity · Investment</span></td>
-                              <td class="num" data-count="96310.22" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr data-account="retirement" tabindex="0" role="button" aria-pressed="false">
-                              <td>401(k)<span class="acct-sub">Schwab · Retirement</span></td>
-                              <td class="num" data-count="74118.90" data-decimals="2" data-prefix="$">$0.00</td>
-                            </tr>
-                            <tr class="is-total"><td>Net Worth</td><td class="num" data-count="177608.70" data-decimals="2" data-prefix="$">$0.00</td></tr>
-                          </tbody>
-                        </table>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">Categorize Transactions</h3>
+                  <div class="viz" role="img" aria-label="Three uncategorized transactions are sorted into Salary, Groceries, and Transportation.">
+                    <div class="viz-card viz-list">
+                      <div class="viz-list__head">
+                        <span class="viz-label">Transaction</span>
+                        <span class="viz-label">Category</span>
                       </div>
-                      <div class="accounts-demo__txns">
-                        <div class="accounts-txn-list" id="accountsTxnList" role="list" aria-live="polite"></div>
-                      </div>
+                      <ul class="viz-rows">
+                        <li class="viz-row viz-row--cat">
+                          <span class="viz-mono" style="--c: #0d6e3f">N</span>
+                          <span class="viz-row__name">Northwind Analytics<small>Payroll &middot; Jul 15</small></span>
+                          <span class="viz-row__amt is-pos">+$2,723</span>
+                          <span class="viz-swap" style="--d: 0.45s; --c: #0d6e3f">
+                            <span class="viz-swap__from">Uncategorized</span>
+                            <span class="viz-swap__to">Salary</span>
+                          </span>
+                        </li>
+                        <li class="viz-row viz-row--cat">
+                          <span class="viz-mono" style="--c: #b7791f">T</span>
+                          <span class="viz-row__name">Trader Joe's<small>Jul 14</small></span>
+                          <span class="viz-row__amt">&minus;$84</span>
+                          <span class="viz-swap" style="--d: 0.85s; --c: #b7791f">
+                            <span class="viz-swap__from">Uncategorized</span>
+                            <span class="viz-swap__to">Groceries</span>
+                          </span>
+                        </li>
+                        <li class="viz-row viz-row--cat">
+                          <span class="viz-mono" style="--c: #2f6fb3">S</span>
+                          <span class="viz-row__name">Shell<small>Jul 12</small></span>
+                          <span class="viz-row__amt">&minus;$46</span>
+                          <span class="viz-swap" style="--d: 1.25s; --c: #2f6fb3">
+                            <span class="viz-swap__from">Uncategorized</span>
+                            <span class="viz-swap__to">Transportation</span>
+                          </span>
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                </div>
-                <!-- <ul class="feature__list">
-                  <li>See your real net worth in one number — every account, every institution, in one place.</li>
-                  <li>Plan as a household with a shared profile for you and your spouse.</li>
-                </ul> -->
-              </article>
+                </article>
 
-              <article class="feature feature--hero feature--reality">
-                <h3 class="feature__title">Split transactions</h3>
-                <div class="feature__shot feature__shot--demo" id="realityDemoShot" aria-hidden="true" data-demo="reality" data-video="step2-split-transactions">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">transactions · actuals chart</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="app-demo">
-                      <div class="app-demo__txns">
-                        <div class="txn-demo txn-demo--h6" id="realityTxnList" role="list"></div>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">Split transactions</h3>
+                  <div class="viz" role="img" aria-label="A $150 dinner is split into your $50 share and $100 your friends paid back, so only $50 counts as spending.">
+                    <div class="viz-card viz-split">
+                      <div class="viz-row">
+                        <span class="viz-mono" style="--c: #003a70">R</span>
+                        <span class="viz-row__name">Riverside Bistro<small>Dinner with friends</small></span>
+                        <span class="viz-row__amt">&minus;$150</span>
                       </div>
-                      <div class="app-demo__chart">
-                        <div class="mini-chart-toolbar">
-                          <span class="mini-chart-toolbar__label">Month</span>
-                          <span class="mini-chart-toolbar__status" id="realityChartStatus"></span>
-                        </div>
-                        <svg class="mini-chart" id="realityChartSvg" viewBox="0 0 560 220" aria-hidden="true"></svg>
-                        <div class="mini-chart-legend">
-                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
-                        </div>
+                      <div class="viz-split__bar">
+                        <span class="viz-split__seg viz-split__seg--mine"></span>
+                        <span class="viz-split__seg viz-split__seg--group"></span>
+                      </div>
+                      <div class="viz-key v-in" style="--d: 0.95s">
+                        <i style="--c: #003a70"></i>
+                        <span>Your share<small>Dining</small></span>
+                        <b>$50</b>
+                      </div>
+                      <div class="viz-key viz-key--muted v-in" style="--d: 1.1s">
+                        <i style="--c: #b9cfe8"></i>
+                        <span>Paid back by friends<small>Transfer &middot; not spending</small></span>
+                        <b>$100</b>
+                      </div>
+                      <div class="viz-split__total v-in" style="--d: 1.4s">
+                        <span>Counts toward spending</span>
+                        <b>$50</b>
                       </div>
                     </div>
                   </div>
-                </div>
-                <ul class="feature__list">
-                  <li>You and three friends go out to dinner for $150. You pay and they each Venmo you $50.</li>
-                  <li>Split the charge — $100 for the group share, $50 for yours.</li>
-                  <li>Mark the $100 share and two Venmo payments as transfers — only the true expense is left: your $50 portion.</li>
-                </ul>
-              </article>
+                  <ul class="feature__list">
+                    <li>You and three friends go out to dinner for $150. You pay and they each Venmo you $50.</li>
+                    <li>Split the charge — $100 for the group share, $50 for yours.</li>
+                    <li>Mark the $100 share and two Venmo payments as transfers — only the true expense is left: your $50 portion.</li>
+                  </ul>
+                </article>
 
-              <article class="feature feature--hero feature--reality">
-                <h3 class="feature__title">Spread out big purchases and income spikes over time</h3>
-                <div class="feature__shot feature__shot--demo" id="realityDemoShot2" aria-hidden="true" data-demo="reality-2" data-video="step2-amortize">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">transactions · actuals chart</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="app-demo">
-                      <div class="app-demo__txns">
-                        <div class="txn-demo txn-demo--h1" id="realityTxnList2" role="list"></div>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">Spread out big purchases and income spikes over time</h3>
+                  <div class="viz" role="img" aria-label="A $12,000 December bonus is spread evenly across the year, adding $1,000 to every month.">
+                    <div class="viz-card viz-spread">
+                      <div class="viz-spread__head">
+                        <span class="viz-label">Monthly income</span>
+                        <span class="viz-swap viz-swap--plain" style="--d: 1.1s; --c: #003a70">
+                          <span class="viz-swap__from">Bonus lands in December</span>
+                          <span class="viz-swap__to">+$1,000 every month</span>
+                        </span>
                       </div>
-                      <div class="app-demo__chart">
-                        <div class="mini-chart-toolbar">
-                          <span class="mini-chart-toolbar__label">Month</span>
-                          <span class="mini-chart-toolbar__status" id="realityChartStatus2"></span>
-                        </div>
-                        <svg class="mini-chart" id="realityChartSvg2" viewBox="0 0 560 220" aria-hidden="true"></svg>
-                        <div class="mini-chart-legend">
-                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
-                        </div>
+                      <div class="viz-spread__plot">
+                        <span class="viz-bar" style="--i: 0"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 1"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 2"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 3"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 4"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 5"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 6"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 7"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 8"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 9"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar" style="--i: 10"><span class="viz-bar__cap"></span><span class="viz-bar__base"></span></span>
+                        <span class="viz-bar viz-bar--spike" style="--i: 11">
+                          <span class="viz-bar__flag">+$12,000</span>
+                          <span class="viz-bar__spike"></span><span class="viz-bar__cap"></span><span class="viz-bar__base"></span>
+                        </span>
+                      </div>
+                      <div class="viz-spread__axis" aria-hidden="true">
+                        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span>
+                        <span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
                       </div>
                     </div>
                   </div>
-                </div>
-                <ul class="feature__list">
-                  <li>Spread out a bonus to all 12 months</li>
-                  <li>Spread out a home renovation over several years</li>
-                </ul>
-              </article>
+                  <ul class="feature__list">
+                    <li>Spread out a bonus to all 12 months</li>
+                    <li>Spread out a home renovation over several years</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </article>
@@ -560,7 +549,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 3</span> -->
                 <h3 class="flow-step__title">Project it forward</h3>
                 <p class="flow-step__lead">Because knowing where you're going will inform you what you should budget today.</p>
               </header>
@@ -570,53 +558,47 @@
                 </svg>
               </button>
               <div class="flow-step__content" id="flowPanel3">
-              <article class="feature feature--hero feature--forecast">
-                <h3 class="feature__title">Fine-tuned Forecasting</h3>
-                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step3-forecast">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">forecast · projection chart</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="forecast-demo forecast-demo--wide">
-                      <div class="forecast-demo__params">
-                        <p class="forecast-demo__params-title">Parameters</p>
-                        <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
-                          <span class="paramgrid__label">Annual growth</span>
-                          <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
-                            <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
-                          </button>
-                          <span class="paramgrid__label">Frequency</span>
-                          <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                          <span class="paramgrid__label">Inflation</span>
-                          <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
-                            <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
-                          </button>
-                          <span class="paramgrid__label">Project until</span>
-                          <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
-                        </div>
-                        <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">Fine-tuned Forecasting</h3>
+                  <div class="viz" role="img" aria-label="Projected salary grows 3% a year from age 33 until retirement at 62, then steps down to retirement income through age 95.">
+                    <div class="viz-card viz-chart">
+                      <div class="viz-chart__head">
+                        <span class="viz-label">Projected income</span>
+                        <span class="viz-pill v-in" style="--d: 0.2s">Salary grows 3% a year</span>
                       </div>
-                      <div class="app-demo__chart app-demo__chart--forecast">
-                        <div class="mini-chart-toolbar">
-                          <span class="mini-chart-toolbar__label">Year</span>
-                          <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
-                        </div>
-                        <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
-                        <div class="mini-chart-legend">
-                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
-                        </div>
+                      <div class="viz-plot">
+                        <svg viewBox="0 0 800 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-grid" d="M48,28 H780 M48,93 H780 M48,158 H780"/>
+                          <path class="viz-grid viz-grid--base" d="M48,222 H780"/>
+                        </svg>
+                        <svg class="v-wipe" style="--d: 0.35s" viewBox="0 0 800 250" preserveAspectRatio="none" aria-hidden="true">
+                          <defs>
+                            <linearGradient id="vizGradForecast" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0" stop-color="#0a5fae" stop-opacity="0.2"/>
+                              <stop offset="1" stop-color="#0a5fae" stop-opacity="0"/>
+                            </linearGradient>
+                          </defs>
+                          <path fill="url(#vizGradForecast)" d="M48.0,144.4 C53.9,143.2 71.6,139.7 83.4,137.2 C95.2,134.7 107.0,132.1 118.8,129.3 C130.6,126.6 142.5,123.7 154.3,120.7 C166.1,117.8 177.9,114.6 189.7,111.4 C201.5,108.1 213.3,104.7 225.1,101.1 C236.9,97.5 248.7,93.8 260.5,89.9 C272.3,86.0 284.1,81.9 295.9,77.6 C307.7,73.4 319.5,68.9 331.4,64.3 C343.2,59.6 356.9,53.8 366.8,49.6 C376.6,45.4 386.5,40.9 390.4,39.1 L402.2,159.5 C416.0,158.3 455.3,155.2 484.8,152.6 C514.4,150.0 547.8,147.0 579.3,143.8 C610.8,140.7 640.3,137.7 673.7,134.0 C707.2,130.2 762.3,123.4 780.0,121.3 L780.0,222 L48.0,222 Z"/>
+                          <path class="viz-stroke viz-stroke--navy" d="M48.0,144.4 C53.9,143.2 71.6,139.7 83.4,137.2 C95.2,134.7 107.0,132.1 118.8,129.3 C130.6,126.6 142.5,123.7 154.3,120.7 C166.1,117.8 177.9,114.6 189.7,111.4 C201.5,108.1 213.3,104.7 225.1,101.1 C236.9,97.5 248.7,93.8 260.5,89.9 C272.3,86.0 284.1,81.9 295.9,77.6 C307.7,73.4 319.5,68.9 331.4,64.3 C343.2,59.6 356.9,53.8 366.8,49.6 C376.6,45.4 386.5,40.9 390.4,39.1 L402.2,159.5 C416.0,158.3 455.3,155.2 484.8,152.6 C514.4,150.0 547.8,147.0 579.3,143.8 C610.8,140.7 640.3,137.7 673.7,134.0 C707.2,130.2 762.3,123.4 780.0,121.3"/>
+                        </svg>
+                        <span class="viz-vline v-in" style="--d: 1.3s; left: 48.8%; top: 15.6%"></span>
+                        <span class="viz-dot" style="--d: 1.35s; --c: #003a70; left: 48.8%; top: 15.6%"></span>
+                        <span class="viz-note v-in" style="--d: 1.45s; left: 48.8%; top: 15.6%">Retire at 62</span>
+                      </div>
+                      <div class="viz-axis" aria-hidden="true">
+                        <span style="left: 6%">Age 33</span>
+                        <span style="left: 23.7%">45</span>
+                        <span style="left: 48.8%">62</span>
+                        <span style="left: 75.4%">80</span>
+                        <span style="left: 97.5%">95</span>
                       </div>
                     </div>
                   </div>
-                </div>
-                <ul class="feature__list">
-                  <li>Forecast a raise, a child, a home purchase, etc.</li>
-                  <li>Forecast as high-level or fine-tuned as you like</li>
-                </ul>
-              </article>
+                  <ul class="feature__list">
+                    <li>Forecast a raise, a child, a home purchase, etc.</li>
+                    <li>Forecast as high-level or fine-tuned as you like</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </article>
@@ -627,7 +609,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 4</span> -->
                 <h3 class="flow-step__title">Test the tradeoffs</h3>
                 <p class="flow-step__lead">Side by side comparison of different scenarios because life can go in many different directions.</p>
               </header>
@@ -637,53 +618,53 @@
                 </svg>
               </button>
               <div class="flow-step__content" id="flowPanel4">
-              <article class="feature feature--hero feature--forecast">
-                <h3 class="feature__title">Scenario Planning</h3>
-                <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-scenarios">
-                  <div class="shot__bar">
-                    <span class="dots"><span></span><span></span><span></span></span>
-                    <span class="shot__name">forecast · projection chart</span>
-                  </div>
-                  <div class="shot__body shot__body--demo">
-                    <div class="forecast-demo forecast-demo--wide">
-                      <div class="forecast-demo__params">
-                        <p class="forecast-demo__params-title">Parameters</p>
-                        <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
-                          <span class="paramgrid__label">Annual growth</span>
-                          <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
-                            <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
-                          </button>
-                          <span class="paramgrid__label">Frequency</span>
-                          <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                          <span class="paramgrid__label">Inflation</span>
-                          <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
-                            <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
-                          </button>
-                          <span class="paramgrid__label">Project until</span>
-                          <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
-                        </div>
-                        <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
+                <article class="feature feature--viz">
+                  <h3 class="feature__title">Scenario Planning</h3>
+                  <div class="viz" role="img" aria-label="Three life plans compared by projected balance at age 95: keep renting $2.4 million, buy a home $1.9 million, buy a home and have two kids $1.1 million.">
+                    <div class="viz-card viz-chart viz-chart--side">
+                      <div class="viz-chart__head">
+                        <span class="viz-label">Projected balance</span>
                       </div>
-                      <div class="app-demo__chart app-demo__chart--forecast">
-                        <div class="mini-chart-toolbar">
-                          <span class="mini-chart-toolbar__label">Year</span>
-                          <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
-                        </div>
-                        <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
-                        <div class="mini-chart-legend">
-                          <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
-                          <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
-                        </div>
+                      <div class="viz-plot">
+                        <svg viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-grid" d="M40,28 H540 M40,93 H540 M40,158 H540"/>
+                          <path class="viz-grid viz-grid--base" d="M40,222 H540"/>
+                        </svg>
+                        <svg class="v-wipe" style="--d: 0.2s" viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-stroke" style="stroke: #003a70" d="M40.0,216.8 C56.1,213.3 107.2,205.0 136.8,195.9 C166.3,186.8 190.5,176.6 217.4,162.3 C244.3,148.0 271.2,126.2 298.1,110.1 C324.9,93.9 351.8,75.9 378.7,65.3 C405.6,54.7 432.5,50.4 459.4,46.7 C486.2,42.9 526.6,43.5 540.0,42.9"/>
+                        </svg>
+                        <svg class="v-wipe" style="--d: 0.45s" viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-stroke" style="stroke: #2f6fb3" d="M40.0,216.8 C56.1,214.5 107.2,210.6 136.8,203.3 C166.3,196.1 190.5,185.3 217.4,173.5 C244.3,161.7 271.2,144.9 298.1,132.5 C324.9,120.0 351.8,107.0 378.7,98.9 C405.6,90.8 432.5,87.1 459.4,84.0 C486.2,80.9 526.6,80.9 540.0,80.2"/>
+                        </svg>
+                        <svg class="v-wipe" style="--d: 0.7s" viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-stroke" style="stroke: #8fb1d9" d="M40.0,216.8 C56.1,215.8 107.2,214.9 136.8,210.8 C166.3,206.7 190.5,199.6 217.4,192.2 C244.3,184.7 271.2,173.5 298.1,166.0 C324.9,158.6 351.8,151.7 378.7,147.4 C405.6,143.0 432.5,141.2 459.4,139.9 C486.2,138.7 526.6,139.9 540.0,139.9"/>
+                        </svg>
+                        <span class="viz-dot" style="--d: 1.7s; --c: #003a70; left: 96.4%; top: 17.2%"></span>
+                        <span class="viz-dot" style="--d: 1.95s; --c: #2f6fb3; left: 96.4%; top: 32.1%"></span>
+                        <span class="viz-dot" style="--d: 2.2s; --c: #8fb1d9; left: 96.4%; top: 56%"></span>
+                      </div>
+                      <div class="viz-axis" aria-hidden="true">
+                        <span style="left: 7.1%">Age 33</span>
+                        <span style="left: 31.6%">50</span>
+                        <span style="left: 53.2%">65</span>
+                        <span style="left: 74.8%">80</span>
+                        <span style="left: 96.4%">95</span>
                       </div>
                     </div>
+                    <div class="viz-card viz-side">
+                      <span class="viz-label">Balance at 95</span>
+                      <ul class="viz-legend">
+                        <li class="v-in" style="--d: 1.7s"><i style="--c: #003a70"></i><span>Keep renting</span><b>$2.4M</b></li>
+                        <li class="v-in" style="--d: 1.95s"><i style="--c: #2f6fb3"></i><span>Buy a home</span><b>$1.9M</b></li>
+                        <li class="v-in" style="--d: 2.2s"><i style="--c: #8fb1d9"></i><span>Buy a home + 2 kids</span><b>$1.1M</b></li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                <ul class="feature__list">
-                  <li>Compare buying a house vs. renting one.</li>
-                  <li>Compare how a car purchase effects when you'll be able to retire.</li>
-                </ul>
-              </article>
+                  <ul class="feature__list">
+                    <li>Compare buying a house vs. renting one.</li>
+                    <li>Compare how a car purchase effects when you'll be able to retire.</li>
+                  </ul>
+                </article>
               </div>
             </div>
           </article>
@@ -694,7 +675,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 5</span> -->
                 <h3 class="flow-step__title">Set a working number</h3>
                 <p class="flow-step__lead">Not a rule you're locked into — a starting point</p>
               </header>
@@ -720,7 +700,6 @@
             </div>
             <div class="flow-step__body">
               <header class="flow-step__head">
-                <!-- <span class="flow-step__kicker">Step 6</span> -->
                 <h3 class="flow-step__title">Track, then adjust</h3>
                 <p class="flow-step__lead">When life shifts, feed it back into the forecast.</p>
               </header>
@@ -730,46 +709,49 @@
                 </svg>
               </button>
               <div class="flow-step__content" id="flowPanel6">
-                <article class="feature feature--hero feature--forecast">
+                <article class="feature feature--viz">
                   <h3 class="feature__title">Budget vs. Actual Insights</h3>
-                  <div class="feature__shot feature__shot--demo" id="forecastDemoShot" aria-hidden="true" data-demo="forecast" data-video="step4-budget-vs-actual">
-                    <div class="shot__bar">
-                      <span class="dots"><span></span><span></span><span></span></span>
-                      <span class="shot__name">forecast · projection chart</span>
-                    </div>
-                    <div class="shot__body shot__body--demo">
-                      <div class="forecast-demo forecast-demo--wide">
-                        <div class="forecast-demo__params">
-                          <p class="forecast-demo__params-title">Parameters</p>
-                          <div class="paramgrid paramgrid--interactive paramgrid--panel" id="forecastParams">
-                            <span class="paramgrid__label">Annual growth</span>
-                            <button type="button" class="paramgrid__control paramgrid__control--focus" data-param="growth" aria-label="Adjust annual growth">
-                              <span id="forecastGrowthVal">3.5%</span> <span class="caret">▲▼</span>
-                            </button>
-                            <span class="paramgrid__label">Frequency</span>
-                            <span class="paramgrid__control">Bi-weekly <span class="caret">▼</span></span>
-                            <span class="paramgrid__label">Inflation</span>
-                            <button type="button" class="paramgrid__control" data-param="inflation" aria-label="Adjust inflation">
-                              <span id="forecastInflationVal">2.4%</span> <span class="caret">▲▼</span>
-                            </button>
-                            <span class="paramgrid__label">Project until</span>
-                            <span class="paramgrid__control">Dec 2031 <span class="caret">▼</span></span>
-                          </div>
-                          <p class="forecast-demo__params-hint">Click growth or inflation to see the projection shift.</p>
-                        </div>
-                        <div class="app-demo__chart app-demo__chart--forecast">
-                          <div class="mini-chart-toolbar">
-                            <span class="mini-chart-toolbar__label">Year</span>
-                            <span class="mini-chart-toolbar__status" id="forecastChartStatus">Income · Expenses · Net Income</span>
-                          </div>
-                          <svg class="mini-chart mini-chart--compact" id="forecastChartSvg" viewBox="0 0 560 110" aria-hidden="true"></svg>
-                          <div class="mini-chart-legend">
-                            <span class="mini-chart-legend__item mini-chart-legend__item--income">Income</span>
-                            <span class="mini-chart-legend__item mini-chart-legend__item--expense">Expenses</span>
-                            <span class="mini-chart-legend__item mini-chart-legend__item--net">Net Income</span>
-                          </div>
-                        </div>
+                  <div class="viz" role="img" aria-label="Actual spending this year tracked against the plan: $31,153 spent against $30,128 planned, $1,025 over plan.">
+                    <div class="viz-card viz-chart viz-chart--side">
+                      <div class="viz-chart__head">
+                        <span class="viz-label">Spending this year</span>
+                        <span class="viz-keys">
+                          <span class="viz-keys__item"><i class="is-solid"></i>Actual</span>
+                          <span class="viz-keys__item"><i class="is-dashed"></i>Plan</span>
+                        </span>
                       </div>
+                      <div class="viz-plot">
+                        <svg viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <path class="viz-grid" d="M40,28 H540 M40,93 H540 M40,158 H540"/>
+                          <path class="viz-grid viz-grid--base" d="M40,222 H540"/>
+                          <path class="viz-stroke viz-stroke--plan" d="M40.0,222.0 L540.0,39.8"/>
+                        </svg>
+                        <svg class="v-wipe" style="--d: 0.3s" viewBox="0 0 560 250" preserveAspectRatio="none" aria-hidden="true">
+                          <defs>
+                            <linearGradient id="vizGradBva" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0" stop-color="#0a5fae" stop-opacity="0.18"/>
+                              <stop offset="1" stop-color="#0a5fae" stop-opacity="0"/>
+                            </linearGradient>
+                          </defs>
+                          <path fill="url(#vizGradBva)" d="M40.0,222.0 C46.9,219.4 67.8,212.2 81.7,206.4 C95.6,200.5 109.4,193.0 123.3,187.0 C137.2,181.0 151.1,175.5 165.0,170.3 C178.9,165.2 192.8,161.7 206.7,156.3 C220.6,151.0 234.4,143.9 248.3,138.3 C262.2,132.7 276.1,127.1 290.0,122.8 C303.9,118.4 324.7,113.9 331.7,112.1 L331.7,222 L40,222 Z"/>
+                          <path class="viz-stroke viz-stroke--navy" d="M40.0,222.0 C46.9,219.4 67.8,212.2 81.7,206.4 C95.6,200.5 109.4,193.0 123.3,187.0 C137.2,181.0 151.1,175.5 165.0,170.3 C178.9,165.2 192.8,161.7 206.7,156.3 C220.6,151.0 234.4,143.9 248.3,138.3 C262.2,132.7 276.1,127.1 290.0,122.8 C303.9,118.4 324.7,113.9 331.7,112.1"/>
+                        </svg>
+                        <span class="viz-dot" style="--d: 1.25s; --c: #003a70; left: 59.2%; top: 44.8%"></span>
+                      </div>
+                      <div class="viz-axis viz-axis--months" aria-hidden="true">
+                        <span style="left: 10.9%">J</span><span style="left: 18.3%">F</span><span style="left: 25.7%">M</span>
+                        <span style="left: 33.2%">A</span><span style="left: 40.6%">M</span><span style="left: 48.1%">J</span>
+                        <span style="left: 55.5%">J</span><span style="left: 62.9%">A</span><span style="left: 70.4%">S</span>
+                        <span style="left: 77.8%">O</span><span style="left: 85.3%">N</span><span style="left: 92.7%">D</span>
+                      </div>
+                    </div>
+                    <div class="viz-card viz-side">
+                      <span class="viz-label">Year to date</span>
+                      <ul class="viz-legend viz-legend--plain">
+                        <li class="v-in" style="--d: 0.9s"><span>Planned</span><b>$30,128</b></li>
+                        <li class="v-in" style="--d: 1.05s"><span>Actual</span><b>$31,153</b></li>
+                      </ul>
+                      <span class="viz-pill viz-pill--warn v-in" style="--d: 1.4s">$1,025 over plan</span>
                     </div>
                   </div>
                   <ul class="feature__list">
@@ -1172,713 +1154,25 @@
         counters.forEach(runCount);
       }
 
-      /* ── Bring each app-sample (and the hero guided-setup window) to life ── */
-      const liveEls = document.querySelectorAll(".feature__shot, .setup");
-      const activateLive = (el) => {
-        el.classList.add("is-live");
-        startSampleLoops(el);
-      };
-      if (reduceMotion || !("IntersectionObserver" in window)) {
-        liveEls.forEach((el) => {
-          el.classList.add("is-live");
-          startSampleLoops(el);
-        });
-      } else {
-        const liveObserver = new IntersectionObserver(
+      /* ── How it works illustrations: play once when mostly on screen ──
+         Steps start folded, so this also fires the first time a panel opens. */
+      (function () {
+        const figures = document.querySelectorAll(".viz");
+        if (reduceMotion || !("IntersectionObserver" in window)) {
+          figures.forEach((el) => el.classList.add("is-live"));
+          return;
+        }
+        const io = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                activateLive(entry.target);
-                liveObserver.unobserve(entry.target);
-              }
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-live");
+              io.unobserve(entry.target);
             });
           },
-          { threshold: 0.12, rootMargin: "80px 0px 0px 0px" }
+          { threshold: 0.45 }
         );
-        liveEls.forEach((el) => liveObserver.observe(el));
-      }
-
-      /* ── Per-sample looping behaviors ── */
-      function startSampleLoops(shot) {
-        /* Custom demos manage their own animation */
-        if (shot.dataset.demo === "reality" || shot.dataset.demo === "reality-2" || shot.dataset.demo === "forecast" || shot.dataset.demo === "accounts") {
-          return;
-        }
-
-        /* Accounts: refresh button re-runs the balance count-up */
-        const refreshBtn = shot.querySelector(".shot__refresh");
-        if (refreshBtn) {
-          const refreshAccounts = () => {
-            if (!reduceMotion) refreshBtn.classList.add("is-spinning");
-            shot.querySelectorAll(".num[data-count]").forEach((el) => {
-              const dec = parseInt(el.dataset.decimals || "0", 10);
-              el.textContent = (el.dataset.prefix || "") + fmtNum(0, dec) + (el.dataset.suffix || "");
-              runCount(el);
-            });
-            if (!reduceMotion) {
-              setTimeout(() => refreshBtn.classList.remove("is-spinning"), 900);
-            }
-          };
-          refreshBtn.addEventListener("click", refreshAccounts);
-          if (!reduceMotion) {
-            setTimeout(() => {
-              refreshAccounts();
-              setInterval(refreshAccounts, 2400);
-            }, 1100);
-          }
-        }
-
-        if (reduceMotion) return;
-
-        /* Scenario card: cycle the active tab + highlight matching row */
-        const sTabs = shot.querySelectorAll(".shot__tabs .shot__tab");
-        const sRows = shot.querySelectorAll(".minitable tbody tr");
-        if (sTabs.length && sRows.length && sTabs.length === sRows.length) {
-          let i = 0;
-          const cycle = () => {
-            sTabs.forEach((t, n) => t.classList.toggle("is-active", n === i));
-            sRows.forEach((r, n) => r.classList.toggle("is-hot", n === i));
-            i = (i + 1) % sTabs.length;
-          };
-          setTimeout(() => {
-            cycle();
-            setInterval(cycle, 1000);
-          }, 550);
-        }
-
-        /* Advanced accounting: toggle the Transfer flag on/off
-           (only in the feature sample, not the hero transaction list) */
-        const flag = shot.classList.contains("feature__shot") && !shot.dataset.demo
-          ? shot.querySelector(".flagbox")
-          : null;
-        if (flag) {
-          setTimeout(() => {
-            flag.classList.add("is-on");
-            setInterval(() => flag.classList.toggle("is-on"), 1300);
-          }, 450);
-        }
-
-        /* Guided setup (hero + feature card): cycle the selected answer */
-        const setupOpts = shot.querySelectorAll(".setup__option, .setupmini__opt");
-        if (setupOpts.length) {
-          let s = 0;
-          const cycleOpt = () => {
-            setupOpts.forEach((o, n) => o.classList.toggle("is-active", n === s));
-            s = (s + 1) % setupOpts.length;
-          };
-          setTimeout(() => {
-            cycleOpt();
-            setInterval(cycleOpt, 1050);
-          }, 650);
-        }
-      }
-
-      /* ── Mini chart renderer (mirrors app: income/expense bars + net line) ── */
-      const CHART_COLORS = {
-        income: "#0d6e3f",
-        expense: "#c0392b",
-        net: "#5b2c8c",
-        grid: "rgba(26, 26, 46, 0.08)",
-        axis: "#6b7280",
-        zero: "rgba(26, 26, 46, 0.22)",
-      };
-
-      function lerp(a, b, t) {
-        return a + (b - a) * t;
-      }
-
-      function lerpSeries(from, to, t) {
-        const len = Math.max(from.length, to.length);
-        return Array.from({ length: len }, (_, i) => ({
-          label: to[i]?.label ?? from[i]?.label ?? "",
-          income: lerp(from[i]?.income ?? 0, to[i]?.income ?? 0, t),
-          expenses: lerp(from[i]?.expenses ?? 0, to[i]?.expenses ?? 0, t),
-          net: lerp(from[i]?.net ?? 0, to[i]?.net ?? 0, t),
-        }));
-      }
-
-      function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
-      }
-
-      function chartBounds(series) {
-        if (!series?.length) return { yMin: -500, yMax: 500 };
-        let yMax = 0;
-        let yMin = 0;
-        for (const row of series) {
-          yMax = Math.max(yMax, row.income, row.net, 0);
-          yMin = Math.min(yMin, row.expenses, row.net, 0);
-        }
-        const span = Math.max(yMax - yMin, 400);
-        const pad = span * 0.14;
-        return { yMin: yMin - pad, yMax: yMax + pad };
-      }
-
-      function miniChartSize(svg) {
-        const vb = svg?.viewBox?.baseVal;
-        const W = vb?.width > 0 ? vb.width : 560;
-        const H = vb?.height > 0 ? vb.height : 220;
-        return { W, H };
-      }
-
-      function renderMiniChart(svg, series, bounds) {
-        if (!svg || !series?.length) return;
-        const { yMin, yMax } = bounds || chartBounds(series);
-        const { W, H } = miniChartSize(svg);
-        const scale = H / 220;
-        const pad = { top: 16 * scale, right: 12, bottom: 28 * scale, left: 36 };
-        const plotW = W - pad.left - pad.right;
-        const plotH = H - pad.top - pad.bottom;
-        const zeroY = pad.top + ((yMax - 0) / (yMax - yMin)) * plotH;
-        const yScale = (v) => pad.top + ((yMax - v) / (yMax - yMin)) * plotH;
-        const n = series.length;
-        const slot = plotW / n;
-        const barW = Math.min(18, slot * 0.32);
-        const gap = (slot - barW * 2) / 3;
-        const labelSize = 9;
-        const axisSize = 8;
-
-        const fmtK = (v) => {
-          const abs = Math.abs(v);
-          if (abs >= 1000) return (v < 0 ? "−" : "") + "$" + (abs / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-          return (v < 0 ? "−" : "") + "$" + Math.round(abs);
-        };
-
-        let html = "";
-        html += `<line x1="${pad.left}" y1="${zeroY}" x2="${W - pad.right}" y2="${zeroY}" stroke="${CHART_COLORS.zero}" stroke-width="1"/>`;
-
-        for (let i = 0; i < n; i++) {
-          const x0 = pad.left + i * slot + gap;
-          const row = series[i];
-          const incH = Math.max(0, zeroY - yScale(row.income));
-          const expH = Math.max(0, yScale(row.expenses) - zeroY);
-          if (row.income > 0) {
-            html += `<rect x="${x0}" y="${yScale(row.income)}" width="${barW}" height="${incH}" fill="${CHART_COLORS.income}"/>`;
-          }
-          if (row.expenses < 0) {
-            html += `<rect x="${x0 + barW + gap}" y="${zeroY}" width="${barW}" height="${expH}" fill="${CHART_COLORS.expense}"/>`;
-          }
-          html += `<text x="${pad.left + i * slot + slot / 2}" y="${H - 8 * scale}" text-anchor="middle" font-family="Inter,sans-serif" font-size="${labelSize}" fill="${CHART_COLORS.axis}">${n <= 8 || i % 2 === 0 || i === n - 1 ? row.label : ""}</text>`;
-        }
-
-        let lineD = "";
-        series.forEach((row, i) => {
-          const cx = pad.left + i * slot + slot / 2;
-          const cy = yScale(row.net);
-          lineD += (i ? " L" : "M") + cx + " " + cy;
-        });
-        html += `<path d="${lineD}" fill="none" stroke="${CHART_COLORS.net}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-
-        html += `<text x="4" y="${pad.top + 4 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">${fmtK(yMax)}</text>`;
-        html += `<text x="4" y="${zeroY + 3 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">$0</text>`;
-        html += `<text x="4" y="${H - pad.bottom + 10 * scale}" font-family="Inter,sans-serif" font-size="${axisSize}" fill="${CHART_COLORS.axis}">${fmtK(yMin)}</text>`;
-
-        svg.innerHTML = html;
-      }
-
-      function animateChart(svg, from, to, duration, onDone, boundsOverride) {
-        const bounds = boundsOverride || chartBounds([...from, ...to]);
-        if (!svg || reduceMotion) {
-          renderMiniChart(svg, to, bounds);
-          if (onDone) onDone();
-          return;
-        }
-        const start = performance.now();
-        const tick = (now) => {
-          const t = easeOutCubic(Math.min((now - start) / duration, 1));
-          renderMiniChart(svg, lerpSeries(from, to, t), bounds);
-          if (t < 1) requestAnimationFrame(tick);
-          else if (onDone) onDone();
-        };
-        requestAnimationFrame(tick);
-      }
-
-      /* ── All Accounts demo ── */
-      (function initAccountsDemo() {
-        const shot = document.getElementById("accountsDemoShot");
-        const list = document.getElementById("accountsTxnList");
-        const tableBody = document.getElementById("accountsTableBody");
-        const shotName = document.getElementById("accountsShotName");
-        if (!shot || !list || !tableBody) return;
-
-        const ACCOUNT_ORDER = ["checking", "credit", "brokerage", "retirement"];
-        const ACCOUNTS = {
-          checking: {
-            label: "Chase Checking",
-            txns: [
-              { desc: "Payroll · ACME Corp · 06/14", amt: 3250 },
-              { desc: "Rent · Landlord · 06/01", amt: -1850 },
-              { desc: "Whole Foods · 06/12", amt: -142.38 },
-              { desc: "Venmo · Alex · 06/14", amt: 50 },
-              { desc: "Electric · ConEd · 06/08", amt: -96.40 },
-              { desc: "Coffee Lab · 06/15", amt: -6.75 },
-            ],
-          },
-          credit: {
-            label: "Sapphire Reserve",
-            txns: [
-              { desc: "Fine Dining · 06/14", amt: -200 },
-              { desc: "Apple Store · 06/15", amt: -1200 },
-              { desc: "Amazon · 06/09", amt: -84.19 },
-              { desc: "Shell Gas · 06/11", amt: -58.42 },
-              { desc: "Marriott · 06/06", amt: -312.00 },
-              { desc: "Spotify · 06/03", amt: -11.99 },
-            ],
-          },
-          brokerage: {
-            label: "Brokerage",
-            txns: [
-              { desc: "MSFT Dividend · 06/13", amt: 48.20 },
-              { desc: "Buy · VTI · 06/05", amt: -1500 },
-              { desc: "Sell · AAPL · 06/10", amt: 820.15 },
-              { desc: "Advisory Fee · 06/01", amt: -12.50 },
-              { desc: "ACH Deposit · 06/02", amt: 2000 },
-              { desc: "Interest · 06/30", amt: 3.88 },
-            ],
-          },
-          retirement: {
-            label: "401(k)",
-            txns: [
-              { desc: "Payroll Contribution · 06/14", amt: 875 },
-              { desc: "Employer Match · 06/14", amt: 437.50 },
-              { desc: "Rebalance · FXAIX · 06/07", amt: -220.00 },
-              { desc: "Bond Dividend · 06/20", amt: 62.10 },
-              { desc: "Plan Admin Fee · 06/01", amt: -4.25 },
-            ],
-          },
-        };
-
-        const accountRows = ACCOUNT_ORDER.map((key) =>
-          tableBody.querySelector(`tr[data-account="${key}"]`)
-        ).filter(Boolean);
-
-        let activeIdx = 0;
-        let cycleTimer = null;
-
-        function txnRowHtml(txn) {
-          const amtClass = txn.amt >= 0 ? "accounts-txn__amt--income" : "accounts-txn__amt--expense";
-          const sign = txn.amt >= 0 ? "+" : "−";
-          return `<div class="accounts-txn__row" role="listitem">
-            <span class="accounts-txn__desc">${txn.desc}</span>
-            <span class="accounts-txn__amt ${amtClass}">${sign}$${Math.abs(txn.amt).toFixed(2)}</span>
-          </div>`;
-        }
-
-        function showAccount(key) {
-          const account = ACCOUNTS[key];
-          if (!account) return;
-          const idx = ACCOUNT_ORDER.indexOf(key);
-          activeIdx = idx >= 0 ? idx : 0;
-
-          accountRows.forEach((row, i) => {
-            const on = i === activeIdx;
-            row.classList.toggle("is-active", on);
-            row.setAttribute("aria-pressed", on ? "true" : "false");
-          });
-
-          if (shotName) shotName.textContent = "accounts — " + account.label;
-          list.classList.remove("is-switching");
-          list.innerHTML = account.txns.map(txnRowHtml).join("");
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => list.classList.add("is-switching"));
-          });
-        }
-
-        function nextAccount() {
-          if (!shot.classList.contains("is-live")) return;
-          activeIdx = (activeIdx + 1) % ACCOUNT_ORDER.length;
-          showAccount(ACCOUNT_ORDER[activeIdx]);
-        }
-
-        function startCycle() {
-          if (reduceMotion || cycleTimer) return;
-          cycleTimer = setInterval(nextAccount, 2800);
-        }
-
-        function stopCycle() {
-          if (!cycleTimer) return;
-          clearInterval(cycleTimer);
-          cycleTimer = null;
-        }
-
-        accountRows.forEach((row) => {
-          row.addEventListener("click", () => {
-            showAccount(row.dataset.account);
-            stopCycle();
-            startCycle();
-          });
-        });
-
-        const boot = () => {
-          showAccount(ACCOUNT_ORDER[activeIdx]);
-          startCycle();
-        };
-
-        if (shot.classList.contains("is-live")) boot();
-        else {
-          const obs = new MutationObserver(() => {
-            if (shot.classList.contains("is-live")) {
-              obs.disconnect();
-              boot();
-            }
-          });
-          obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
-        }
-      })();
-
-      /* ── Numbers That Match Reality demo ── */
-      function initRealityDemo({
-        shotId,
-        listId,
-        stepsId,
-        chartSvgId,
-        chartStatusId,
-        variant,
-      }) {
-        const shot = document.getElementById(shotId);
-        const list = document.getElementById(listId);
-        const steps = document.getElementById(stepsId);
-        const chartSvg = document.getElementById(chartSvgId);
-        const chartStatus = document.getElementById(chartStatusId);
-        if (!shot || !list || !chartSvg) return;
-
-        // When a screen recording replaces this mockup, the step bullets can't
-        // stay in sync with the video — so keep them visible but static.
-        const videoActive = () => shot.dataset.videoActive === "1";
-        const clearSteps = () => {
-          if (steps) {
-            steps.querySelectorAll("[data-step]").forEach((li) =>
-              li.classList.remove("is-active", "is-done")
-            );
-          }
-          if (chartStatus) chartStatus.textContent = "";
-        };
-        shot.addEventListener("video:active", clearSteps);
-
-        const REALITY_MONTHS = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const STEP_ORDER = variant === "split-transfer"
-          ? ["unified", "split", "transfer"]
-          : ["unified", "amortize"];
-        const PHASE_WAIT = { unified: 2800, split: 2800, transfer: 3200, amortize: 3600 };
-        const PHASE_ANIM = { split: 900, transfer: 900, amortize: 1100 };
-        const JUN = 1;
-        const zeroMonth = (label) => ({ label, income: 0, expenses: 0, net: 0 });
-
-        function chartForPhase(phase) {
-          const data = REALITY_MONTHS.map(zeroMonth);
-          if (variant === "split-transfer") {
-            if (phase === "unified" || phase === "split") {
-              data[JUN].income = 150;
-              data[JUN].expenses = -200;
-            } else if (phase === "transfer") {
-              data[JUN].expenses = -50;
-            }
-          } else if (phase === "unified") {
-            data[JUN].expenses = -1200;
-          } else if (phase === "amortize") {
-            for (let i = JUN; i < data.length; i++) {
-              data[i].expenses = i === JUN ? -150 : -100;
-            }
-          }
-          data.forEach((row) => {
-            row.net = row.income + row.expenses;
-          });
-          return data;
-        }
-
-        function setActiveStep(step) {
-          if (!steps) return;
-          const activeIdx = step ? STEP_ORDER.indexOf(step) : -1;
-          steps.querySelectorAll("[data-step]").forEach((li) => {
-            const idx = STEP_ORDER.indexOf(li.dataset.step);
-            li.classList.toggle("is-active", step && li.dataset.step === step);
-            li.classList.toggle("is-done", activeIdx >= 0 && idx >= 0 && idx < activeIdx);
-          });
-          if (chartStatus) {
-            chartStatus.textContent = step === "unified"
-              ? "Chase · Sapphire · Venmo"
-              : step
-                ? "Income · Expenses · Net Income"
-                : "";
-          }
-        }
-
-        function rowHtml(row) {
-          const amtClass = row.amt >= 0 ? "txn-demo__amt--income" : "txn-demo__amt--expense";
-          const sign = row.amt >= 0 ? "+" : "−";
-          const controls = row.controls
-            ? `<div class="txn-demo__controls">${row.controls}</div>`
-            : "";
-          return `<div class="txn-demo__row${row.cls ? " " + row.cls : ""}" data-id="${row.id}" role="listitem">
-            <span class="txn-demo__desc">${row.desc}</span>
-            <span class="txn-demo__amt ${amtClass}">${sign}$${Math.abs(row.amt).toFixed(2)}</span>
-            ${controls}
-          </div>`;
-        }
-
-        const ctl = (label, val, active) =>
-          `<span class="txn-demo__ctl">${label}<span class="txn-demo__ctl-val${active ? " is-active" : ""}">${val}</span></span>`;
-        const splitCtl = (value = "", active = false) =>
-          `<span class="txn-demo__ctl txn-demo__split">Split<input type="text" class="txn-demo__split-input${active ? " is-active" : ""}" value="${value}" placeholder="150, 50" readonly tabindex="-1" aria-label="Split amounts" /></span>`;
-        const transferCtl = (on) =>
-          `<span class="txn-demo__ctl txn-demo__transfer">Transfer<span class="flagbox${on ? " is-on" : ""}"></span></span>`;
-
-        function allControls({
-          splitVal = "",
-          splitActive = false,
-          transferOn = false,
-          amortVal = "—",
-          amortizeActive = false,
-        } = {}) {
-          return (
-            splitCtl(splitVal, splitActive) +
-            transferCtl(transferOn) +
-            ctl("Amortize", amortVal, amortizeActive)
-          );
-        }
-
-        const mutedDinner = (controls) => ({
-          id: "dinner",
-          desc: "Dinner · 06/14",
-          amt: -200,
-          cls: "is-muted",
-          controls,
-        });
-
-        function rowsForPhase(phase) {
-          const idle = () => allControls();
-          const splitFilled = (val = "150, 50") => allControls({ splitVal: val, splitActive: true });
-          const transferActive = () => allControls({ transferOn: true });
-          const splitTransferActive = () =>
-            allControls({ splitVal: "150, 50", splitActive: true, transferOn: true });
-          const amortizeActive = () =>
-            allControls({ amortVal: "12 months", amortizeActive: true });
-
-          if (variant === "split-transfer") {
-            if (phase === "unified") {
-              return [
-                { id: "dinner", desc: "Dinner · 06/14", amt: -200, controls: idle() },
-                { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
-                { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
-                { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
-              ];
-            }
-            if (phase === "split") {
-              return [
-                { ...mutedDinner(splitFilled()), cls: "is-muted is-splitting" },
-                { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child", controls: idle() },
-                { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: idle() },
-                { id: "v1", desc: "Venmo · Alex", amt: 50, controls: idle() },
-                { id: "v2", desc: "Venmo · Sam", amt: 50, controls: idle() },
-                { id: "v3", desc: "Venmo · Jordan", amt: 50, controls: idle() },
-              ];
-            }
-            return [
-              mutedDinner(splitFilled()),
-              { id: "dinner-a", desc: "Dinner · group share", amt: -150, cls: "is-split-child is-selected is-transfer", controls: splitTransferActive() },
-              { id: "dinner-b", desc: "Dinner · your portion", amt: -50, cls: "is-split-child", controls: splitFilled() },
-              { id: "v1", desc: "Venmo · Alex", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "v2", desc: "Venmo · Sam", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-              { id: "v3", desc: "Venmo · Jordan", amt: 50, cls: "is-selected is-transfer", controls: transferActive() },
-            ];
-          }
-
-          const laptopRow = (controls) => ({
-            id: "laptop",
-            desc: "Apple Store · 06/15",
-            amt: -1200,
-            controls,
-          });
-
-          if (phase === "unified") {
-            return [laptopRow(idle())];
-          }
-          return [laptopRow(amortizeActive())];
-        }
-
-        function paintRows(rows) {
-          list.innerHTML = rows.map(rowHtml).join("");
-        }
-
-        let running = false;
-
-        function wait(ms) {
-          return new Promise((resolve) => setTimeout(resolve, ms));
-        }
-
-        async function runLoop() {
-          if (running || !shot.classList.contains("is-live") || videoActive()) return;
-          running = true;
-
-          const first = STEP_ORDER[0];
-          setActiveStep(first);
-          paintRows(rowsForPhase(first));
-          renderMiniChart(chartSvg, chartForPhase(first));
-          await wait(PHASE_WAIT[first]);
-
-          for (let i = 1; i < STEP_ORDER.length; i++) {
-            if (videoActive()) { running = false; clearSteps(); return; }
-            const phase = STEP_ORDER[i];
-            const prev = STEP_ORDER[i - 1];
-            setActiveStep(phase);
-            paintRows(rowsForPhase(phase));
-            animateChart(
-              chartSvg,
-              chartForPhase(prev),
-              chartForPhase(phase),
-              PHASE_ANIM[phase] || 900
-            );
-            await wait(PHASE_WAIT[phase]);
-          }
-
-          running = false;
-          if (shot.classList.contains("is-live") && !videoActive()) runLoop();
-        }
-
-        const boot = () => {
-          if (videoActive()) { clearSteps(); return; }
-          setActiveStep("unified");
-          paintRows(rowsForPhase("unified"));
-          renderMiniChart(chartSvg, chartForPhase("unified"));
-          if (!reduceMotion) runLoop();
-        };
-
-        if (shot.classList.contains("is-live")) boot();
-        else {
-          const obs = new MutationObserver(() => {
-            if (shot.classList.contains("is-live")) {
-              obs.disconnect();
-              boot();
-            }
-          });
-          obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
-        }
-      }
-
-      initRealityDemo({
-        shotId: "realityDemoShot",
-        listId: "realityTxnList",
-        stepsId: "realitySteps",
-        chartSvgId: "realityChartSvg",
-        chartStatusId: "realityChartStatus",
-        variant: "split-transfer",
-      });
-      initRealityDemo({
-        shotId: "realityDemoShot2",
-        listId: "realityTxnList2",
-        stepsId: "realitySteps2",
-        chartSvgId: "realityChartSvg2",
-        chartStatusId: "realityChartStatus2",
-        variant: "amortize",
-      });
-
-      /* ── Fine-tuned Forecast demo ── */
-      (function initForecastDemo() {
-        const shot = document.getElementById("forecastDemoShot");
-        const chartSvg = document.getElementById("forecastChartSvg");
-        const growthEl = document.getElementById("forecastGrowthVal");
-        const inflationEl = document.getElementById("forecastInflationVal");
-        const params = document.getElementById("forecastParams");
-        if (!shot || !chartSvg || !growthEl || !inflationEl || !params) return;
-
-        const FORECAST_YEARS = ["2026", "2027", "2028", "2029", "2030", "2031"];
-        const BASE_INC = 5200;
-        const BASE_EXP = -3800;
-
-        let growth = 3.5;
-        let inflation = 2.4;
-        let chartFrom = null;
-
-        function buildSeries(g, inf) {
-          const gY = g / 100;
-          const iY = inf / 100;
-          return FORECAST_YEARS.map((label, y) => {
-            const income = BASE_INC * Math.pow(1 + gY, y);
-            const expenses = BASE_EXP * Math.pow(1 + iY, y);
-            return { label, income, expenses, net: income + expenses };
-          });
-        }
-
-        /* Fixed y-axis bounds spanning the widest reach of every assumption
-           the chart can land on (auto-cycle + interactive clicks). Locking the
-           scale keeps bars and the net line from re-scaling — and shifting
-           vertically — each time the parameters change. */
-        const G_MIN = 2, G_MAX = 6, I_MIN = 1.5, I_MAX = 5;
-        const FIXED_BOUNDS = chartBounds([
-          ...buildSeries(G_MAX, I_MIN), // largest income, smallest expenses
-          ...buildSeries(G_MIN, I_MAX), // smallest income, largest expenses
-          ...buildSeries(G_MAX, I_MAX),
-          ...buildSeries(G_MIN, I_MIN),
-        ]);
-
-        function paintParams() {
-          growthEl.textContent = growth.toFixed(1) + "%";
-          inflationEl.textContent = inflation.toFixed(1) + "%";
-        }
-
-        function updateChart(animate) {
-          const next = buildSeries(growth, inflation);
-          if (!chartFrom || !animate || reduceMotion) {
-            renderMiniChart(chartSvg, next, FIXED_BOUNDS);
-            chartFrom = next;
-            return;
-          }
-          const prev = chartFrom;
-          animateChart(chartSvg, prev, next, 350, () => {
-            chartFrom = next;
-          }, FIXED_BOUNDS);
-        }
-
-        paintParams();
-        chartFrom = buildSeries(growth, inflation);
-        renderMiniChart(chartSvg, chartFrom, FIXED_BOUNDS);
-
-        params.querySelectorAll("[data-param]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const key = btn.dataset.param;
-            if (key === "growth") growth = growth >= 5 ? 2 : growth + 1;
-            else if (key === "inflation") inflation = inflation >= 4 ? 1.5 : inflation + 0.8;
-            paintParams();
-            updateChart(true);
-            params.querySelectorAll(".paramgrid__control--focus").forEach((el) => el.classList.remove("paramgrid__control--focus"));
-            btn.classList.add("paramgrid__control--focus");
-          });
-        });
-
-        if (reduceMotion) return;
-
-        let cycleIdx = 0;
-        const cycles = [
-          () => { growth = 2.5; inflation = 2.4; },
-          () => { growth = 5.5; inflation = 2.4; },
-          () => { growth = 3.5; inflation = 1.5; },
-          () => { growth = 3.5; inflation = 4.2; },
-          () => { growth = 3.5; inflation = 2.4; },
-        ];
-
-        const autoCycle = () => {
-          if (!shot.classList.contains("is-live")) return;
-          cycles[cycleIdx % cycles.length]();
-          cycleIdx++;
-          paintParams();
-          updateChart(true);
-        };
-
-        setTimeout(() => {
-          if (shot.classList.contains("is-live")) {
-            autoCycle();
-            setInterval(autoCycle, 1600);
-          } else {
-            const obs = new MutationObserver(() => {
-              if (shot.classList.contains("is-live")) {
-                obs.disconnect();
-                autoCycle();
-                setInterval(autoCycle, 1600);
-              }
-            });
-            obs.observe(shot, { attributes: true, attributeFilter: ["class"] });
-          }
-        }, 1200);
+        figures.forEach((el) => io.observe(el));
       })();
 
       /* ── Hero reveal ──
@@ -1955,87 +1249,6 @@
         });
       })();
 
-      /* ── Auto-swap how-it-works mockups for screen recordings ──
-         Drop a file into frontend/static/videos/ named to match the
-         data-video attribute (e.g. step3-forecast.mp4) and it replaces the
-         animated mockup automatically. If the file isn't there, the mockup
-         stays untouched — so you can add recordings one at a time. */
-      (function () {
-        const shots = document.querySelectorAll("[data-video]");
-        if (!shots.length) return;
-
-        // Only decode/play videos while they're on screen.
-        const playObserver =
-          "IntersectionObserver" in window
-            ? new IntersectionObserver(
-                (entries) => {
-                  entries.forEach((entry) => {
-                    const v = entry.target;
-                    if (entry.isIntersecting) {
-                      const p = v.play();
-                      if (p) p.catch(() => {});
-                    } else {
-                      v.pause();
-                    }
-                  });
-                },
-                { threshold: 0.25 }
-              )
-            : null;
-
-        shots.forEach((shot) => {
-          const name = shot.getAttribute("data-video");
-          if (!name) return;
-
-          const video = document.createElement("video");
-          video.className = "shot__video";
-          video.muted = true;
-          video.loop = true;
-          video.playsInline = true;
-          video.setAttribute("playsinline", "");
-          video.setAttribute("muted", "");
-          video.preload = "metadata";
-          video.src = "/static/videos/" + name + ".mp4";
-
-          video.addEventListener(
-            "loadeddata",
-            () => {
-              shot.classList.add("has-video");
-              shot.dataset.videoActive = "1";
-              shot.dispatchEvent(new CustomEvent("video:active"));
-              shot.appendChild(video);
-
-              // Recordings are tiny on phones — let a tap open them fullscreen.
-              const openFullscreen = () => {
-                if (video.requestFullscreen) video.requestFullscreen();
-                else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-                else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
-              };
-              video.addEventListener("click", openFullscreen);
-
-              const zoom = document.createElement("span");
-              zoom.className = "shot__zoom";
-              zoom.setAttribute("aria-hidden", "true");
-              zoom.textContent = "\u2922 Tap to enlarge";
-              shot.appendChild(zoom);
-
-              if (playObserver) {
-                playObserver.observe(video);
-              } else {
-                video.autoplay = true;
-                const p = video.play();
-                if (p) p.catch(() => {});
-              }
-            },
-            { once: true }
-          );
-
-          // No matching file (or it can't load) → leave the mockup in place.
-          video.addEventListener("error", () => {}, { once: true });
-
-          video.load();
-        });
-      })();
     </script>
   </body>
 </html>
