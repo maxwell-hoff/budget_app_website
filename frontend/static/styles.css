@@ -436,7 +436,7 @@ body::before {
      has breathing room above the fold on normal-height viewports. */
   margin-top: auto;
   margin-bottom: auto;
-  transform: translateY(-8vh);
+  transform: translateY(-12vh);
 }
 
 .hero__title {
