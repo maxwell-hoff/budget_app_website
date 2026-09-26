@@ -436,7 +436,7 @@ body::before {
      has breathing room above the fold on normal-height viewports. */
   margin-top: auto;
   margin-bottom: auto;
-  transform: translateY(-8vh);
+  transform: translateY(-12vh);
 }
 
 .hero__title {
@@ -500,10 +500,28 @@ body::before {
   height: 1.05rem;
   flex-shrink: 0;
 }
-.hero__platform-note {
-  margin-top: 0.9rem;
-  font-size: 0.75rem;
+.hero__facts {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  list-style: none;
+  font-size: 0.8rem;
   color: var(--muted);
+}
+.hero__facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.hero__facts li::before {
+  content: "";
+  width: 0.8rem;
+  height: 0.8rem;
+  flex-shrink: 0;
+  background: var(--accent-bright);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3L13 4.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3L13 4.5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .hero__more {
