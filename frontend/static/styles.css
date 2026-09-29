@@ -626,6 +626,315 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Hero reel: the real app in a framed window ──
+   Wide screens: sits to the right of the copy and pins with it (sticky, pulled
+   up over the stage). Narrower screens: stacks beneath the copy. */
+.hero__visual {
+  position: relative;
+  z-index: 1;
+  padding: 0 0 clamp(3rem, 8vw, 5rem);
+}
+
+.reel {
+  --reel-bg: #0c0f14; /* the app's own background, so frame and footage meet seamlessly */
+  position: relative;
+  width: min(760px, 100%);
+  overflow: hidden;
+  background: var(--reel-bg);
+  border: 1px solid rgba(20, 20, 43, 0.85);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    var(--shadow-lift),
+    0 40px 90px -30px rgba(10, 95, 174, 0.45);
+}
+
+@media (min-width: 1200px) {
+  .hero {
+    --hero-w: min(600px, 44vw);
+    --hero-gap: clamp(2.5rem, 4vw, 4.5rem);
+    overflow-x: clip;
+  }
+  .hero__title { font-size: clamp(2.5rem, 4.6vw, 4.8rem); }
+
+  .hero__visual {
+    position: sticky;
+    top: 52px;
+    display: flex;
+    align-items: center;
+    height: calc(100vh - 52px);
+    height: calc(100svh - 52px);
+    margin-top: calc(52px - 100vh);
+    margin-top: calc(52px - 100svh);
+    padding: 2.5rem 0 4.5rem;
+    pointer-events: none;
+  }
+  .hero__visual-inner { display: flex; }
+  .reel {
+    flex: 1 1 auto;
+    width: auto;
+    /* Starts just right of the copy column and may run into the page margin
+       (in a margin, % is the wrap's width, so 100% - 100vw is minus both margins) */
+    margin-left: calc(var(--hero-w) + var(--hero-gap));
+    margin-right: min(0px, calc((100% - 100vw) / 2 + clamp(1.25rem, 3vw, 3rem)));
+    /* Never taller than the stage: footage is 1200x988, plus ~52px of chrome */
+    max-width: calc((100svh - 52px - 7rem - 52px) * 1.2146);
+    pointer-events: auto;
+  }
+}
+
+.reel__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 0.5rem 0 0.85rem;
+  background: linear-gradient(180deg, var(--titlebar-2), var(--titlebar));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+}
+.reel__lights {
+  display: flex;
+  gap: 6px;
+}
+.reel__lights span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+.reel__lights span:first-child {
+  background: var(--accent-bright);
+  box-shadow: 0 0 8px rgba(10, 95, 174, 0.9);
+}
+.reel__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reel__toggle {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.reel__toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.reel__toggle:focus-visible,
+.reel__chapters button:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+.reel__toggle svg { width: 13px; height: 13px; }
+.reel__icon-play { display: none; }
+.reel.is-paused .reel__icon-play { display: block; }
+.reel.is-paused .reel__icon-pause { display: none; }
+
+.reel__screen {
+  position: relative;
+  aspect-ratio: 1200 / 988;
+  background: var(--reel-bg);
+}
+.reel__screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+/* Soft dim + big play button while paused */
+.reel__screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(12, 15, 20, 0.15), rgba(12, 15, 20, 0.55));
+  opacity: 0;
+  transition: opacity var(--t-slow);
+}
+.reel.is-paused .reel__screen::after { opacity: 1; }
+
+.reel__play {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  padding: 0;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.94);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.14), 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.85);
+  transition: opacity var(--t-slow), transform var(--t-slow), box-shadow var(--t-normal);
+}
+.reel__play svg { width: 26px; height: 26px; margin-left: 4px; }
+.reel.is-paused .reel__play {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.reel__play:hover {
+  box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.2), 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+}
+.reel__play:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 4px;
+}
+
+/* Chapter name over the footage */
+.reel__caption {
+  position: absolute;
+  z-index: 1;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  background: rgba(12, 15, 20, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.reel__caption-num {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+.reel__caption.is-new { animation: reelCaption 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes reelCaption {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Segmented progress: one segment per chapter, sized by its length (JS sets
+   flex-grow), filled by --p (0–1). Each segment is a button that seeks. */
+.reel__chapters {
+  display: flex;
+  gap: 4px;
+  padding: 0 0.8rem 0.35rem;
+  background: var(--reel-bg);
+}
+.reel__chapters button {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.reel__chapters span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-50%);
+  transition: height var(--t-fast), background var(--t-fast);
+}
+.reel__chapters span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--accent-bright), #38bdf8);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+}
+.reel__chapters .is-done span::after { transform: scaleX(1); opacity: 0.55; }
+.reel__chapters button:hover span {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.26);
+}
+/* Chapter name tooltip on hover / keyboard focus */
+.reel__chapters button::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(12, 15, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.reel__chapters button:first-child::after { left: 0; transform: translate(0, 4px); }
+.reel__chapters button:last-child::after { left: auto; right: 0; transform: translate(0, 4px); }
+.reel__chapters button:hover::after,
+.reel__chapters button:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.reel__chapters button:first-child:hover::after,
+.reel__chapters button:first-child:focus-visible::after,
+.reel__chapters button:last-child:hover::after,
+.reel__chapters button:last-child:focus-visible::after {
+  transform: translate(0, 0);
+}
+
+/* Narrower screens: copy then reel, in normal flow (the hero doesn't pin) */
+@media (max-width: 1199px) {
+  .hero,
+  .hero__stage {
+    min-height: 0;
+  }
+  .hero__stage {
+    padding: clamp(3rem, 9vh, 5.5rem) 0 clamp(2.5rem, 6vw, 3.5rem);
+  }
+  .hero__stage-inner { transform: none; }
+}
+@media (max-width: 520px) {
+  .reel__title { display: none; }
+  .reel__play { width: 56px; height: 56px; }
+  .reel__play svg { width: 22px; height: 22px; }
+  .reel__caption { left: 0.5rem; bottom: 0.5rem; font-size: 0.7rem; }
+}
+
 /* ── The product window (replaces the old video) ── */
 .window {
   background: var(--surface-1);
@@ -3197,70 +3506,6 @@ body::before {
 }
 .shot__body { padding: 0.7rem; }
 
-/* ── Screen-recording replacement for how-it-works mockups ──
-   When a matching video is found in /static/videos/, JS adds .has-video
-   and appends .shot__video; the animated mockup markup stays hidden as a
-   fallback so anything without a recording still renders. */
-.feature__shot.has-video {
-  padding: 0;
-  background: #000;
-  position: relative;
-}
-.feature__shot.has-video > *:not(.shot__video):not(.shot__zoom) { display: none; }
-/* Standard clip shape is 16:14 (portrait) — record these at 16:14
-   (e.g. 1080x1350) so they fill the card without cropping. */
-.shot__video {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 14;
-  object-fit: cover;
-  cursor: zoom-in;
-}
-
-/* Guided-setup clip is the exception: a short, wide strip.
-   Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
-.feature__shot[data-video="step1-guided-setup"].has-video .shot__video {
-  aspect-ratio: 16 / 8;
-  object-fit: cover;
-}
-
-/* Tap-to-enlarge hint — recordings are small on phones, so let people
-   open them fullscreen. Only shown on touch / small screens. */
-.shot__zoom {
-  position: absolute;
-  right: 0.55rem;
-  bottom: 0.55rem;
-  display: none;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.55rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  color: #fff;
-  background: rgba(10, 12, 24, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: var(--radius-sm);
-  backdrop-filter: blur(4px);
-  pointer-events: none;
-}
-@media (max-width: 720px), (hover: none) {
-  .shot__zoom { display: inline-flex; }
-  /* Break the recording out of the card padding so it's as wide as possible. */
-  .flow .feature .feature__shot.has-video {
-    margin-left: -1.35rem;
-    margin-right: -1.35rem;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-  .flow .feature--hero .feature__shot.has-video {
-    margin-left: -1.45rem;
-    margin-right: -1.45rem;
-  }
-}
-
 /* tabs row used in a few shots */
 .shot__tabs {
   display: flex;
@@ -4365,9 +4610,7 @@ body::before {
     font-size: 0.95rem;
   }
 
-  .flow .feature__shot,
-  .flow .feature .feature__shot.has-video,
-  .flow .feature--hero .feature__shot.has-video {
+  .flow .feature__shot {
     margin-left: 0;
     margin-right: 0;
     border-radius: 0;
@@ -4465,4 +4708,11 @@ body::before {
   .setupmini__fill {
     transition: none !important;
   }
+
+  .reel__chapters span,
+  .reel__play,
+  .reel__screen::after {
+    transition: none !important;
+  }
+  .reel__caption.is-new { animation: none; }
 }
