@@ -2010,10 +2010,6 @@ body::before {
   background-color: var(--accent-bright);
   box-shadow: 0 0 0 3px rgba(10, 95, 174, 0.14);
 }
-.ci--partial {
-  border: 2px solid var(--accent);
-  background: linear-gradient(90deg, var(--accent) 50%, transparent 50%);
-}
 .ci--no {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='%23b8bec6' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
@@ -2050,7 +2046,6 @@ body::before {
   height: 14px;
   background-size: 9px;
 }
-.compare__legend .ci--partial { border-width: 1.5px; }
 
 /* Phones: the feature names stay pinned while the products scroll sideways */
 @media (max-width: 760px) {
