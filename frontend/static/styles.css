@@ -1895,6 +1895,182 @@ body::before {
   color: var(--muted);
 }
 
+/* ── How it compares ── */
+.compare__card {
+  overflow: hidden;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.compare__scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.compare__table {
+  width: 100%;
+  min-width: 700px;
+  table-layout: fixed; /* equal product columns; the feature column is sized on thead td */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+.compare__table thead td { width: 34%; }
+.compare__table th,
+.compare__table td {
+  padding: 0.72rem 0.6rem;
+  text-align: center;
+  vertical-align: middle;
+  border-top: 1px solid var(--border);
+}
+.compare__table thead th,
+.compare__table thead td {
+  padding: 1.05rem 0.6rem 0.95rem;
+  border-top: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.compare__table tbody th[scope="row"] {
+  padding-left: 1.2rem;
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink);
+}
+.compare__group th,
+.compare__group td {
+  padding: 1rem 0.6rem 0.4rem;
+  background: var(--surface-2);
+}
+.compare__group th {
+  padding-left: 1.2rem;
+  text-align: left;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.compare__table tbody tr:not(.compare__group):hover > * {
+  background: var(--surface-2);
+}
+
+/* Highlighted Workbench column — one continuous band, capped like the paid tier */
+.compare__table .compare__ours,
+.compare__table tbody tr:not(.compare__group):hover > .compare__ours {
+  background: linear-gradient(180deg, rgba(10, 95, 174, 0.07), rgba(10, 95, 174, 0.05));
+  box-shadow: inset 1px 0 0 var(--accent-line), inset -1px 0 0 var(--accent-line);
+}
+.compare__table thead .compare__ours {
+  position: relative;
+  color: var(--accent);
+}
+.compare__table thead .compare__ours::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+}
+.compare__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.compare__brand .nav__dots { gap: 3px; }
+.compare__brand .nav__dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--border-strong);
+}
+.compare__brand .nav__dots span:first-child {
+  background: var(--accent-bright);
+  box-shadow: none;
+}
+
+/* Yes / partly / no marks */
+.ci {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+}
+.ci--yes {
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3L13 4.5' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.compare__ours .ci--yes {
+  background-color: var(--accent-bright);
+  box-shadow: 0 0 0 3px rgba(10, 95, 174, 0.14);
+}
+.ci--partial {
+  border: 2px solid var(--accent);
+  background: linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+}
+.ci--no {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='%23b8bec6' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+/* Out of flow, so the mark it annotates stays centred in its column */
+.compare__mark {
+  position: absolute;
+  margin-left: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.compare__notes {
+  margin-top: 1rem;
+  max-width: 74ch;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.compare__notes p + p { margin-top: 0.35rem; }
+.compare__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin-bottom: 0.6rem;
+}
+.compare__legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.compare__legend .ci {
+  width: 14px;
+  height: 14px;
+  background-size: 9px;
+}
+.compare__legend .ci--partial { border-width: 1.5px; }
+
+/* Phones: the feature names stay pinned while the products scroll sideways */
+@media (max-width: 760px) {
+  .compare__table thead td { width: 180px; }
+  .compare__table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-1);
+    box-shadow: 1px 0 0 var(--border);
+  }
+  .compare__group th { background: var(--surface-2); }
+  .compare__table thead td {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-1);
+  }
+}
+
 /* ── Download ── */
 .download__card {
   position: relative;
