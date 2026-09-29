@@ -8,7 +8,7 @@ crossfaded into the next. Writes:
   frontend/static/videos/showcase.jpg   poster frame
 
 and prints the reel's length and each chapter's start time, for the
-data-duration / data-start attributes on the hero reel in index.html.
+data-duration / data-start attributes on the demo reel in index.html.
 Requires ffmpeg on PATH.
 
 Run from the repo root:  python scripts/build_showcase_video.py

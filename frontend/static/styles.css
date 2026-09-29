@@ -626,19 +626,37 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Hero reel: the real app in a framed window ──
-   Wide screens: sits to the right of the copy and pins with it (sticky, pulled
-   up over the stage). Narrower screens: stacks beneath the copy. */
-.hero__visual {
+/* ── Demo: the real app in a framed window, in its own section ── */
+.demo__head {
+  max-width: 640px;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  text-align: center;
+}
+.demo__head .section__title { margin-top: 0.7rem; }
+
+.demo__stage {
   position: relative;
-  z-index: 1;
-  padding: 0 0 clamp(3rem, 8vw, 5rem);
+  display: flex;
+  justify-content: center;
+}
+/* Soft accent glow the window floats on */
+.demo__stage::before {
+  content: "";
+  position: absolute;
+  inset: 8% 6% -6%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(10, 95, 174, 0.16), transparent);
+  filter: blur(24px);
+  pointer-events: none;
 }
 
 .reel {
   --reel-bg: #0c0f14; /* the app's own background, so frame and footage meet seamlessly */
   position: relative;
-  width: min(760px, 100%);
+  /* Heading + window fit on one screen: footage is 1200x988, plus ~52px of
+     chrome; ~11rem covers the heading and breathing room, 52px the nav */
+  width: min(100%, 860px, calc((100vh - 52px - 11rem - 52px) * 1.2146));
+  width: min(100%, 860px, calc((100svh - 52px - 11rem - 52px) * 1.2146));
   overflow: hidden;
   background: var(--reel-bg);
   border: 1px solid rgba(20, 20, 43, 0.85);
@@ -647,40 +665,6 @@ body::before {
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
     var(--shadow-lift),
     0 40px 90px -30px rgba(10, 95, 174, 0.45);
-}
-
-@media (min-width: 1200px) {
-  .hero {
-    --hero-w: min(600px, 44vw);
-    --hero-gap: clamp(2.5rem, 4vw, 4.5rem);
-    overflow-x: clip;
-  }
-  .hero__title { font-size: clamp(2.5rem, 4.6vw, 4.8rem); }
-
-  .hero__visual {
-    position: sticky;
-    top: 52px;
-    display: flex;
-    align-items: center;
-    height: calc(100vh - 52px);
-    height: calc(100svh - 52px);
-    margin-top: calc(52px - 100vh);
-    margin-top: calc(52px - 100svh);
-    padding: 2.5rem 0 4.5rem;
-    pointer-events: none;
-  }
-  .hero__visual-inner { display: flex; }
-  .reel {
-    flex: 1 1 auto;
-    width: auto;
-    /* Starts just right of the copy column and may run into the page margin
-       (in a margin, % is the wrap's width, so 100% - 100vw is minus both margins) */
-    margin-left: calc(var(--hero-w) + var(--hero-gap));
-    margin-right: min(0px, calc((100% - 100vw) / 2 + clamp(1.25rem, 3vw, 3rem)));
-    /* Never taller than the stage: footage is 1200x988, plus ~52px of chrome */
-    max-width: calc((100svh - 52px - 7rem - 52px) * 1.2146);
-    pointer-events: auto;
-  }
 }
 
 .reel__bar {
@@ -917,17 +901,6 @@ body::before {
   transform: translate(0, 0);
 }
 
-/* Narrower screens: copy then reel, in normal flow (the hero doesn't pin) */
-@media (max-width: 1199px) {
-  .hero,
-  .hero__stage {
-    min-height: 0;
-  }
-  .hero__stage {
-    padding: clamp(3rem, 9vh, 5.5rem) 0 clamp(2.5rem, 6vw, 3.5rem);
-  }
-  .hero__stage-inner { transform: none; }
-}
 @media (max-width: 520px) {
   .reel__title { display: none; }
   .reel__play { width: 56px; height: 56px; }

@@ -300,52 +300,6 @@
           </svg>
         </span>
       </div>
-
-      <!-- ── The real app, beside the headline: one crossfaded reel with chapters ── -->
-      <div class="hero__visual">
-        <div class="wrap hero__visual-inner">
-          <figure class="reel reveal-up d4" id="reel" data-duration="61.47">
-            <div class="reel__bar">
-              <span class="reel__lights" aria-hidden="true"><span></span><span></span><span></span></span>
-              <span class="reel__title">Workbench Budgeting</span>
-              <button class="reel__toggle" id="reelToggle" type="button" aria-label="Pause video">
-                <svg class="reel__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
-                <svg class="reel__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
-              </button>
-            </div>
-            <div class="reel__screen">
-              <video
-                id="reelVideo"
-                src="{{ url_for('static', filename='videos/showcase.mp4') }}"
-                poster="{{ url_for('static', filename='videos/showcase.jpg') }}"
-                width="1200"
-                height="988"
-                muted
-                loop
-                playsinline
-                preload="auto"
-                aria-label="Screen recording of Workbench Budgeting on sample data: accounts, categorizing, splitting, spreading purchases, forecasting, scenarios, and budget versus actual."
-              ></video>
-              <button class="reel__play" id="reelPlay" type="button" aria-label="Play video">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
-              </button>
-              <span class="reel__caption" aria-hidden="true">
-                <span class="reel__caption-num" id="reelNum">01</span>
-                <span id="reelCaption">All your accounts</span>
-              </span>
-            </div>
-            <div class="reel__chapters" role="group" aria-label="Video chapters">
-              <button type="button" data-start="0" aria-label="All your accounts"><span></span></button>
-              <button type="button" data-start="7.5" aria-label="Categorize"><span></span></button>
-              <button type="button" data-start="14.21" aria-label="Split shared costs"><span></span></button>
-              <button type="button" data-start="26.71" aria-label="Spread big purchases"><span></span></button>
-              <button type="button" data-start="38.71" aria-label="Forecast"><span></span></button>
-              <button type="button" data-start="49.15" aria-label="Compare scenarios"><span></span></button>
-              <button type="button" data-start="55.77" aria-label="Budget vs. actual"><span></span></button>
-            </div>
-          </figure>
-        </div>
-      </div>
     </header>
 
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
@@ -832,6 +786,58 @@
       </div>
     </section>
 
+    <!-- ── Demo: one crossfaded reel of the real app ── -->
+    <section class="section demo" id="demo" aria-label="Product demo">
+      <div class="wrap">
+        <div class="demo__head on-scroll">
+          <span class="kicker">See it in action</span>
+          <h2 class="section__title">One minute in the real app.</h2>
+        </div>
+        <div class="demo__stage on-scroll">
+          <figure class="reel" id="reel" data-duration="61.47">
+            <div class="reel__bar">
+              <span class="reel__lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <span class="reel__title">Workbench Budgeting</span>
+              <button class="reel__toggle" id="reelToggle" type="button" aria-label="Pause video">
+                <svg class="reel__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
+                <svg class="reel__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="reel__screen">
+              <video
+                id="reelVideo"
+                src="{{ url_for('static', filename='videos/showcase.mp4') }}"
+                poster="{{ url_for('static', filename='videos/showcase.jpg') }}"
+                width="1200"
+                height="988"
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label="Screen recording of Workbench Budgeting on sample data: accounts, categorizing, splitting, spreading purchases, forecasting, scenarios, and budget versus actual."
+              ></video>
+              <button class="reel__play" id="reelPlay" type="button" aria-label="Play video">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+              </button>
+              <span class="reel__caption" aria-hidden="true">
+                <span class="reel__caption-num" id="reelNum">01</span>
+                <span id="reelCaption">All your accounts</span>
+              </span>
+            </div>
+            <div class="reel__chapters" role="group" aria-label="Video chapters">
+              <button type="button" data-start="0" aria-label="All your accounts"><span></span></button>
+              <button type="button" data-start="7.5" aria-label="Categorize"><span></span></button>
+              <button type="button" data-start="14.21" aria-label="Split shared costs"><span></span></button>
+              <button type="button" data-start="26.71" aria-label="Spread big purchases"><span></span></button>
+              <button type="button" data-start="38.71" aria-label="Forecast"><span></span></button>
+              <button type="button" data-start="49.15" aria-label="Compare scenarios"><span></span></button>
+              <button type="button" data-start="55.77" aria-label="Budget vs. actual"><span></span></button>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Pricing ── -->
     <section class="section pricing" id="pricing" aria-label="Pricing">
       <div class="wrap">
@@ -1216,9 +1222,8 @@
         figures.forEach((el) => io.observe(el));
       })();
 
-      /* ── Hero reel: caption + segmented chapter bar follow the video ──
-         Plays muted while on screen (after the intro splash clears) and
-         pauses when scrolled away. A pause the visitor chose sticks until
+      /* ── Demo reel: caption + segmented chapter bar follow the video ──
+         Plays muted while on screen and pauses when scrolled away. A pause the visitor chose sticks until
          they press play or pick a chapter. Reduced motion waits for a click. */
       (function () {
         const reel = document.getElementById("reel");
@@ -1319,37 +1324,27 @@
         render();
         if (reduceMotion || !("IntersectionObserver" in window)) return;
 
-        const watch = () => {
-          new IntersectionObserver(
-            (entries) => {
-              const onScreen = entries[0].isIntersecting;
-              if (onScreen && !userPaused) play();
-              else if (!onScreen && !video.paused) video.pause();
-            },
-            { threshold: 0.35 }
-          ).observe(video);
-        };
-        const intro = document.getElementById("wbIntro");
-        if (!intro) return watch();
-        const mo = new MutationObserver(() => {
-          if (intro.isConnected) return;
-          mo.disconnect();
-          watch();
-        });
-        mo.observe(document.body, { childList: true });
+        new IntersectionObserver(
+          (entries) => {
+            const onScreen = entries[0].isIntersecting;
+            if (onScreen && !userPaused) play();
+            else if (!onScreen && !video.paused) video.pause();
+          },
+          { threshold: 0.5 }
+        ).observe(video);
       })();
 
       /* ── Hero reveal ──
-         Keep the headline in place while the promise + download reveal in
-         the space beneath it. The hero pins for one extra screen of scroll; a
-         little scrolling flips the reveal on. Only on wide screens, where the
-         reel sits beside the copy; narrower screens stack copy then reel.
-         Falls back to a plain stacked hero when JS is off or motion is reduced. */
+         Keep the headline centered while the promise + download reveal in the
+         space beneath it. The hero pins for one extra screen of scroll; a
+         little scrolling flips the reveal on. Falls back to a plain stacked
+         hero when JS is off or motion is reduced. */
       (function () {
         const hero = document.querySelector(".hero");
         if (!hero || reduceMotion) return;
 
-        const wide = window.matchMedia("(min-width: 1200px)");
+        hero.classList.add("is-pinnable");
+
         let ticking = false;
         const sync = () => {
           ticking = false;
@@ -1357,10 +1352,6 @@
           const progress =
             scrollable > 0 ? -hero.getBoundingClientRect().top / scrollable : 0;
           hero.classList.toggle("is-revealed", progress > 0.08);
-        };
-        const apply = () => {
-          hero.classList.toggle("is-pinnable", wide.matches);
-          sync();
         };
         window.addEventListener(
           "scroll",
@@ -1373,9 +1364,7 @@
           { passive: true }
         );
         window.addEventListener("resize", sync, { passive: true });
-        if (wide.addEventListener) wide.addEventListener("change", apply);
-        else if (wide.addListener) wide.addListener(apply);
-        apply();
+        sync();
       })();
 
       /* ── Hero download: lead with the visitor's platform ──

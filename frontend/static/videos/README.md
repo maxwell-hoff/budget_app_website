@@ -3,7 +3,8 @@
 The `step*.mp4` files are raw screen recordings. They aren't shown on the site
 directly: `scripts/build_showcase_video.py` crops, trims, speeds up, and
 crossfades them into `showcase.mp4` (plus the `showcase.jpg` poster), which plays
-in the landing page hero, beside the headline.
+in the "See it in action" section of the landing page (between Philosophy and
+Pricing).
 
 ## Rebuilding
 
