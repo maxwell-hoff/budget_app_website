@@ -1,2 +1,6 @@
 flask
 gunicorn
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg[binary]
+python-dotenv
