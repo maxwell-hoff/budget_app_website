@@ -2,7 +2,8 @@
 
 Open `budget_app.code-workspace` (in `personal_projects_local/`) so the agent can see
 both repos. Start a new agent chat, paste the prompt below, and replace `<STEP_ID>`
-(for example `1.1`) and optionally `<NOTES>`.
+(for example `4`) and optionally `<NOTES>`. Steps run in number order; the next
+one is the lowest-numbered step in PLAN.md that is not `done`.
 
 ```text
 You are working on the "paid Plaid" project, which spans two repos:
@@ -30,8 +31,9 @@ Extra context for this step (optional): <NOTES>
 - Run one step per chat. Starting fresh keeps the agent focused on the plan, not on
   leftover context.
 - For bigger steps, start the chat in Plan mode, review the plan, then let it build.
-- Desktop steps (Phase 5) change the desktop repo, but PLAN.md lives in the website
+- Desktop steps (14–16, 20) change the desktop repo, but PLAN.md lives in the website
   repo. Commit the PLAN.md update on a matching branch in the website repo, or merge it
   directly to `main` since it is docs only.
-- Manual steps (0.3, 6.2) can still use the prompt: the agent prepares config and a
+- Manual steps (3, 18) and the "Before starting (manual)" notes on steps 7, 8, and 11
+  are for you. Steps 3 and 18 can still use the prompt: the agent prepares config and a
   checklist, and you do the dashboard work.

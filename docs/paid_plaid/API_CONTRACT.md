@@ -11,7 +11,7 @@ See [PLAN.md](PLAN.md) for steps and status.
 
 ## Base URL and versioning
 
-- Production: `https://<website-domain>/v1` (TODO: fill in at step 0.3)
+- Production: `https://<website-domain>/v1` (TODO: fill in at step 3)
 - Local dev: `http://127.0.0.1:5001/v1` (website `serve.py` default port)
 - The desktop app reads the base URL from `BUDGET_APP_CLOUD_URL`.
 - Breaking changes require a new version prefix (`/v2`); additive changes (new optional
@@ -30,7 +30,7 @@ Authorization: Bearer <session_token>
 Session tokens are opaque random strings. The server stores only a hash. The desktop
 app stores the token in the OS keychain (`keyring`), never in SQLite or `.env`.
 
-### Desktop sign-in flow (PKCE, loopback redirect) — step 3.1 / 5.1
+### Desktop sign-in flow (PKCE, loopback redirect) — steps 10 and 14
 
 ```mermaid
 sequenceDiagram
@@ -79,7 +79,7 @@ Every non-2xx response has this body:
 
 ### Auth
 
-#### `POST /v1/auth/token` — step 3.1 — TODO
+#### `POST /v1/auth/token` — step 10 — TODO
 Exchange a one-time code for a session token. No bearer token required.
 
 Request (draft):
@@ -91,7 +91,7 @@ Response 200 (draft):
 { "session_token": "…", "expires_at": "2027-03-30T00:00:00Z", "user": { "id": 1, "email": "…" } }
 ```
 
-#### `GET /v1/me` — step 3.1 — TODO
+#### `GET /v1/me` — step 10 — TODO
 Current user and entitlement.
 
 Response 200 (draft):
@@ -104,33 +104,33 @@ Response 200 (draft):
 }
 ```
 
-#### `POST /v1/auth/logout` — step 3.1 — TODO
+#### `POST /v1/auth/logout` — step 10 — TODO
 Revokes the calling session token. Response 204.
 
 ### Plaid (all require a session **and** Plaid access; otherwise 401 / 402)
 
-#### `POST /v1/plaid/link-token` — step 4.1 — TODO
+#### `POST /v1/plaid/link-token` — step 11 — TODO
 Create a Plaid Link token for the user. Response: `{ "link_token": "…", "expiration": "…" }`.
 
-#### `POST /v1/plaid/exchange` — step 4.1 — TODO
+#### `POST /v1/plaid/exchange` — step 11 — TODO
 Exchange a Link `public_token`. The server stores the access token; it is **never**
 returned to the client.
 Request: `{ "public_token": "…", "institution": { "id": "…", "name": "…" } }`
 Response: `{ "item": <PlaidItem> }`
 
-#### `GET /v1/plaid/items` — step 4.1 — TODO
+#### `GET /v1/plaid/items` — step 11 — TODO
 Response: `{ "items": [<PlaidItem>, …] }`
 
-#### `DELETE /v1/plaid/items/<item_id>` — step 4.1 — TODO
+#### `DELETE /v1/plaid/items/<item_id>` — step 11 — TODO
 Calls Plaid `/item/remove` and deletes the item. Response 204.
 
-#### `POST /v1/plaid/sync` — step 4.2 — TODO
+#### `POST /v1/plaid/sync` — step 12 — TODO
 Returns accounts and transactions in the shape the desktop ingest consumes (see
 `budget_app/backend/plaid_data_fetcher.py`). Transaction data is not stored on the server.
 Request (draft): `{ "item_id": "…optional…", "days_back": 730 }`
-Response: TODO (define with a shared fixture at step 4.2).
+Response: TODO (define with a shared fixture at step 12).
 
-#### `POST /v1/plaid/items/<item_id>/relink-token` — step 4.3 — TODO
+#### `POST /v1/plaid/items/<item_id>/relink-token` — step 13 — TODO
 Update-mode Link token for an item returning 409. Response: `{ "link_token": "…" }`.
 
 ### Shared objects
@@ -155,11 +155,11 @@ Listed here so both sides know they exist.
 
 | Endpoint | Step | Purpose |
 | --- | --- | --- |
-| `GET /app-login` | 3.1 | Browser page for the desktop sign-in flow (accepts password or Google web login) |
-| `GET /auth/google` | 1.4 | Start "Sign in with Google" |
-| `GET /auth/google/callback` | 1.4 | Google OpenID Connect callback |
-| `POST /billing/checkout` | 2.1 | Start Stripe Checkout ($8.99/month) |
-| `POST /billing/portal` | 2.2 | Open Stripe Customer Portal |
-| `POST /stripe/webhook` | 2.1 | Stripe events (signature-verified) |
-| `POST /plaid/webhook` | 4.3 | Plaid item events (JWT-verified) |
-| `GET /healthz` | 0.2 | Health check |
+| `GET /healthz` | 1 | Health check |
+| `GET /auth/google` | 7 | Start "Sign in with Google" |
+| `GET /auth/google/callback` | 7 | Google OpenID Connect callback |
+| `POST /billing/checkout` | 8 | Start Stripe Checkout ($8.99/month) |
+| `POST /stripe/webhook` | 8 | Stripe events (signature-verified) |
+| `POST /billing/portal` | 9 | Open Stripe Customer Portal |
+| `GET /app-login` | 10 | Browser page for the desktop sign-in flow (accepts password or Google web login) |
+| `POST /plaid/webhook` | 13 | Plaid item events (JWT-verified) |
