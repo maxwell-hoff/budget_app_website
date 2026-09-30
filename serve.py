@@ -3,8 +3,10 @@ from datetime import datetime
 from pathlib import Path
 
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort
+from sqlalchemy import text
 
-app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
+from config import BASE_DIR, load_config
+from extensions import db, migrate
 
 DOWNLOADS_DIR = Path(__file__).resolve().parent / 'frontend' / 'static' / 'downloads'
 
@@ -15,17 +17,14 @@ PLATFORM_FOLDERS = {
 }
 
 
-@app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/about')
 def about():
     return render_template('about.html')
 
 
-@app.route('/download/<platform>')
 def download(platform):
     folder_name = PLATFORM_FOLDERS.get(platform)
     if not folder_name:
@@ -43,7 +42,6 @@ def download(platform):
     return send_from_directory(folder, target.name, as_attachment=True)
 
 
-@app.route('/notify', methods=['POST'])
 def notify():
     data = request.get_json(silent=True) or {}
     email = (data.get('email') or '').strip()
@@ -55,6 +53,37 @@ def notify():
     print(f"\n=== NOTIFY SIGNUP === {timestamp} === {email} ===\n", flush=True)
 
     return jsonify({'ok': True})
+
+
+def healthz():
+    try:
+        db.session.execute(text('SELECT 1'))
+    except Exception:
+        return jsonify({'status': 'error', 'database': 'unreachable'}), 503
+    return jsonify({'status': 'ok'})
+
+
+def create_app(test_config=None):
+    app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
+    os.makedirs(app.instance_path, exist_ok=True)
+
+    app.config.update(load_config(app.instance_path))
+    if test_config:
+        app.config.update(test_config)
+
+    db.init_app(app)
+    migrate.init_app(app, db, directory=str(BASE_DIR / 'migrations'))
+
+    app.add_url_rule('/', view_func=index)
+    app.add_url_rule('/about', view_func=about)
+    app.add_url_rule('/download/<platform>', view_func=download)
+    app.add_url_rule('/notify', view_func=notify, methods=['POST'])
+    app.add_url_rule('/healthz', view_func=healthz)
+
+    return app
+
+
+app = create_app()
 
 
 if __name__ == '__main__':

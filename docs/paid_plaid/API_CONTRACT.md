@@ -155,7 +155,7 @@ Listed here so both sides know they exist.
 
 | Endpoint | Step | Purpose |
 | --- | --- | --- |
-| `GET /healthz` | 1 | Health check |
+| `GET /healthz` | 1 | Health check: 200 `{"status": "ok"}`, or 503 `{"status": "error", "database": "unreachable"}` if the database query fails |
 | `GET /auth/google` | 7 | Start "Sign in with Google" |
 | `GET /auth/google/callback` | 7 | Google OpenID Connect callback |
 | `POST /billing/checkout` | 8 | Start Stripe Checkout ($8.99/month) |
