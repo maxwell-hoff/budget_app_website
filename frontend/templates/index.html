@@ -360,6 +360,7 @@
                   </div>
                   <ul class="feature__list">
                     <li>Completely private. The data never leaves your machine.</li>
+                    <li>Takes about 10 minutes to complete.</li>
                   </ul>
                 </article>
               </div>
@@ -416,6 +417,9 @@
                       <span class="viz-total__note">4 accounts &middot; 3 institutions</span>
                     </div>
                   </div>
+                  <ul class="feature__list">
+                    <li>Balances are checked against your statements, so nothing goes missing.</li>
+                  </ul>
                 </article>
 
                 <article class="feature feature--viz">
@@ -778,11 +782,219 @@
       <div class="wrap philosophy__inner on-scroll">
         <span class="kicker">Philosophy</span>
         <p class="philosophy__quote">
-          Understanding can't be <span>handed to you.</span>
+          A budget you understand is a budget <span>you'll keep.</span>
         </p>
         <p class="philosophy__sub">
-          It has to be worked for. Your finances are the same. So I built a tool that rewards doing the work, not skipping it.
+          Workbench shows its work. Every number traces back to your real transactions, so you can trust it, and change it when life changes.
         </p>
+      </div>
+    </section>
+
+    <!-- ── Demo: one crossfaded reel of the real app ── -->
+    <section class="section demo" id="demo" aria-label="Product demo">
+      <div class="wrap">
+        <div class="demo__head on-scroll">
+          <span class="kicker">See it in action</span>
+          <h2 class="section__title">One minute in the real app.</h2>
+        </div>
+        <div class="demo__stage on-scroll">
+          <figure class="reel" id="reel" data-duration="61.47">
+            <div class="reel__bar">
+              <span class="reel__lights" aria-hidden="true"><span></span><span></span><span></span></span>
+              <span class="reel__title">Workbench Budgeting</span>
+              <button class="reel__toggle" id="reelToggle" type="button" aria-label="Pause video">
+                <svg class="reel__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
+                <svg class="reel__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="reel__screen">
+              <video
+                id="reelVideo"
+                src="{{ url_for('static', filename='videos/showcase.mp4') }}"
+                poster="{{ url_for('static', filename='videos/showcase.jpg') }}"
+                width="1200"
+                height="988"
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label="Screen recording of Workbench Budgeting on sample data: accounts, categorizing, splitting, spreading purchases, forecasting, scenarios, and budget versus actual."
+              ></video>
+              <button class="reel__play" id="reelPlay" type="button" aria-label="Play video">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+              </button>
+              <span class="reel__caption" aria-hidden="true">
+                <span class="reel__caption-num" id="reelNum">01</span>
+                <span id="reelCaption">All your accounts</span>
+              </span>
+            </div>
+            <div class="reel__chapters" role="group" aria-label="Video chapters">
+              <button type="button" data-start="0" aria-label="All your accounts"><span></span></button>
+              <button type="button" data-start="7.5" aria-label="Categorize"><span></span></button>
+              <button type="button" data-start="14.21" aria-label="Split shared costs"><span></span></button>
+              <button type="button" data-start="26.71" aria-label="Spread big purchases"><span></span></button>
+              <button type="button" data-start="38.71" aria-label="Forecast"><span></span></button>
+              <button type="button" data-start="49.15" aria-label="Compare scenarios"><span></span></button>
+              <button type="button" data-start="55.77" aria-label="Budget vs. actual"><span></span></button>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How it compares ── -->
+    <section class="section compare" id="compare" aria-label="How Workbench compares">
+      <div class="wrap">
+        <div class="section__head on-scroll">
+          <span class="kicker">How it compares</span>
+          <h2 class="section__title">
+            Plan from your real spending, privately, and for free.
+          </h2>
+        </div>
+
+        <div class="compare__card on-scroll">
+          <div class="compare__scroll">
+            <table class="compare__table">
+              <thead>
+                <tr>
+                  <td></td>
+                  <th scope="col" class="compare__ours">
+                    <span class="compare__brand"><span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>Workbench</span>
+                  </th>
+                  <th scope="col">YNAB</th>
+                  <th scope="col">Monarch</th>
+                  <th scope="col">Copilot</th>
+                  <th scope="col">ProjectionLab</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="compare__group">
+                  <th scope="rowgroup">Tracking what happened</th>
+                  <td class="compare__ours"></td>
+                  <td colspan="4"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Tracks your real transactions</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Checks your balances against your statements</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Splits shared bills and Venmo paybacks</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Spreads big purchases across months</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Budget vs. actual</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Subscription tracking</th>
+                  <td class="compare__ours"><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr class="compare__group">
+                  <th scope="rowgroup">Planning what's next</th>
+                  <td class="compare__ours"></td>
+                  <td colspan="4"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Forecasts out to retirement</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Compares scenarios side by side</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Tax modeling</th>
+                  <td class="compare__ours"><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                </tr>
+                <tr class="compare__group">
+                  <th scope="rowgroup">Practical</th>
+                  <td class="compare__ours"></td>
+                  <td colspan="4"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Your data stays private to you</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span><sup class="compare__mark" aria-label="see footnote">*</sup></td>
+                </tr>
+                <tr>
+                  <th scope="row">Mobile app</th>
+                  <td class="compare__ours"><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Free tier</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="compare__notes on-scroll">
+          <p class="compare__legend" aria-hidden="true">
+            <span><span class="ci ci--yes"></span>Yes</span>
+            <span><span class="ci ci--no"></span>No</span>
+          </p>
+          <p>* Through ProjectionLab's private Docker container.</p>
+          <p>
+            Based on each product's public website and documentation as of September 2026. Features change often.
+            YNAB, Monarch, Copilot, and ProjectionLab are trademarks of their respective owners.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -795,7 +1007,7 @@
             Free to use. $8.99/month for easy bank account syncing.
           </h2>
           <p class="section__lead">
-            Similarly capabable tools I found cost $250 a month.
+            Similarly capable tools I found cost $250 a month.
           </p>
         </div>
 
@@ -806,7 +1018,7 @@
               <span class="pricing__tier-tag">always</span>
             </header>
             <p class="pricing__tier-body">
-              Upload statements manually. All other features included.
+              Built on your bank statements (CSV), and every month ties out to them. No bank login required. All other features included.
             </p>
           </article>
 
@@ -1168,6 +1380,118 @@
           { threshold: 0.45 }
         );
         figures.forEach((el) => io.observe(el));
+      })();
+
+      /* ── Demo reel: caption + segmented chapter bar follow the video ──
+         Plays muted while on screen and pauses when scrolled away. A pause the visitor chose sticks until
+         they press play or pick a chapter. Reduced motion waits for a click. */
+      (function () {
+        const reel = document.getElementById("reel");
+        const video = document.getElementById("reelVideo");
+        if (!reel || !video) return;
+
+        const segs = Array.from(reel.querySelectorAll(".reel__chapters button"));
+        const starts = segs.map((b) => parseFloat(b.dataset.start));
+        const total = parseFloat(reel.dataset.duration);
+        const toggle = document.getElementById("reelToggle");
+        const bigPlay = document.getElementById("reelPlay");
+        const caption = reel.querySelector(".reel__caption");
+        const captionText = document.getElementById("reelCaption");
+        const captionNum = document.getElementById("reelNum");
+        let active = -1;
+        let userPaused = reduceMotion;
+        let raf = 0;
+
+        const endOf = (i) => (i + 1 < starts.length ? starts[i + 1] : total);
+        segs.forEach((b, i) => { b.style.flexGrow = (endOf(i) - starts[i]).toFixed(2); });
+
+        const chapterAt = (t) => {
+          let i = 0;
+          while (i + 1 < starts.length && t >= starts[i + 1]) i++;
+          return i;
+        };
+
+        function setActive(i) {
+          if (i === active) return;
+          active = i;
+          segs.forEach((b, j) => {
+            b.classList.toggle("is-active", j === i);
+            b.classList.toggle("is-done", j < i);
+            if (j !== i) b.style.removeProperty("--p");
+          });
+          captionText.textContent = segs[i].getAttribute("aria-label");
+          captionNum.textContent = String(i + 1).padStart(2, "0");
+          caption.classList.remove("is-new");
+          void caption.offsetWidth; // restart the caption's entrance
+          caption.classList.add("is-new");
+        }
+
+        function render() {
+          const t = video.currentTime;
+          const i = chapterAt(t);
+          setActive(i);
+          const p = (t - starts[i]) / (endOf(i) - starts[i]);
+          segs[i].style.setProperty("--p", Math.min(Math.max(p, 0), 1).toFixed(4));
+        }
+
+        function loop() {
+          render();
+          raf = requestAnimationFrame(loop);
+        }
+
+        function play() {
+          const attempt = video.play();
+          if (attempt && attempt.catch) attempt.catch(() => reel.classList.add("is-paused"));
+        }
+
+        video.addEventListener("play", () => {
+          reel.classList.remove("is-paused");
+          toggle.setAttribute("aria-label", "Pause video");
+          cancelAnimationFrame(raf);
+          loop();
+        });
+        video.addEventListener("pause", () => {
+          reel.classList.add("is-paused");
+          toggle.setAttribute("aria-label", "Play video");
+          cancelAnimationFrame(raf);
+          render();
+        });
+        video.addEventListener("seeked", render);
+
+        const togglePlay = () => {
+          if (video.paused) {
+            userPaused = false;
+            play();
+          } else {
+            userPaused = true;
+            video.pause();
+          }
+        };
+        toggle.addEventListener("click", togglePlay);
+        bigPlay.addEventListener("click", togglePlay);
+        video.addEventListener("click", togglePlay);
+
+        segs.forEach((b, i) => {
+          b.addEventListener("click", () => {
+            video.currentTime = starts[i] + 0.05;
+            userPaused = false;
+            render();
+            play();
+          });
+        });
+
+        reel.classList.add("is-paused");
+        render();
+        if (reduceMotion || !("IntersectionObserver" in window)) return;
+
+        new IntersectionObserver(
+          (entries) => {
+            const onScreen = entries[0].isIntersecting;
+            if (onScreen && !userPaused) play();
+            else if (!onScreen && !video.paused) video.pause();
+          },
+          { threshold: 0.5 }
+        ).observe(video);
       })();
 
       /* ── Hero reveal ──

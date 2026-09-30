@@ -626,6 +626,288 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Demo: the real app in a framed window, in its own section ── */
+.demo__head {
+  max-width: 640px;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  text-align: center;
+}
+.demo__head .section__title { margin-top: 0.7rem; }
+
+.demo__stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+/* Soft accent glow the window floats on */
+.demo__stage::before {
+  content: "";
+  position: absolute;
+  inset: 8% 6% -6%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(10, 95, 174, 0.16), transparent);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.reel {
+  --reel-bg: #0c0f14; /* the app's own background, so frame and footage meet seamlessly */
+  position: relative;
+  /* Heading + window fit on one screen: footage is 1200x988, plus ~52px of
+     chrome; ~11rem covers the heading and breathing room, 52px the nav */
+  width: min(100%, 860px, calc((100vh - 52px - 11rem - 52px) * 1.2146));
+  width: min(100%, 860px, calc((100svh - 52px - 11rem - 52px) * 1.2146));
+  overflow: hidden;
+  background: var(--reel-bg);
+  border: 1px solid rgba(20, 20, 43, 0.85);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    var(--shadow-lift),
+    0 40px 90px -30px rgba(10, 95, 174, 0.45);
+}
+
+.reel__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 0.5rem 0 0.85rem;
+  background: linear-gradient(180deg, var(--titlebar-2), var(--titlebar));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.55);
+}
+.reel__lights {
+  display: flex;
+  gap: 6px;
+}
+.reel__lights span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+.reel__lights span:first-child {
+  background: var(--accent-bright);
+  box-shadow: 0 0 8px rgba(10, 95, 174, 0.9);
+}
+.reel__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reel__toggle {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+}
+.reel__toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.reel__toggle:focus-visible,
+.reel__chapters button:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+.reel__toggle svg { width: 13px; height: 13px; }
+.reel__icon-play { display: none; }
+.reel.is-paused .reel__icon-play { display: block; }
+.reel.is-paused .reel__icon-pause { display: none; }
+
+.reel__screen {
+  position: relative;
+  aspect-ratio: 1200 / 988;
+  background: var(--reel-bg);
+}
+.reel__screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+/* Soft dim + big play button while paused */
+.reel__screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(12, 15, 20, 0.15), rgba(12, 15, 20, 0.55));
+  opacity: 0;
+  transition: opacity var(--t-slow);
+}
+.reel.is-paused .reel__screen::after { opacity: 1; }
+
+.reel__play {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  padding: 0;
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.94);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.14), 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.85);
+  transition: opacity var(--t-slow), transform var(--t-slow), box-shadow var(--t-normal);
+}
+.reel__play svg { width: 26px; height: 26px; margin-left: 4px; }
+.reel.is-paused .reel__play {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.reel__play:hover {
+  box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.2), 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+}
+.reel__play:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 4px;
+}
+
+/* Chapter name over the footage */
+.reel__caption {
+  position: absolute;
+  z-index: 1;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.75rem 0.4rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  background: rgba(12, 15, 20, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.reel__caption-num {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #38bdf8;
+}
+.reel__caption.is-new { animation: reelCaption 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes reelCaption {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Segmented progress: one segment per chapter, sized by its length (JS sets
+   flex-grow), filled by --p (0–1). Each segment is a button that seeks. */
+.reel__chapters {
+  display: flex;
+  gap: 4px;
+  padding: 0 0.8rem 0.35rem;
+  background: var(--reel-bg);
+}
+.reel__chapters button {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.reel__chapters span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-50%);
+  transition: height var(--t-fast), background var(--t-fast);
+}
+.reel__chapters span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--accent-bright), #38bdf8);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+}
+.reel__chapters .is-done span::after { transform: scaleX(1); opacity: 0.55; }
+.reel__chapters button:hover span {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.26);
+}
+/* Chapter name tooltip on hover / keyboard focus */
+.reel__chapters button::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(12, 15, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.reel__chapters button:first-child::after { left: 0; transform: translate(0, 4px); }
+.reel__chapters button:last-child::after { left: auto; right: 0; transform: translate(0, 4px); }
+.reel__chapters button:hover::after,
+.reel__chapters button:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.reel__chapters button:first-child:hover::after,
+.reel__chapters button:first-child:focus-visible::after,
+.reel__chapters button:last-child:hover::after,
+.reel__chapters button:last-child:focus-visible::after {
+  transform: translate(0, 0);
+}
+
+@media (max-width: 520px) {
+  .reel__title { display: none; }
+  .reel__play { width: 56px; height: 56px; }
+  .reel__play svg { width: 22px; height: 22px; }
+  .reel__caption { left: 0.5rem; bottom: 0.5rem; font-size: 0.7rem; }
+}
+
 /* ── The product window (replaces the old video) ── */
 .window {
   background: var(--surface-1);
@@ -1611,6 +1893,177 @@ body::before {
   max-width: 62ch;
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* ── How it compares ── */
+.compare__card {
+  overflow: hidden;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.compare__scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.compare__table {
+  width: 100%;
+  min-width: 700px;
+  table-layout: fixed; /* equal product columns; the feature column is sized on thead td */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+.compare__table thead td { width: 34%; }
+.compare__table th,
+.compare__table td {
+  padding: 0.72rem 0.6rem;
+  text-align: center;
+  vertical-align: middle;
+  border-top: 1px solid var(--border);
+}
+.compare__table thead th,
+.compare__table thead td {
+  padding: 1.05rem 0.6rem 0.95rem;
+  border-top: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.compare__table tbody th[scope="row"] {
+  padding-left: 1.2rem;
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink);
+}
+.compare__group th,
+.compare__group td {
+  padding: 1rem 0.6rem 0.4rem;
+  background: var(--surface-2);
+}
+.compare__group th {
+  padding-left: 1.2rem;
+  text-align: left;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.compare__table tbody tr:not(.compare__group):hover > * {
+  background: var(--surface-2);
+}
+
+/* Highlighted Workbench column — one continuous band, capped like the paid tier */
+.compare__table .compare__ours,
+.compare__table tbody tr:not(.compare__group):hover > .compare__ours {
+  background: linear-gradient(180deg, rgba(10, 95, 174, 0.07), rgba(10, 95, 174, 0.05));
+  box-shadow: inset 1px 0 0 var(--accent-line), inset -1px 0 0 var(--accent-line);
+}
+.compare__table thead .compare__ours {
+  position: relative;
+  color: var(--accent);
+}
+.compare__table thead .compare__ours::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+}
+.compare__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.compare__brand .nav__dots { gap: 3px; }
+.compare__brand .nav__dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--border-strong);
+}
+.compare__brand .nav__dots span:first-child {
+  background: var(--accent-bright);
+  box-shadow: none;
+}
+
+/* Yes / partly / no marks */
+.ci {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+}
+.ci--yes {
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3L13 4.5' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.compare__ours .ci--yes {
+  background-color: var(--accent-bright);
+  box-shadow: 0 0 0 3px rgba(10, 95, 174, 0.14);
+}
+.ci--no {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='%23b8bec6' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+/* Out of flow, so the mark it annotates stays centred in its column */
+.compare__mark {
+  position: absolute;
+  margin-left: 3px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.compare__notes {
+  margin-top: 1rem;
+  max-width: 74ch;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.compare__notes p + p { margin-top: 0.35rem; }
+.compare__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin-bottom: 0.6rem;
+}
+.compare__legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.compare__legend .ci {
+  width: 14px;
+  height: 14px;
+  background-size: 9px;
+}
+
+/* Phones: the feature names stay pinned while the products scroll sideways */
+@media (max-width: 760px) {
+  .compare__table thead td { width: 180px; }
+  .compare__table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-1);
+    box-shadow: 1px 0 0 var(--border);
+  }
+  .compare__group th { background: var(--surface-2); }
+  .compare__table thead td {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-1);
+  }
 }
 
 /* ── Download ── */
@@ -3197,70 +3650,6 @@ body::before {
 }
 .shot__body { padding: 0.7rem; }
 
-/* ── Screen-recording replacement for how-it-works mockups ──
-   When a matching video is found in /static/videos/, JS adds .has-video
-   and appends .shot__video; the animated mockup markup stays hidden as a
-   fallback so anything without a recording still renders. */
-.feature__shot.has-video {
-  padding: 0;
-  background: #000;
-  position: relative;
-}
-.feature__shot.has-video > *:not(.shot__video):not(.shot__zoom) { display: none; }
-/* Standard clip shape is 16:14 (portrait) — record these at 16:14
-   (e.g. 1080x1350) so they fill the card without cropping. */
-.shot__video {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 14;
-  object-fit: cover;
-  cursor: zoom-in;
-}
-
-/* Guided-setup clip is the exception: a short, wide strip.
-   Record it at 16:5 (e.g. 1600x500) so it fills without cropping. */
-.feature__shot[data-video="step1-guided-setup"].has-video .shot__video {
-  aspect-ratio: 16 / 8;
-  object-fit: cover;
-}
-
-/* Tap-to-enlarge hint — recordings are small on phones, so let people
-   open them fullscreen. Only shown on touch / small screens. */
-.shot__zoom {
-  position: absolute;
-  right: 0.55rem;
-  bottom: 0.55rem;
-  display: none;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.55rem;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  color: #fff;
-  background: rgba(10, 12, 24, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: var(--radius-sm);
-  backdrop-filter: blur(4px);
-  pointer-events: none;
-}
-@media (max-width: 720px), (hover: none) {
-  .shot__zoom { display: inline-flex; }
-  /* Break the recording out of the card padding so it's as wide as possible. */
-  .flow .feature .feature__shot.has-video {
-    margin-left: -1.35rem;
-    margin-right: -1.35rem;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-  .flow .feature--hero .feature__shot.has-video {
-    margin-left: -1.45rem;
-    margin-right: -1.45rem;
-  }
-}
-
 /* tabs row used in a few shots */
 .shot__tabs {
   display: flex;
@@ -4365,9 +4754,7 @@ body::before {
     font-size: 0.95rem;
   }
 
-  .flow .feature__shot,
-  .flow .feature .feature__shot.has-video,
-  .flow .feature--hero .feature__shot.has-video {
+  .flow .feature__shot {
     margin-left: 0;
     margin-right: 0;
     border-radius: 0;
@@ -4465,4 +4852,11 @@ body::before {
   .setupmini__fill {
     transition: none !important;
   }
+
+  .reel__chapters span,
+  .reel__play,
+  .reel__screen::after {
+    transition: none !important;
+  }
+  .reel__caption.is-new { animation: none; }
 }
