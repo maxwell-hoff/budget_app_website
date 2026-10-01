@@ -4,9 +4,12 @@ from pathlib import Path
 
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort
 from sqlalchemy import text
+from werkzeug.middleware.proxy_fix import ProxyFix
 
+import auth
+import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
 from config import BASE_DIR, load_config
-from extensions import db, migrate
+from extensions import db, limiter, login_manager, migrate
 
 DOWNLOADS_DIR = Path(__file__).resolve().parent / 'frontend' / 'static' / 'downloads'
 
@@ -65,6 +68,8 @@ def healthz():
 
 def create_app(test_config=None):
     app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
+    # Render terminates TLS in one proxy hop; this gives rate limiting the real client IP.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
     os.makedirs(app.instance_path, exist_ok=True)
 
     app.config.update(load_config(app.instance_path))
@@ -73,6 +78,12 @@ def create_app(test_config=None):
 
     db.init_app(app)
     migrate.init_app(app, db, directory=str(BASE_DIR / 'migrations'))
+    login_manager.init_app(app)
+    limiter.init_app(app)
+
+    login_manager.login_view = 'auth.login' if app.config['ACCOUNTS_ENABLED'] else None
+    if app.config['ACCOUNTS_ENABLED']:
+        app.register_blueprint(auth.bp)
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)

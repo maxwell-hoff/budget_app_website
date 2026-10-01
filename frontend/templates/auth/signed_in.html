@@ -1,0 +1,11 @@
+{% extends "auth/base.html" %}
+{% block title %}Signed in{% endblock %}
+{% block card_name %}account{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">You're signed in</h1>
+  <p class="auth-card__text">Signed in as <strong>{{ current_user.email }}</strong>.</p>
+  <form method="post" action="{{ url_for('auth.logout') }}" class="auth-form">
+    {{ logout_form.csrf_token }}
+    <button type="submit" class="btn auth-form__submit">Log out</button>
+  </form>
+{% endblock %}

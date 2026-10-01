@@ -1,0 +1,9 @@
+{% macro field(f, autocomplete) %}
+  <div class="auth-field{% if f.errors %} has-error{% endif %}">
+    {{ f.label(class_="auth-field__label") }}
+    {{ f(class_="auth-field__input", autocomplete=autocomplete, required=True) }}
+    {% for message in f.errors %}
+      <p class="auth-field__error">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endmacro %}

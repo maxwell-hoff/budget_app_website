@@ -40,6 +40,26 @@ def test_accounts_enabled_falsy_values(monkeypatch, value):
     assert env_flag('ACCOUNTS_ENABLED', default=True) is False
 
 
+def test_secret_key_required_on_render(monkeypatch):
+    monkeypatch.setenv('RENDER', 'true')
+    monkeypatch.delenv('SECRET_KEY', raising=False)
+    with pytest.raises(RuntimeError):
+        create_app()
+
+
+def test_render_uses_secure_cookies(monkeypatch):
+    monkeypatch.setenv('RENDER', 'true')
+    monkeypatch.setenv('SECRET_KEY', 'x' * 32)
+    monkeypatch.delenv('SESSION_COOKIE_SECURE', raising=False)
+    assert create_app().config['SESSION_COOKIE_SECURE'] is True
+
+
+def test_dev_works_without_secret_key(monkeypatch):
+    monkeypatch.delenv('RENDER', raising=False)
+    monkeypatch.delenv('SECRET_KEY', raising=False)
+    assert create_app().config['SECRET_KEY']
+
+
 def test_database_url_defaults_to_sqlite_in_instance(monkeypatch, tmp_path):
     monkeypatch.delenv('DATABASE_URL', raising=False)
     assert database_url(tmp_path) == f"sqlite:///{tmp_path / 'app.db'}"
@@ -63,4 +83,6 @@ def test_migrations_upgrade_runs(tmp_path):
     app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': f"sqlite:///{tmp_path / 'm.db'}"})
     with app.app_context():
         upgrade()
-        assert 'alembic_version' in inspect(db.engine).get_table_names()
+        tables = inspect(db.engine).get_table_names()
+        assert 'alembic_version' in tables
+        assert 'users' in tables

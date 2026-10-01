@@ -21,7 +21,6 @@ step is always the lowest-numbered one that is not `done`.
 | # | Step | Repo |
 | --- | --- | --- |
 | 1 | Database and app scaffolding | website |
-| 2 | Serve installer downloads from GitHub Releases | website |
 | 3 | Provision hosting (manual) | website + dashboards |
 | 4 | Users, sign up, log in, log out | website |
 | 5 | Password reset and email verification | website |
@@ -42,6 +41,9 @@ step is always the lowest-numbered one that is not `done`.
 | 20 | Remove the direct Plaid path | desktop |
 
 Update the status in the step section below; this table is only an index.
+
+There is no step 2: it (serving downloads from GitHub Releases) was dropped, and the
+other steps keep their numbers so existing references stay valid.
 
 ---
 
@@ -94,19 +96,6 @@ flowchart LR
 - **Status:** done
 - **PR:** [#38](https://github.com/maxwell-hoff/budget_app_website/pull/38)
 
-### 2. Serve installer downloads from GitHub Releases
-- **Repo:** budget_app_website
-- **Depends on:** 1
-- **Scope:** Change `/download/<platform>` to redirect to the matching GitHub Releases
-  asset instead of streaming the LFS binaries in `frontend/static/downloads/`. Keep the
-  release URLs in one config spot so a new release is a one-line change. Leave the
-  binaries in the repo for now (removal can be a later cleanup). Add a test for each
-  platform redirect.
-- **Done when:** All three download buttons (mac-arm, mac-x64, windows) download the
-  correct installer locally and on Render; the rest of the site is unchanged.
-- **Status:** todo
-- **PR:** —
-
 ### 3. Provision hosting (manual — you)
 - **Repo:** budget_app_website (Render dashboard + `render.yaml`)
 - **Depends on:** 1
@@ -116,7 +105,7 @@ flowchart LR
   An agent can prepare the `render.yaml` change; the dashboard work is manual.
 - **Done when:** Production deploy is healthy (`/healthz` 200) and connected to Postgres.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/render_yaml_update_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/render_yaml_update_20260930) (replace with the PR URL once opened)
+- **PR:** [#39](https://github.com/maxwell-hoff/budget_app_website/pull/39)
 
 ## Phase B — Accounts (website, behind `ACCOUNTS_ENABLED`)
 
@@ -130,8 +119,8 @@ flowchart LR
   is off.
 - **Done when:** With the flag on, a user can sign up, log in, and log out; with it off,
   the routes 404 and the site looks unchanged. Tests cover both.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/accounts_auth_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/accounts_auth_20260930) (replace with the PR URL once opened)
 
 ### 5. Password reset and email verification
 - **Repo:** budget_app_website
@@ -343,10 +332,11 @@ flowchart LR
 
 ### 19. Launch
 - **Repo:** both (one PR in each, plus a production env change)
-- **Depends on:** 2, 16, 18
+- **Depends on:** 16, 18
 - **Scope:** Desktop PR: default `BUDGET_APP_CLOUD_PLAID` to on, point
   `BUDGET_APP_CLOUD_URL` at production, bump the app version, update release notes,
-  and publish the release. Website PR: update the download links (step 2 config) and
+  and publish the release. Website PR: replace the installers in
+  `frontend/static/downloads/` with the new release's builds and update the
   marketing copy for the paid Plaid feature. Then set `ACCOUNTS_ENABLED=true` in
   production. Order: set the env var and merge the website PR first, then publish the
   desktop release, so the app never points users at sign-up pages that 404.
@@ -386,6 +376,13 @@ Newest last. One line each: date — decision — reason.
 - 2026-09-30 — Migrations start from an empty baseline revision (`07f88d99736f`); `.flaskenv` sets `FLASK_APP=serve:app` so `flask db upgrade` needs no flags — step 3's `preDeployCommand` and later model steps chain onto it.
 - 2026-09-30 — Production runs on Render Postgres, linked by pasting its Internal Database URL into `DATABASE_URL` in the dashboard. `render.yaml` lists `DATABASE_URL` and `SECRET_KEY` with `sync: false` rather than using `fromDatabase` — the service is managed in the dashboard, and a mismatched database name in a Blueprint sync could create a second, empty database.
 - 2026-09-30 — Production base URL is `https://workbenchbudgeting.com` (API at `/v1`).
+- 2026-09-30 — Step 2 (serve downloads from GitHub Releases) is dropped permanently — installers stay in `frontend/static/downloads/` on the website. Other step numbers are unchanged.
+- 2026-09-30 — Account blueprints are registered only when `ACCOUNTS_ENABLED` is on (read at startup), rather than checking the flag per request — every route truly 404s when off (including wrong-method requests), and rate limits never fire on disabled routes. Later account steps (5–7, 10) should follow the same pattern.
+- 2026-09-30 — Password hashing uses Werkzeug's default (scrypt) — strong and needs no extra dependency.
+- 2026-09-30 — CSRF uses per-form Flask-WTF tokens, not global `CSRFProtect` — keeps `/notify` (JSON from the landing page) and future JSON/webhook endpoints (`/v1/*`, `/stripe/webhook`, `/plaid/webhook`) unaffected.
+- 2026-09-30 — Rate limiting uses Flask-Limiter with in-memory storage, keyed by client IP via `ProxyFix(x_for=1)` — "basic" per the plan; limits are per gunicorn worker. Move to a shared store (e.g. Redis) if it becomes a problem.
+- 2026-09-30 — The app refuses to start on Render (`RENDER=true`) without `SECRET_KEY`, and session cookies are `Secure` there by default.
+- 2026-09-30 — Database constraints follow a naming convention (`uq_users_email`, `pk_users`, …) and Alembic uses batch mode — so later migrations can alter constraints, including on SQLite.
 
 ## Handoff notes
 
@@ -398,6 +395,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-09-30 — step 4 — budget_app_website — feature/mhoff/accounts_auth_20260930
+- Done: `users` table (`models.py`, migration `f750ec1fdb0b`). `auth.py` blueprint with `/signup`, `/login`, `/logout`, registered only when `ACCOUNTS_ENABLED` is on. Flask-Login sessions, scrypt hashing, Flask-WTF CSRF on every form, Flask-Limiter on POSTs (login 5/min and 30/hour; signup 10/hour). Emails are trimmed and lowercased; login uses a generic error and constant-cost hashing for unknown or password-less accounts; `?next=` accepts local paths only. Templates in `frontend/templates/auth/` with `frontend/static/auth.css` (existing `styles.css` untouched). `ProxyFix` for the real client IP behind Render. `SECRET_KEY` required on Render; secure cookies there. Removed step 2 from this plan at Max's request. 59 tests pass; `/` and `/about` render byte-identical with the flag off or on; sign up, wrong password, log in, and log out checked by hand in a browser.
+- Not done / follow-ups: Until step 6 adds `/account`, logging in lands on `/login`, which shows "Signed in as …" and a Log out button; step 6 should change `after_login_url()` in `auth.py` to `/account` and add the nav link. Before turning the flag on in production, check that the rate limiter sees real client IPs on Render (if Render adds more than one proxy hop, all users would share one limit; adjust `ProxyFix` `x_for`). Email verification is step 5 (`email_verified_at` stays null for now).
+- Manual actions needed: Confirm `SECRET_KEY` is set on the Render service; this release refuses to start there without it. Confirm the dashboard's Pre-Deploy Command is `flask db upgrade` so the `users` table is created on deploy. Open the PR and paste its URL into step 4's PR line.
+- Next step: 5.
 
 ### 2026-09-30 — step 3 — budget_app_website — feature/mhoff/render_yaml_update_20260930
 - Done (dashboard, by Max): Created Render Postgres in the web service's region; set `DATABASE_URL` (internal URL), `SECRET_KEY`, and `ACCOUNTS_ENABLED=false` on the web service; moved the web service to a paid instance type (workspace stays on Hobby). Production `/healthz` returns `{"status": "ok"}`.
