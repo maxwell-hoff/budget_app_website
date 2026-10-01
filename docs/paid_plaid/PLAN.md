@@ -92,7 +92,7 @@ flowchart LR
 - **Done when:** Existing pages render unchanged, `flask db upgrade` runs locally,
   `pytest` passes, `/healthz` returns 200.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/db_scaffolding_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/db_scaffolding_20260930) (replace with the PR URL once opened)
+- **PR:** [#38](https://github.com/maxwell-hoff/budget_app_website/pull/38)
 
 ### 2. Serve installer downloads from GitHub Releases
 - **Repo:** budget_app_website
@@ -115,8 +115,8 @@ flowchart LR
   on deploy (`preDeployCommand: flask db upgrade` in `render.yaml`), set billing alerts.
   An agent can prepare the `render.yaml` change; the dashboard work is manual.
 - **Done when:** Production deploy is healthy (`/healthz` 200) and connected to Postgres.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/render_yaml_update_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/render_yaml_update_20260930) (replace with the PR URL once opened)
 
 ## Phase B — Accounts (website, behind `ACCOUNTS_ENABLED`)
 
@@ -333,7 +333,7 @@ flowchart LR
 - **Depends on:** 13, 17
 - **Scope:** Stripe live mode (product, price, webhook endpoint, portal config); Plaid
   production access and security questionnaire; Google OAuth consent screen published
-  with the production redirect URI (`https://<website-domain>/auth/google/callback`),
+  with the production redirect URI (`https://workbenchbudgeting.com/auth/google/callback`),
   privacy policy and terms links, and brand verification if Google requests it; set
   production env vars. Keep `ACCOUNTS_ENABLED=false` until step 19.
 - **Done when:** With `ACCOUNTS_ENABLED` turned on briefly for yourself (or on a
@@ -384,6 +384,8 @@ Newest last. One line each: date — decision — reason.
 - 2026-09-30 — Postgres driver is psycopg 3 (`psycopg[binary]`); `DATABASE_URL` values starting `postgres://` or `postgresql://` are rewritten to `postgresql+psycopg://` — Render hands out `postgres://`, which SQLAlchemy 2 rejects.
 - 2026-09-30 — `/healthz` runs `SELECT 1` and returns 503 if the database is unreachable — lets Render's health check catch a broken database connection, not just a dead process.
 - 2026-09-30 — Migrations start from an empty baseline revision (`07f88d99736f`); `.flaskenv` sets `FLASK_APP=serve:app` so `flask db upgrade` needs no flags — step 3's `preDeployCommand` and later model steps chain onto it.
+- 2026-09-30 — Production runs on Render Postgres, linked by pasting its Internal Database URL into `DATABASE_URL` in the dashboard. `render.yaml` lists `DATABASE_URL` and `SECRET_KEY` with `sync: false` rather than using `fromDatabase` — the service is managed in the dashboard, and a mismatched database name in a Blueprint sync could create a second, empty database.
+- 2026-09-30 — Production base URL is `https://workbenchbudgeting.com` (API at `/v1`).
 
 ## Handoff notes
 
@@ -396,6 +398,13 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-09-30 — step 3 — budget_app_website — feature/mhoff/render_yaml_update_20260930
+- Done (dashboard, by Max): Created Render Postgres in the web service's region; set `DATABASE_URL` (internal URL), `SECRET_KEY`, and `ACCOUNTS_ENABLED=false` on the web service; moved the web service to a paid instance type (workspace stays on Hobby). Production `/healthz` returns `{"status": "ok"}`.
+- Done (repo): `render.yaml` now records the paid plan (`starter`), `preDeployCommand: flask db upgrade`, `healthCheckPath: /healthz`, `ACCOUNTS_ENABLED`, and `DATABASE_URL`/`SECRET_KEY` as `sync: false`. Filled in `https://workbenchbudgeting.com` in `API_CONTRACT.md` and the step 18 Google redirect URI. Set step 1's PR link to #38.
+- Not done / follow-ups: Confirm the dashboard's Pre-Deploy Command is `flask db upgrade` and Health Check Path is `/healthz` (the service is dashboard-managed, so `render.yaml` doesn't apply them). Confirm the instance type name and correct `plan:` in `render.yaml` if it isn't Starter. Billing alerts: check the Render workspace billing settings.
+- Manual actions needed: Open the PR (the `gh` CLI isn't installed) and paste its URL into step 3's PR line.
+- Next step: 2.
 
 ### 2026-09-30 — step 1 — budget_app_website — feature/mhoff/db_scaffolding_20260930
 - Done: `serve.py` now has `create_app()` (module-level `app` kept for gunicorn). Added `config.py` (`DATABASE_URL` with SQLite fallback at `instance/app.db`, `SECRET_KEY`, `ACCOUNTS_ENABLED` default off, `.env` loading in dev), `extensions.py` (`db`, `migrate`), `migrations/` with an empty baseline revision, `.flaskenv`, `GET /healthz`, `pytest.ini` + `tests/` (27 tests), `requirements-dev.txt`, `.env.example`. Updated `CLAUDE.md` and the `/healthz` entry in `API_CONTRACT.md`. Verified `/`, `/about`, and the 404 page render byte-identical to before, `flask db upgrade` runs, and `gunicorn serve:app` serves pages, downloads, and `/healthz`.

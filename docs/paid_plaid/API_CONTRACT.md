@@ -11,7 +11,7 @@ See [PLAN.md](PLAN.md) for steps and status.
 
 ## Base URL and versioning
 
-- Production: `https://<website-domain>/v1` (TODO: fill in at step 3)
+- Production: `https://workbenchbudgeting.com/v1`
 - Local dev: `http://127.0.0.1:5001/v1` (website `serve.py` default port)
 - The desktop app reads the base URL from `BUDGET_APP_CLOUD_URL`.
 - Breaking changes require a new version prefix (`/v2`); additive changes (new optional
@@ -100,7 +100,7 @@ Response 200 (draft):
   "user": { "id": 1, "email": "…", "email_verified": true },
   "plaid_access": true,
   "subscription": { "status": "active", "current_period_end": "…", "cancel_at_period_end": false },
-  "account_url": "https://<website-domain>/account"
+  "account_url": "https://workbenchbudgeting.com/account"
 }
 ```
 
