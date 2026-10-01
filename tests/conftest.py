@@ -12,6 +12,8 @@ def make_app(**overrides):
         'ACCOUNTS_ENABLED': False,
         'WTF_CSRF_ENABLED': False,
         'RATELIMIT_ENABLED': False,
+        'EMAIL_BACKEND': 'memory',
+        'PUBLIC_BASE_URL': None,
     }
     config.update(overrides)
     app = create_app(config)
@@ -38,6 +40,11 @@ def accounts_app():
 @pytest.fixture
 def accounts_client(accounts_app):
     return accounts_app.test_client()
+
+
+@pytest.fixture
+def outbox(accounts_app):
+    return accounts_app.extensions.setdefault('mail_outbox', [])
 
 
 @pytest.fixture

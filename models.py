@@ -1,5 +1,8 @@
+import hashlib
+import hmac
 from datetime import datetime, timezone
 
+from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -31,3 +34,14 @@ class User(UserMixin, db.Model):
         if not self.password_hash:
             return False
         return check_password_hash(self.password_hash, password)
+
+    def password_fingerprint(self):
+        """Short keyed digest of the password hash. It changes whenever the password
+        changes, which makes reset tokens single-use and ends other sessions."""
+        key = current_app.config['SECRET_KEY'].encode()
+        return hmac.new(key, (self.password_hash or '').encode(), hashlib.sha256).hexdigest()[:16]
+
+    def get_id(self):
+        # Flask-Login stores this in the session cookie; load_user rejects it once the
+        # password changes.
+        return f'{self.id}:{self.password_fingerprint()}'

@@ -117,6 +117,38 @@
   border: 1px solid rgba(192, 57, 43, 0.25);
   border-radius: var(--radius-sm);
 }
+.auth-form__notice {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.84rem;
+  color: var(--good);
+  background: rgba(13, 110, 63, 0.06);
+  border: 1px solid rgba(13, 110, 63, 0.25);
+  border-radius: var(--radius-sm);
+}
+.auth-form--inline {
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+.auth-form--inline .auth-card__text {
+  margin: 0;
+}
+.auth-form__forgot,
+.auth-link-button {
+  align-self: flex-start;
+  padding: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-bright);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.auth-form__forgot {
+  margin-top: -0.4rem;
+}
 .auth-form__hint {
   margin: -0.4rem 0 0;
   font-size: 0.78rem;

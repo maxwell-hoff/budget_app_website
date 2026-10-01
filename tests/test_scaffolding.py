@@ -54,6 +54,19 @@ def test_render_uses_secure_cookies(monkeypatch):
     assert create_app().config['SESSION_COOKIE_SECURE'] is True
 
 
+def test_public_base_url_defaults(monkeypatch):
+    monkeypatch.delenv('PUBLIC_BASE_URL', raising=False)
+    monkeypatch.delenv('RENDER', raising=False)
+    assert create_app().config['PUBLIC_BASE_URL'] is None
+
+    monkeypatch.setenv('RENDER', 'true')
+    monkeypatch.setenv('SECRET_KEY', 'x' * 32)
+    assert create_app().config['PUBLIC_BASE_URL'] == 'https://workbenchbudgeting.com'
+
+    monkeypatch.setenv('PUBLIC_BASE_URL', 'https://staging.example.com/')
+    assert create_app().config['PUBLIC_BASE_URL'] == 'https://staging.example.com'
+
+
 def test_dev_works_without_secret_key(monkeypatch):
     monkeypatch.delenv('RENDER', raising=False)
     monkeypatch.delenv('SECRET_KEY', raising=False)
