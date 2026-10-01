@@ -59,6 +59,8 @@ def load_config(instance_path):
         'EMAIL_BACKEND': os.environ.get('EMAIL_BACKEND') or ('resend' if resend_api_key else 'console'),
         'EMAIL_FROM': os.environ.get('EMAIL_FROM') or 'Workbench Budgeting <noreply@workbenchbudgeting.com>',
         'PUBLIC_BASE_URL': public_base_url(on_render),
+        'GOOGLE_CLIENT_ID': os.environ.get('GOOGLE_CLIENT_ID', '').strip(),
+        'GOOGLE_CLIENT_SECRET': os.environ.get('GOOGLE_CLIENT_SECRET', '').strip(),
         'SECRET_KEY': secret_key(),
         'SQLALCHEMY_DATABASE_URI': database_url(instance_path),
         'SQLALCHEMY_ENGINE_OPTIONS': {'pool_pre_ping': True},

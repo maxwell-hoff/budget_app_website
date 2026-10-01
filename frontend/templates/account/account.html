@@ -34,23 +34,69 @@
     </div>
   </dl>
 
-  <section class="account-section" aria-labelledby="password-heading">
-    <h2 id="password-heading" class="account-section__title">
-      {{ 'Change password' if has_password else 'Set a password' }}
-    </h2>
-    <form method="post" class="auth-form" novalidate>
-      {{ form.csrf_token }}
-      {% if has_password %}
-        {{ field(form.current_password, "current-password") }}
+  <section class="account-section" aria-labelledby="methods-heading">
+    <h2 id="methods-heading" class="account-section__title">Sign-in methods</h2>
+    <dl class="account-details">
+      <div>
+        <dt>Password</dt>
+        <dd>
+          {% if has_password %}
+            <span class="account-badge account-badge--good">Set</span>
+          {% elif google_identity %}
+            <span class="account-details__note">Not needed — you sign in with Google.</span>
+          {% else %}
+            <span class="account-badge">Not set</span>
+          {% endif %}
+        </dd>
+      </div>
+      {% if google_identity or config.GOOGLE_ENABLED %}
+        <div>
+          <dt>Google</dt>
+          <dd>
+            {% if google_identity %}
+              <span class="account-badge account-badge--good">Connected</span>
+              <span>{{ google_identity.email }}</span>
+              {% if has_password %}
+                <form method="post" action="{{ url_for('google.unlink') }}" class="account-inline-form">
+                  {{ unlink_form.csrf_token }}
+                  <button type="submit" class="auth-link-button">Disconnect</button>
+                </form>
+              {% endif %}
+            {% else %}
+              <span class="account-badge">Not connected</span>
+              <a class="auth-link-button" href="{{ url_for('google.login', next=url_for('account.account')) }}">Connect Google</a>
+            {% endif %}
+          </dd>
+        </div>
       {% endif %}
-      {{ field(form.password, "new-password") }}
-      {{ field(form.confirm, "new-password") }}
-      <p class="auth-form__hint">At least 8 characters. Changing your password signs you out on other devices.</p>
-      <button type="submit" class="btn btn--primary auth-form__submit">
-        {{ 'Update password' if has_password else 'Set password' }}
-      </button>
-    </form>
+    </dl>
   </section>
+
+  {% if has_password %}
+    <section class="account-section" aria-labelledby="password-heading">
+      <h2 id="password-heading" class="account-section__title">Change password</h2>
+      <form method="post" class="auth-form" novalidate>
+        {{ form.csrf_token }}
+        {{ field(form.current_password, "current-password") }}
+        {{ field(form.password, "new-password") }}
+        {{ field(form.confirm, "new-password") }}
+        <p class="auth-form__hint">At least 8 characters. Changing your password signs you out on other devices.</p>
+        <button type="submit" class="btn btn--primary auth-form__submit">Update password</button>
+      </form>
+    </section>
+  {% else %}
+    <details class="account-section account-optional"{% if form.errors %} open{% endif %}>
+      <summary class="account-section__title">Add a password (optional)</summary>
+      <p class="account-details__note">Lets you sign in with your email and password as well as with Google.</p>
+      <form method="post" class="auth-form" novalidate>
+        {{ form.csrf_token }}
+        {{ field(form.password, "new-password") }}
+        {{ field(form.confirm, "new-password") }}
+        <p class="auth-form__hint">At least 8 characters.</p>
+        <button type="submit" class="btn btn--primary auth-form__submit">Set password</button>
+      </form>
+    </details>
+  {% endif %}
 
   <form method="post" action="{{ url_for('auth.logout') }}" class="auth-form account-logout">
     {{ logout_form.csrf_token }}

@@ -150,7 +150,7 @@ def test_passwordless_user_can_set_password(accounts_app, accounts_client, make_
     log_in_as(accounts_app, accounts_client, user_id)
 
     page = accounts_client.get('/account')
-    assert b'Set a password' in page.data
+    assert b'Add a password (optional)' in page.data
     assert b'Current password' not in page.data
 
     resp = change_password(accounts_client, current=None, follow_redirects=True)
