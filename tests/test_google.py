@@ -328,7 +328,8 @@ def test_cannot_disconnect_last_sign_in_method(google):
     google_login(google, client, claims(email='only-google@gmail.com'))
     page = client.get('/account').data
     assert b'Disconnect' not in page
-    assert b'Set a password below' in page
+    assert 'Not needed — you sign in with Google.'.encode() in page
+    assert b'Add a password (optional)' in page
 
     resp = client.post('/account/google/unlink', follow_redirects=True)
     assert b'Set a password before disconnecting Google' in resp.data

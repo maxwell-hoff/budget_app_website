@@ -215,6 +215,13 @@
   font-weight: 600;
   color: var(--ink);
 }
+.account-optional summary {
+  cursor: pointer;
+}
+.account-optional .account-details__note {
+  display: block;
+  margin: 0 0 1rem;
+}
 .account-logout {
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
