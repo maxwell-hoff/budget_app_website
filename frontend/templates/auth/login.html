@@ -1,5 +1,6 @@
 {% extends "auth/base.html" %}
 {% from "auth/_field.html" import field %}
+{% from "auth/_google_button.html" import google_button %}
 {% block title %}Log in{% endblock %}
 {% block card_name %}log_in{% endblock %}
 {% block content %}
@@ -7,6 +8,7 @@
   {% if error %}
     <p class="auth-form__alert" role="alert">{{ error }}</p>
   {% endif %}
+  {{ google_button(request.args.get('next')) }}
   <form method="post" class="auth-form" novalidate>
     {{ form.csrf_token }}
     {{ field(form.email, "email") }}

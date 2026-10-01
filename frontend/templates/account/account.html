@@ -34,6 +34,44 @@
     </div>
   </dl>
 
+  <section class="account-section" aria-labelledby="methods-heading">
+    <h2 id="methods-heading" class="account-section__title">Sign-in methods</h2>
+    <dl class="account-details">
+      <div>
+        <dt>Password</dt>
+        <dd>
+          {% if has_password %}
+            <span class="account-badge account-badge--good">Set</span>
+          {% else %}
+            <span class="account-badge">Not set</span>
+          {% endif %}
+        </dd>
+      </div>
+      {% if google_identity or config.GOOGLE_ENABLED %}
+        <div>
+          <dt>Google</dt>
+          <dd>
+            {% if google_identity %}
+              <span class="account-badge account-badge--good">Connected</span>
+              <span>{{ google_identity.email }}</span>
+              {% if has_password %}
+                <form method="post" action="{{ url_for('google.unlink') }}" class="account-inline-form">
+                  {{ unlink_form.csrf_token }}
+                  <button type="submit" class="auth-link-button">Disconnect</button>
+                </form>
+              {% else %}
+                <span class="account-details__note">Set a password below before you can disconnect Google.</span>
+              {% endif %}
+            {% else %}
+              <span class="account-badge">Not connected</span>
+              <a class="auth-link-button" href="{{ url_for('google.login', next=url_for('account.account')) }}">Connect Google</a>
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
+    </dl>
+  </section>
+
   <section class="account-section" aria-labelledby="password-heading">
     <h2 id="password-heading" class="account-section__title">
       {{ 'Change password' if has_password else 'Set a password' }}

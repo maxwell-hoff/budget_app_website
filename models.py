@@ -45,3 +45,26 @@ class User(UserMixin, db.Model):
         # Flask-Login stores this in the session cookie; load_user rejects it once the
         # password changes.
         return f'{self.id}:{self.password_fingerprint()}'
+
+    def identity(self, provider):
+        return next((i for i in self.identities if i.provider == provider), None)
+
+
+class OAuthIdentity(db.Model):
+    """A third-party sign-in (only Google so far) linked to a user."""
+
+    __tablename__ = 'oauth_identities'
+    __table_args__ = (
+        db.UniqueConstraint('provider', 'provider_subject'),
+        db.UniqueConstraint('user_id', 'provider'),
+    )
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    provider = db.Column(db.String(32), nullable=False)
+    # Google's stable `sub` claim; emails can change, this can't.
+    provider_subject = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(320), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+    user = db.relationship('User', backref=db.backref('identities', cascade='all, delete-orphan'))

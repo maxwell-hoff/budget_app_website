@@ -140,7 +140,7 @@ flowchart LR
   subscription status, change password, nav link when logged in (flag on only).
 - **Done when:** Page renders for logged-in users, redirects to login otherwise.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/account_page_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/account_page_20261001) (replace with the PR URL once opened)
+- **PR:** [#42](https://github.com/maxwell-hoff/budget_app_website/pull/42)
 
 ### 7. Sign in with Google
 - **Repo:** budget_app_website
@@ -162,8 +162,8 @@ flowchart LR
 - **Done when:** A new user can sign up with Google, an existing password user can sign
   in with Google and end up on the same account. Tests mock Google's token and userinfo
   responses, including an unverified email (must not link) and a bad `state` (rejected).
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/google_signin_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/google_signin_20261001) (replace with the PR URL once opened)
 
 ## Phase C — Billing (website, Stripe test mode)
 
@@ -392,6 +392,10 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-01 — `/account` is the landing page after sign-up, log-in, password reset, and email verification; it replaces the interim "You're signed in" page from step 4.
 - 2026-10-01 — The "Account" nav link is added to the existing marketing pages with an inline `{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}` placed so the HTML is byte-identical when the flag is off or the visitor is logged out. No "Log in" link for logged-out visitors yet; that's launch copy (step 19).
 - 2026-10-01 — `/account` already lets password-less users set a password (the form hides "Current password" for them), so step 7 only needs to show linked sign-in methods and guard against removing the last one.
+- 2026-10-01 — When Google sign-in links to an existing account whose email was never verified, that account's password is removed (and its sessions end) — otherwise someone could pre-register a victim's email with a password and keep access after the real owner signs in with Google. Verified accounts keep their password.
+- 2026-10-01 — A logged-in user can connect Google from `/account` even if the Google email differs from their account email; a Google account already linked to another user is refused rather than switching accounts. One Google account per user (`uq_oauth_identities_user_id`).
+- 2026-10-01 — "Removing a sign-in method" means disconnecting Google (`POST /account/google/unlink`); it's refused when the user has no password. There's no way to remove a password, so that's the only guard needed.
+- 2026-10-01 — The Google client is registered per app instance in `create_app` (Authlib `OAuth(app)`), not as a module-level extension — keeps test apps with different credentials independent. The redirect URI is built from `PUBLIC_BASE_URL` like email links.
 
 ## Handoff notes
 
@@ -404,6 +408,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-01 — step 7 — budget_app_website — feature/mhoff/google_signin_20261001
+- Done: `oauth_identities` table (`OAuthIdentity`, migration `f14fb3f708ab`). `google_auth.py` blueprint: `/auth/google`, `/auth/google/callback`, `POST /account/google/unlink`; Authlib OIDC with `state` + `nonce`. Account matching per the plan, plus: connect-while-logged-in, refusing a Google account linked to someone else, and dropping the password of an unverified account on link. "Continue with Google" on `/login` and `/signup` (hidden unless both Google env vars are set). `/account` has a "Sign-in methods" section (password set/not set; Google connected with Disconnect, or Connect Google). 149 tests pass; they stub only Google's metadata, token endpoint, and ID-token signature check, so Authlib's real state/nonce checks run. Existing pages byte-identical. Log-in page checked in a browser.
+- Not done / follow-ups: A real round trip against Google needs Max's credentials in a local `.env` (not done in this session; see manual actions). Google profile name/picture aren't stored.
+- Manual actions needed: Put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`, run `ACCOUNTS_ENABLED=true python serve.py` (port 5001), open `http://127.0.0.1:5001/login` (127.0.0.1, not localhost, to match the redirect URI), and sign in with Google. Production (step 18): add `https://workbenchbudgeting.com/auth/google/callback` to the OAuth client and set both env vars on Render. Open the PR and paste its URL into step 7's PR line.
+- Next step: 8 (needs a Stripe test-mode account, product, and price first; see its "Before starting" note).
 
 ### 2026-10-01 — step 6 — budget_app_website — feature/mhoff/account_page_20261001
 - Done: `account.py` blueprint with `/account` (login required; registered only when the flag is on): email, verification status with resend, "Not subscribed" placeholder, change password (current password required if set; "Set a password" for password-less users), log out. Changing the password re-logs in the current session and ends all others. Sign-up, log-in, reset, verify, and resend now land on `/account`; `GET /login` redirects there when logged in; removed `auth/signed_in.html`. "Account" nav link on `/`, `/about`, and account pages when logged in (flag on only); account pages' nav now matches the current landing page (How it works / Philosophy / Pricing / About). 115 tests pass; `/`, `/about`, and the 404 page are byte-identical to `main` with the flag off and with it on while logged out. Checked by hand in a browser.

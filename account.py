@@ -5,6 +5,7 @@ from wtforms.validators import Length, Optional
 
 from auth import MAX_PASSWORD_LENGTH, LogoutForm, NewPasswordForm, ResendVerificationForm
 from extensions import db, limiter
+from google_auth import UnlinkGoogleForm
 
 # Only registered when ACCOUNTS_ENABLED is on (see create_app), so every route 404s otherwise.
 bp = Blueprint('account', __name__)
@@ -46,4 +47,6 @@ def account():
         has_password=has_password,
         logout_form=LogoutForm(),
         resend_form=ResendVerificationForm(),
+        unlink_form=UnlinkGoogleForm(),
+        google_identity=user.identity('google'),
     )

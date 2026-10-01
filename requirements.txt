@@ -8,3 +8,5 @@ Flask-Login
 Flask-WTF
 email-validator
 Flask-Limiter
+Authlib
+requests
