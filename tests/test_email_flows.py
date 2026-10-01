@@ -10,7 +10,7 @@ import tokens
 from extensions import db
 from models import User, utcnow
 from serve import create_app
-from tests.conftest import make_app
+from tests.conftest import make_app, signed_in_email
 
 PASSWORD = 'correct horse battery'
 NEW_PASSWORD = 'a brand new passphrase'
@@ -20,11 +20,6 @@ def link_path(message):
     """Pull the site-relative path out of the link in an email body."""
     url = re.search(r'https?://\S+', message['text']).group(0)
     return '/' + url.split('/', 3)[3]
-
-
-def signed_in_email(client):
-    match = re.search(rb'Signed in as <strong>([^<]+)</strong>', client.get('/login').data)
-    return match.group(1).decode() if match else None
 
 
 def login(client, email='user@example.com', password=PASSWORD):

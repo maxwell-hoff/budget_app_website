@@ -1,0 +1,59 @@
+{% extends "auth/base.html" %}
+{% from "auth/_field.html" import field %}
+{% block title %}My account{% endblock %}
+{% block card_name %}account{% endblock %}
+{% block card_class %} auth-card--wide{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">My account</h1>
+
+  <dl class="account-details">
+    <div>
+      <dt>Email</dt>
+      <dd>{{ current_user.email }}</dd>
+    </div>
+    <div>
+      <dt>Email status</dt>
+      <dd>
+        {% if current_user.email_verified_at %}
+          <span class="account-badge account-badge--good">Verified</span>
+        {% else %}
+          <span class="account-badge">Not verified</span>
+          <form method="post" action="{{ url_for('auth.resend_verification') }}" class="account-inline-form">
+            {{ resend_form.csrf_token }}
+            <button type="submit" class="auth-link-button">Resend verification link</button>
+          </form>
+        {% endif %}
+      </dd>
+    </div>
+    <div>
+      <dt>Subscription</dt>
+      <dd>
+        <span class="account-badge">Not subscribed</span>
+        <span class="account-details__note">Bank syncing subscriptions are coming soon.</span>
+      </dd>
+    </div>
+  </dl>
+
+  <section class="account-section" aria-labelledby="password-heading">
+    <h2 id="password-heading" class="account-section__title">
+      {{ 'Change password' if has_password else 'Set a password' }}
+    </h2>
+    <form method="post" class="auth-form" novalidate>
+      {{ form.csrf_token }}
+      {% if has_password %}
+        {{ field(form.current_password, "current-password") }}
+      {% endif %}
+      {{ field(form.password, "new-password") }}
+      {{ field(form.confirm, "new-password") }}
+      <p class="auth-form__hint">At least 8 characters. Changing your password signs you out on other devices.</p>
+      <button type="submit" class="btn btn--primary auth-form__submit">
+        {{ 'Update password' if has_password else 'Set password' }}
+      </button>
+    </form>
+  </section>
+
+  <form method="post" action="{{ url_for('auth.logout') }}" class="auth-form account-logout">
+    {{ logout_form.csrf_token }}
+    <button type="submit" class="btn auth-form__submit">Log out</button>
+  </form>
+{% endblock %}

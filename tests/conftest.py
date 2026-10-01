@@ -1,8 +1,17 @@
+import re
+
 import pytest
 
 from extensions import db
 from models import User
 from serve import create_app
+
+
+def signed_in_email(client):
+    """Email shown on /account, or None if the client isn't logged in."""
+    resp = client.get('/account')
+    match = re.search(rb'<dt>Email</dt>\s*<dd>([^<]+)</dd>', resp.data)
+    return match.group(1).decode() if match else None
 
 
 def make_app(**overrides):

@@ -41,7 +41,8 @@
           <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
           <a href="#pricing">Pricing</a>
-          <a href="/about">About</a>
+          <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}
+          <a href="/account">Account</a>{% endif %}
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>
