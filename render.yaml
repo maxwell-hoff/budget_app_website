@@ -2,9 +2,18 @@ services:
   - type: web
     name: workbench-budgeting
     runtime: python
-    plan: free
+    plan: starter
     buildCommand: pip install -r requirements.txt
+    preDeployCommand: flask db upgrade
     startCommand: gunicorn --bind 0.0.0.0:$PORT serve:app
+    healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: ACCOUNTS_ENABLED
+        value: "false"
+      # Secrets are set in the Render dashboard; sync: false keeps Blueprint syncs from touching them.
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
