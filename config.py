@@ -42,9 +42,23 @@ def secret_key():
     return secrets.token_hex(32)
 
 
+def public_base_url(on_render):
+    url = os.environ.get('PUBLIC_BASE_URL', '').strip().rstrip('/')
+    if url:
+        return url
+    # Links in emails must not be built from the request's Host header, which an attacker
+    # can set to their own domain to capture reset tokens.
+    return 'https://workbenchbudgeting.com' if on_render else None
+
+
 def load_config(instance_path):
     on_render = env_flag('RENDER')
+    resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
     return {
+        'RESEND_API_KEY': resend_api_key,
+        'EMAIL_BACKEND': os.environ.get('EMAIL_BACKEND') or ('resend' if resend_api_key else 'console'),
+        'EMAIL_FROM': os.environ.get('EMAIL_FROM') or 'Workbench Budgeting <noreply@workbenchbudgeting.com>',
+        'PUBLIC_BASE_URL': public_base_url(on_render),
         'SECRET_KEY': secret_key(),
         'SQLALCHEMY_DATABASE_URI': database_url(instance_path),
         'SQLALCHEMY_ENGINE_OPTIONS': {'pool_pre_ping': True},

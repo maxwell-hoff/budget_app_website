@@ -13,7 +13,9 @@ serve.py → Flask app factory (create_app) + module-level `app`: pages, /downlo
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
 models.py → SQLAlchemy models (User)
-auth.py → /signup, /login, /logout blueprint (registered only when ACCOUNTS_ENABLED is on)
+auth.py → account blueprint: sign up/in/out, password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
+mailer.py → send_email (Resend in production, console in dev, memory in tests)
+tokens.py → signed, expiring tokens for password reset and email verification
 frontend/templates/auth/ → account page templates (auth.css styles them)
 migrations/ → Alembic migrations (flask db ...)
 tests/ → pytest suite (conftest.py has app/client fixtures)

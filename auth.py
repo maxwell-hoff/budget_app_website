@@ -1,8 +1,10 @@
 from functools import cache
 from urllib.parse import urlsplit
 
-from flask import Blueprint, abort, redirect, render_template, request, url_for
-from flask_login import current_user, login_user, logout_user
+import hmac
+
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -10,7 +12,12 @@ from wtforms import EmailField, PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 from extensions import db, limiter, login_manager
-from models import User, normalize_email
+from mailer import try_send_email
+from models import User, normalize_email, utcnow
+from tokens import (
+    RESET_MAX_AGE, VERIFY_MAX_AGE,
+    load_reset_token, load_verify_token, make_reset_token, make_verify_token,
+)
 
 # Only registered when ACCOUNTS_ENABLED is on (see create_app), so every route 404s otherwise.
 bp = Blueprint('auth', __name__)
@@ -20,16 +27,21 @@ MAX_PASSWORD_LENGTH = 128
 
 
 @login_manager.user_loader
-def load_user(user_id):
-    return db.session.get(User, int(user_id))
+def load_user(session_id):
+    user_id, _, fingerprint = session_id.partition(':')
+    if not user_id.isdigit():
+        return None
+    user = db.session.get(User, int(user_id))
+    if not user or not hmac.compare_digest(fingerprint, user.password_fingerprint()):
+        return None
+    return user
 
 
 def _strip(value):
     return value.strip() if isinstance(value, str) else value
 
 
-class SignupForm(FlaskForm):
-    email = EmailField('Email', filters=[_strip], validators=[DataRequired(), Email(), Length(max=320)])
+class NewPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[
         DataRequired(),
         Length(
@@ -44,12 +56,24 @@ class SignupForm(FlaskForm):
     ])
 
 
+class SignupForm(NewPasswordForm):
+    email = EmailField('Email', filters=[_strip], validators=[DataRequired(), Email(), Length(max=320)])
+
+
+class ForgotPasswordForm(FlaskForm):
+    email = EmailField('Email', filters=[_strip], validators=[DataRequired(), Email(), Length(max=320)])
+
+
 class LoginForm(FlaskForm):
     email = EmailField('Email', filters=[_strip], validators=[DataRequired(), Email(), Length(max=320)])
     password = PasswordField('Password', validators=[DataRequired(), Length(max=MAX_PASSWORD_LENGTH)])
 
 
 class LogoutForm(FlaskForm):
+    pass
+
+
+class ResendVerificationForm(FlaskForm):
     pass
 
 
@@ -69,6 +93,43 @@ def safe_next_url(target):
 
 def after_login_url():
     return safe_next_url(request.args.get('next')) or url_for('auth.login')
+
+
+def external_url(endpoint, **values):
+    base = current_app.config.get('PUBLIC_BASE_URL')
+    if base:
+        return base + url_for(endpoint, **values)
+    return url_for(endpoint, _external=True, **values)
+
+
+def send_verification_email(user):
+    link = external_url('auth.verify_email', token=make_verify_token(user))
+    return try_send_email(
+        user.email,
+        'Verify your email for Workbench Budgeting',
+        f"Welcome to Workbench Budgeting.\n\n"
+        f"Confirm your email address by opening this link:\n{link}\n\n"
+        f"The link expires in {VERIFY_MAX_AGE // 3600} hours. "
+        f"If you didn't create an account, you can ignore this email.\n",
+    )
+
+
+def send_reset_email(user):
+    link = external_url('auth.reset_password', token=make_reset_token(user))
+    return try_send_email(
+        user.email,
+        'Reset your Workbench Budgeting password',
+        f"Someone asked to reset the password for this Workbench Budgeting account.\n\n"
+        f"Choose a new password here:\n{link}\n\n"
+        f"The link expires in {RESET_MAX_AGE // 60} minutes and works once. "
+        f"If you didn't ask for this, you can ignore this email; your password won't change.\n",
+    )
+
+
+def message_page(title, heading, text, link=None, link_text=None, status=200):
+    return render_template(
+        'auth/message.html', title=title, heading=heading, text=text, link=link, link_text=link_text,
+    ), status
 
 
 @bp.route('/signup', methods=['GET', 'POST'])
@@ -93,6 +154,8 @@ def signup():
                 form.email.errors.append('An account with that email already exists.')
             else:
                 login_user(user)
+                send_verification_email(user)
+                flash(f'We sent a link to {user.email} to verify your email address.')
                 return redirect(after_login_url())
 
     return render_template('auth/signup.html', form=form)
@@ -102,7 +165,9 @@ def signup():
 @limiter.limit('5 per minute;30 per hour', methods=['POST'])
 def login():
     if current_user.is_authenticated:
-        return render_template('auth/signed_in.html', logout_form=LogoutForm())
+        return render_template(
+            'auth/signed_in.html', logout_form=LogoutForm(), resend_form=ResendVerificationForm(),
+        )
 
     form = LoginForm()
     error = None
@@ -125,3 +190,80 @@ def logout():
         abort(400)
     logout_user()
     return redirect(url_for('index'))
+
+
+@bp.route('/forgot-password', methods=['GET', 'POST'])
+@limiter.limit('5 per hour', methods=['POST'])
+def forgot_password():
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        email = normalize_email(form.email.data)
+        user = db.session.scalar(db.select(User).filter_by(email=email))
+        if user:
+            send_reset_email(user)
+        # Same response either way, so this form doesn't reveal which emails have accounts.
+        return message_page(
+            'Check your email', 'Check your email',
+            f'If an account exists for {email}, we sent a link to reset its password. '
+            f'The link expires in {RESET_MAX_AGE // 60} minutes.',
+        )
+    return render_template('auth/forgot_password.html', form=form)
+
+
+@bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+@limiter.limit('10 per hour', methods=['POST'])
+def reset_password(token):
+    user = load_reset_token(token)
+    if not user:
+        return message_page(
+            'Link expired', 'This link has expired',
+            'Password reset links work once and expire after an hour. Request a new one.',
+            link=url_for('auth.forgot_password'), link_text='Reset password', status=400,
+        )
+
+    form = NewPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        # The link arrived in their inbox, which proves they own the address.
+        if not user.email_verified_at:
+            user.email_verified_at = utcnow()
+        db.session.commit()
+        login_user(user)
+        flash('Your password has been updated.')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password.html', form=form, email=user.email)
+
+
+@bp.route('/verify-email/<token>')
+def verify_email(token):
+    user = load_verify_token(token)
+    if not user:
+        return message_page(
+            'Link expired', 'This link has expired',
+            f'Verification links expire after {VERIFY_MAX_AGE // 3600} hours. '
+            f'Log in to get a new one.',
+            link=url_for('auth.login'), link_text='Log in', status=400,
+        )
+    if not user.email_verified_at:
+        user.email_verified_at = utcnow()
+        db.session.commit()
+    return message_page(
+        'Email verified', 'Email verified',
+        f'Thanks — {user.email} is confirmed.',
+        link=url_for('auth.login'), link_text='Continue',
+    )
+
+
+@bp.route('/verify-email/resend', methods=['POST'])
+@login_required
+@limiter.limit('3 per hour')
+def resend_verification():
+    if not ResendVerificationForm().validate_on_submit():
+        abort(400)
+    if current_user.email_verified_at:
+        flash('Your email is already verified.')
+    else:
+        send_verification_email(current_user)
+        flash(f'We sent a new verification link to {current_user.email}.')
+    return redirect(url_for('auth.login'))

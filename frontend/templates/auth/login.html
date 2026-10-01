@@ -11,6 +11,7 @@
     {{ form.csrf_token }}
     {{ field(form.email, "email") }}
     {{ field(form.password, "current-password") }}
+    <a class="auth-form__forgot" href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
     <button type="submit" class="btn btn--primary auth-form__submit">Log in</button>
   </form>
   <p class="auth-card__alt">New here? <a href="{{ url_for('auth.signup', next=request.args.get('next')) }}">Create an account</a></p>

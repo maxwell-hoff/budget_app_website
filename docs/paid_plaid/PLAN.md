@@ -120,7 +120,7 @@ flowchart LR
 - **Done when:** With the flag on, a user can sign up, log in, and log out; with it off,
   the routes 404 and the site looks unchanged. Tests cover both.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/accounts_auth_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/accounts_auth_20260930) (replace with the PR URL once opened)
+- **PR:** [#40](https://github.com/maxwell-hoff/budget_app_website/pull/40)
 
 ### 5. Password reset and email verification
 - **Repo:** budget_app_website
@@ -130,8 +130,8 @@ flowchart LR
   Routes: `/forgot-password`, `/reset-password/<token>`, `/verify-email/<token>`.
 - **Done when:** Reset and verify flows work end to end in dev (console email) and tests
   cover token expiry/reuse.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/email_flows_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/email_flows_20260930) (replace with the PR URL once opened)
 
 ### 6. My account page
 - **Repo:** budget_app_website
@@ -383,6 +383,12 @@ Newest last. One line each: date — decision — reason.
 - 2026-09-30 — Rate limiting uses Flask-Limiter with in-memory storage, keyed by client IP via `ProxyFix(x_for=1)` — "basic" per the plan; limits are per gunicorn worker. Move to a shared store (e.g. Redis) if it becomes a problem.
 - 2026-09-30 — The app refuses to start on Render (`RENDER=true`) without `SECRET_KEY`, and session cookies are `Secure` there by default.
 - 2026-09-30 — Database constraints follow a naming convention (`uq_users_email`, `pk_users`, …) and Alembic uses batch mode — so later migrations can alter constraints, including on SQLite.
+- 2026-09-30 — Transactional email uses Resend, called over its HTTP API with the standard library (no SDK) and isolated in `mailer.py` — simple API and a free tier; switching to Postmark means replacing one function. Emails are plain text.
+- 2026-09-30 — Reset and verification tokens are stateless `itsdangerous` signed tokens (no tokens table). Reset tokens embed a keyed fingerprint of the password hash, so they stop working once the password changes (single-use); verification tokens embed the email address. Reset expires in 1 hour, verification in 48 hours.
+- 2026-09-30 — The Flask-Login session ID is `<user_id>:<password fingerprint>`, so changing the password (reset now, change-password in step 6) logs out every other session.
+- 2026-09-30 — A successful password reset also marks the email verified (the link proves inbox access) and lets password-less (Google-only, step 7) users set a password.
+- 2026-09-30 — Links in emails are built from `PUBLIC_BASE_URL` (default `https://workbenchbudgeting.com` on Render), never from the request's Host header, so a forged Host can't redirect reset links.
+- 2026-09-30 — Added `POST /verify-email/resend` (not in the original step 5 scope) — without it, an expired verification link was a dead end.
 
 ## Handoff notes
 
@@ -395,6 +401,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-09-30 — step 5 — budget_app_website — feature/mhoff/email_flows_20260930
+- Done: `mailer.py` (`send_email` with `resend` / `console` / `memory` backends; `try_send_email` logs failures so pages never break on an email outage). `tokens.py` (reset and verify tokens). In `auth.py`: `/forgot-password`, `/reset-password/<token>`, `/verify-email/<token>`, `POST /verify-email/resend`; sign-up now sends a verification email; flash messages on account pages; "Forgot password?" link on login; the signed-in page shows a resend link while unverified. Session IDs carry a password fingerprint so a reset ends other sessions. Config: `RESEND_API_KEY`, `EMAIL_BACKEND`, `EMAIL_FROM`, `PUBLIC_BASE_URL`. 94 tests pass (expiry, tampering, reuse, wrong token type, changed email, other-session logout, Host-header injection, rate limit, CSRF, provider failure). Checked by hand in a browser with console email: sign up, verify, forgot password, reset, and reuse of the reset link (rejected). Existing pages are byte-identical.
+- Not done / follow-ups: Step 6 should show verification status on `/account` (and can move the resend button there), and its change-password form should call `user.set_password` and then `login_user(user)` again so the current session survives the new fingerprint. `/forgot-password` responds slightly slower when the account exists (it sends the email inline); sign-up already reveals whether an email is registered, so this was left as is. Email is plain text only.
+- Manual actions needed: Before turning `ACCOUNTS_ENABLED` on in production (not needed to merge this): create a Resend account, verify `workbenchbudgeting.com` there (add the DNS records it shows), create an API key, and set `RESEND_API_KEY` on the Render service. Optionally set `EMAIL_FROM` if you want a sender other than `noreply@workbenchbudgeting.com`. Open the PR and paste its URL into step 5's PR line.
+- Next step: 6.
 
 ### 2026-09-30 — step 4 — budget_app_website — feature/mhoff/accounts_auth_20260930
 - Done: `users` table (`models.py`, migration `f750ec1fdb0b`). `auth.py` blueprint with `/signup`, `/login`, `/logout`, registered only when `ACCOUNTS_ENABLED` is on. Flask-Login sessions, scrypt hashing, Flask-WTF CSRF on every form, Flask-Limiter on POSTs (login 5/min and 30/hour; signup 10/hour). Emails are trimmed and lowercased; login uses a generic error and constant-cost hashing for unknown or password-less accounts; `?next=` accepts local paths only. Templates in `frontend/templates/auth/` with `frontend/static/auth.css` (existing `styles.css` untouched). `ProxyFix` for the real client IP behind Render. `SECRET_KEY` required on Render; secure cookies there. Removed step 2 from this plan at Max's request. 59 tests pass; `/` and `/about` render byte-identical with the flag off or on; sign up, wrong password, log in, and log out checked by hand in a browser.

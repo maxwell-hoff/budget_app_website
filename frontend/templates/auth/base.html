@@ -49,6 +49,9 @@
           <span class="auth-card__name">{% block card_name %}{% endblock %}</span>
         </div>
         <div class="auth-card__body">
+          {% for message in get_flashed_messages() %}
+            <p class="auth-form__notice" role="status">{{ message }}</p>
+          {% endfor %}
           {% block content %}{% endblock %}
         </div>
       </div>
