@@ -163,7 +163,7 @@ flowchart LR
   in with Google and end up on the same account. Tests mock Google's token and userinfo
   responses, including an unverified email (must not link) and a bad `state` (rejected).
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/google_signin_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/google_signin_20261001) (replace with the PR URL once opened)
+- **PR:** [#43](https://github.com/maxwell-hoff/budget_app_website/pull/43)
 
 ## Phase C — Billing (website, Stripe test mode)
 
@@ -182,8 +182,8 @@ flowchart LR
 - **Done when:** In Stripe test mode (Stripe CLI forwarding webhooks), subscribing
   creates an `active` subscription row; canceling updates it. Webhook tests use signed
   fixture payloads; duplicate events are ignored.
-- **Status:** todo
-- **PR:** —
+- **Status:** in-progress (code and tests done; waiting on the live test-mode check in the handoff notes)
+- **PR:** [open PR from `feature/mhoff/stripe_checkout_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/stripe_checkout_20261001) (replace with the PR URL once opened)
 
 ### 9. Customer Portal and the paid-access check
 - **Repo:** budget_app_website
@@ -396,6 +396,13 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-01 — A logged-in user can connect Google from `/account` even if the Google email differs from their account email; a Google account already linked to another user is refused rather than switching accounts. One Google account per user (`uq_oauth_identities_user_id`).
 - 2026-10-01 — "Removing a sign-in method" means disconnecting Google (`POST /account/google/unlink`); it's refused when the user has no password. There's no way to remove a password, so that's the only guard needed.
 - 2026-10-01 — The Google client is registered per app instance in `create_app` (Authlib `OAuth(app)`), not as a module-level extension — keeps test apps with different credentials independent. The redirect URI is built from `PUBLIC_BASE_URL` like email links.
+- 2026-10-01 — `subscriptions` has one row per user (unique `user_id`) holding their Stripe customer and current or most recent subscription; `status` is Stripe's own status string, null until the first subscription. Resubscribing reuses the customer and replaces the subscription ID.
+- 2026-10-01 — The Stripe customer is created in `/billing/checkout` (with `metadata.user_id`) before Checkout starts, so every webhook maps to a user by customer ID regardless of event order. `client_reference_id` and subscription metadata carry the user ID as a fallback.
+- 2026-10-01 — Webhooks re-fetch the subscription from Stripe instead of trusting the event body — out-of-order or stale events can't roll the row back. Events for a different subscription are ignored while the row's current one is still live.
+- 2026-10-01 — `/billing/checkout` refuses while the status is `active`, `trialing`, `past_due`, `unpaid`, `incomplete`, or `paused` (`billing.LIVE_STATUSES`), so nobody can pay twice. Step 9's `has_plaid_access` decides access separately.
+- 2026-10-01 — `cancel_at_period_end` is true when Stripe reports either `cancel_at_period_end` or a `cancel_at` date (newer Stripe API versions and the portal may use `cancel_at`). The renewal date is read from the subscription or, for API versions from 2025-03-31 on, its items.
+- 2026-10-01 — Billing routes are registered only when `ACCOUNTS_ENABLED` is on **and** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, and `STRIPE_WEBHOOK_SECRET` are all set; otherwise they 404 and `/account` keeps the "coming soon" text. Uses `stripe` (Python SDK) v16 via `StripeClient`, converting responses to plain dicts.
+- 2026-10-01 — The Stripe product is "bank syncing through Plaid"; its name and description come from the Stripe dashboard (shown on the Checkout page), not from code.
 
 ## Handoff notes
 
@@ -408,6 +415,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-01 — step 8 — budget_app_website — feature/mhoff/stripe_checkout_20261001
+- Done: `subscriptions` and `stripe_events` tables (`Subscription`, `StripeEvent`; migration `3baf908ea7df`). `billing.py`: `POST /billing/checkout` (creates the Stripe customer once, then a Checkout Session; refuses if already subscribed) and `POST /stripe/webhook` (signature check, the six event types from the plan, idempotent by event ID, re-fetches the subscription so ordering doesn't matter, handles old and new Stripe API shapes for the renewal date and invoice → subscription link). `/account` shows Active / Past due / etc. with "Renews on" or "Ends on", or a "Subscribe for $8.99/month" button, or the old "coming soon" text when Stripe isn't configured; `?checkout=success` shows a thank-you message. Env: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` (`.env.example`, `render.yaml`). 193 tests pass (44 new: signed fixture payloads, bad/missing/old signatures, tampering, duplicates, out-of-order events, both API shapes, resubscribe, unknown customers, Stripe errors → 500, exact Checkout params). Account page checked in a browser with placeholder keys.
+- Not done / follow-ups: The live test-mode run ("Done when") needs Max's Stripe test keys (see manual actions); set the status to `done` once it passes. Step 9 adds the Customer Portal (`POST /billing/portal`, using `subscriptions.stripe_customer_id`), `has_plaid_access`, and the Manage button; until then, cancel test subscriptions in the Stripe dashboard. Step 13 should hook "subscription fully ended" into `_sync` in `billing.py` (status becomes `canceled`).
+- Manual actions needed: In Stripe test mode, create the product (e.g. "Workbench Bank Sync", description about syncing banks through Plaid) with a recurring $8.99 USD monthly price. Put `STRIPE_SECRET_KEY` (sk_test_…) and `STRIPE_PRICE_ID` (price_…) in `.env`; run `stripe listen --forward-to 127.0.0.1:5001/stripe/webhook` and put the `whsec_…` it prints in `STRIPE_WEBHOOK_SECRET`; run `flask db upgrade`, then `ACCOUNTS_ENABLED=true python serve.py`; subscribe from `/account` with card 4242 4242 4242 4242, then cancel the subscription in the Stripe dashboard and check `/account` updates. Production (step 18): live-mode product/price, a webhook endpoint at `https://workbenchbudgeting.com/stripe/webhook` with the six events, and the three env vars on Render. Open the PR and paste its URL into step 8's PR line.
+- Next step: 9.
 
 ### 2026-10-01 — step 7 — budget_app_website — feature/mhoff/google_signin_20261001
 - Done: `oauth_identities` table (`OAuthIdentity`, migration `f14fb3f708ab`). `google_auth.py` blueprint: `/auth/google`, `/auth/google/callback`, `POST /account/google/unlink`; Authlib OIDC with `state` + `nonce`. Account matching per the plan, plus: connect-while-logged-in, refusing a Google account linked to someone else, and dropping the password of an unverified account on link. "Continue with Google" on `/login` and `/signup` (hidden unless both Google env vars are set). `/account` has a "Sign-in methods" section (password set/not set; Google connected with Disconnect, or Connect Google). 149 tests pass; they stub only Google's metadata, token endpoint, and ID-token signature check, so Authlib's real state/nonce checks run. Existing pages byte-identical. Log-in page checked in a browser.
