@@ -1,0 +1,129 @@
+/* Account pages (sign up, log in). Builds on the variables in styles.css. */
+
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 160px);
+  padding: 4.5rem 1rem 5rem;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.auth-card__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(180deg, var(--titlebar), var(--titlebar-2));
+}
+.auth-card__bar .dots {
+  display: flex;
+  gap: 5px;
+}
+.auth-card__bar .dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+}
+.auth-card__bar .dots span:first-child {
+  background: var(--accent);
+}
+.auth-card__name {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+}
+.auth-card__body {
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+.auth-card__title {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.auth-card__text {
+  margin: 0 0 1.25rem;
+  color: var(--ink-muted);
+}
+.auth-card__alt {
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.auth-card__alt a {
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.auth-field__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.auth-field__input {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.auth-field__input:focus {
+  outline: none;
+  border-color: var(--accent-bright);
+  box-shadow: var(--shadow-glow);
+}
+.auth-field.has-error .auth-field__input {
+  border-color: var(--bad);
+}
+.auth-field__error,
+.auth-form__alert {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--bad);
+}
+.auth-form__alert {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(192, 57, 43, 0.06);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  border-radius: var(--radius-sm);
+}
+.auth-form__hint {
+  margin: -0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.auth-form__submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.4rem;
+}

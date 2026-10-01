@@ -156,6 +156,9 @@ Listed here so both sides know they exist.
 | Endpoint | Step | Purpose |
 | --- | --- | --- |
 | `GET /healthz` | 1 | Health check: 200 `{"status": "ok"}`, or 503 `{"status": "error", "database": "unreachable"}` if the database query fails |
+| `GET, POST /signup` | 4 | Create an account (email + password), then log in. HTML form with CSRF token; 404 when `ACCOUNTS_ENABLED` is off |
+| `GET, POST /login` | 4 | Log in; honors a local-only `?next=` path. GET shows "signed in as …" when already logged in. POST rate limited (5/min, 30/hour per IP; 429). 404 when the flag is off |
+| `POST /logout` | 4 | Log out (CSRF token required, else 400), redirect to `/`. 404 when the flag is off |
 | `GET /auth/google` | 7 | Start "Sign in with Google" |
 | `GET /auth/google/callback` | 7 | Google OpenID Connect callback |
 | `POST /billing/checkout` | 8 | Start Stripe Checkout ($8.99/month) |

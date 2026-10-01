@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>{% block title %}{% endblock %} · Workbench Budgeting</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="wrap nav__inner">
+        <a class="nav__brand" href="/" aria-label="Workbench Budgeting home">
+          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          Workbench&nbsp;Budgeting
+        </a>
+        <span class="nav__spacer"></span>
+        <button
+          class="nav__toggle"
+          id="navToggle"
+          type="button"
+          aria-label="Open menu"
+          aria-controls="navLinks"
+          aria-expanded="false"
+        >
+          <span class="nav__toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <div class="nav__links" id="navLinks">
+          <a href="/#features">Features</a>
+          <a href="/#philosophy">Philosophy</a>
+          <a href="/about">About</a>
+          <a href="/#download" class="btn btn--primary btn--sm nav__cta">Download</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="auth">
+      <div class="auth-card">
+        <div class="auth-card__bar">
+          <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="auth-card__name">{% block card_name %}{% endblock %}</span>
+        </div>
+        <div class="auth-card__body">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <span class="footer__brand">
+          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          Workbench Budgeting
+        </span>
+        <div class="footer__end">
+          <span>&copy; <span id="year"></span> Garden Studio. All rights reserved.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      (function () {
+        const nav = document.querySelector(".nav");
+        const toggle = document.getElementById("navToggle");
+        const links = document.getElementById("navLinks");
+        if (!nav || !toggle || !links) return;
+
+        const setOpen = (open) => {
+          nav.classList.toggle("is-open", open);
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        };
+
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setOpen(!nav.classList.contains("is-open"));
+        });
+        document.addEventListener("click", (e) => {
+          if (nav.classList.contains("is-open") && !nav.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") setOpen(false);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "auth/base.html" %}
+{% from "auth/_field.html" import field %}
+{% block title %}Create account{% endblock %}
+{% block card_name %}sign_up{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">Create your account</h1>
+  <form method="post" class="auth-form" novalidate>
+    {{ form.csrf_token }}
+    {{ field(form.email, "email") }}
+    {{ field(form.password, "new-password") }}
+    {{ field(form.confirm, "new-password") }}
+    <p class="auth-form__hint">At least 8 characters.</p>
+    <button type="submit" class="btn btn--primary auth-form__submit">Create account</button>
+  </form>
+  <p class="auth-card__alt">Already have an account? <a href="{{ url_for('auth.login', next=request.args.get('next')) }}">Log in</a></p>
+{% endblock %}

@@ -10,8 +10,11 @@ all Plaid API calls) used by the desktop app in `../budget_app`.
 
 ```
 serve.py → Flask app factory (create_app) + module-level `app`: pages, /download/<platform>, /notify, /healthz
-config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED)
-extensions.py → SQLAlchemy `db` and Flask-Migrate `migrate`
+config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
+extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
+models.py → SQLAlchemy models (User)
+auth.py → /signup, /login, /logout blueprint (registered only when ACCOUNTS_ENABLED is on)
+frontend/templates/auth/ → account page templates (auth.css styles them)
 migrations/ → Alembic migrations (flask db ...)
 tests/ → pytest suite (conftest.py has app/client fixtures)
 frontend/templates/ → index.html (landing page), about.html
