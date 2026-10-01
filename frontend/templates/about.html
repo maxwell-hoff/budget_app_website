@@ -39,7 +39,8 @@
         <div class="nav__links" id="navLinks">
           <a href="/#features">Features</a>
           <a href="/#philosophy">Philosophy</a>
-          <a href="/about" aria-current="page">About</a>
+          <a href="/about" aria-current="page">About</a>{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}
+          <a href="/account">Account</a>{% endif %}
           <a href="/#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>

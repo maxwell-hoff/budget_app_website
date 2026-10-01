@@ -4,7 +4,7 @@ import pytest
 
 from extensions import db
 from models import User
-from tests.conftest import make_app
+from tests.conftest import make_app, signed_in_email
 
 PASSWORD = 'correct horse battery'
 
@@ -19,12 +19,6 @@ def signup(client, email='New@Example.com ', password=PASSWORD, confirm=None, **
 
 def login(client, email='user@example.com', password=PASSWORD, **kwargs):
     return client.post('/login', data={'email': email, 'password': password}, **kwargs)
-
-
-def signed_in_email(client):
-    resp = client.get('/login')
-    match = re.search(rb'Signed in as <strong>([^<]+)</strong>', resp.data)
-    return match.group(1).decode() if match else None
 
 
 # --- Flag off ---------------------------------------------------------------
@@ -147,9 +141,9 @@ def test_logout_get_not_allowed(accounts_client):
 
 @pytest.mark.parametrize('next_url,expected', [
     ('/about', '/about'),
-    ('https://evil.example.com/', '/login'),
-    ('//evil.example.com/', '/login'),
-    ('/\\evil.example.com', '/login'),
+    ('https://evil.example.com/', '/account'),
+    ('//evil.example.com/', '/account'),
+    ('/\\evil.example.com', '/account'),
 ])
 def test_login_next_redirect_is_local_only(accounts_client, make_user, next_url, expected):
     make_user()

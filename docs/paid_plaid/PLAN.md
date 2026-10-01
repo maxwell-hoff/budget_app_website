@@ -131,7 +131,7 @@ flowchart LR
 - **Done when:** Reset and verify flows work end to end in dev (console email) and tests
   cover token expiry/reuse.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/email_flows_20260930`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/email_flows_20260930) (replace with the PR URL once opened)
+- **PR:** [#41](https://github.com/maxwell-hoff/budget_app_website/pull/41)
 
 ### 6. My account page
 - **Repo:** budget_app_website
@@ -139,8 +139,8 @@ flowchart LR
 - **Scope:** `/account` (login required): email, verification status, placeholder for
   subscription status, change password, nav link when logged in (flag on only).
 - **Done when:** Page renders for logged-in users, redirects to login otherwise.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/account_page_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/account_page_20261001) (replace with the PR URL once opened)
 
 ### 7. Sign in with Google
 - **Repo:** budget_app_website
@@ -389,6 +389,9 @@ Newest last. One line each: date — decision — reason.
 - 2026-09-30 — A successful password reset also marks the email verified (the link proves inbox access) and lets password-less (Google-only, step 7) users set a password.
 - 2026-09-30 — Links in emails are built from `PUBLIC_BASE_URL` (default `https://workbenchbudgeting.com` on Render), never from the request's Host header, so a forged Host can't redirect reset links.
 - 2026-09-30 — Added `POST /verify-email/resend` (not in the original step 5 scope) — without it, an expired verification link was a dead end.
+- 2026-10-01 — `/account` is the landing page after sign-up, log-in, password reset, and email verification; it replaces the interim "You're signed in" page from step 4.
+- 2026-10-01 — The "Account" nav link is added to the existing marketing pages with an inline `{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}` placed so the HTML is byte-identical when the flag is off or the visitor is logged out. No "Log in" link for logged-out visitors yet; that's launch copy (step 19).
+- 2026-10-01 — `/account` already lets password-less users set a password (the form hides "Current password" for them), so step 7 only needs to show linked sign-in methods and guard against removing the last one.
 
 ## Handoff notes
 
@@ -401,6 +404,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-01 — step 6 — budget_app_website — feature/mhoff/account_page_20261001
+- Done: `account.py` blueprint with `/account` (login required; registered only when the flag is on): email, verification status with resend, "Not subscribed" placeholder, change password (current password required if set; "Set a password" for password-less users), log out. Changing the password re-logs in the current session and ends all others. Sign-up, log-in, reset, verify, and resend now land on `/account`; `GET /login` redirects there when logged in; removed `auth/signed_in.html`. "Account" nav link on `/`, `/about`, and account pages when logged in (flag on only); account pages' nav now matches the current landing page (How it works / Philosophy / Pricing / About). 115 tests pass; `/`, `/about`, and the 404 page are byte-identical to `main` with the flag off and with it on while logged out. Checked by hand in a browser.
+- Not done / follow-ups: Step 9 replaces the subscription placeholder (`frontend/templates/account/account.html`) with real status and Subscribe/Manage buttons. Step 7 adds linked sign-in methods to this page. Step 13 adds account deletion here. No logged-out "Log in" nav link yet (step 19).
+- Manual actions needed: Open the PR and paste its URL into step 6's PR line. No env or dashboard changes.
+- Next step: 7 (needs a Google OAuth client first; see its "Before starting" note).
 
 ### 2026-09-30 — step 5 — budget_app_website — feature/mhoff/email_flows_20260930
 - Done: `mailer.py` (`send_email` with `resend` / `console` / `memory` backends; `try_send_email` logs failures so pages never break on an email outage). `tokens.py` (reset and verify tokens). In `auth.py`: `/forgot-password`, `/reset-password/<token>`, `/verify-email/<token>`, `POST /verify-email/resend`; sign-up now sends a verification email; flash messages on account pages; "Forgot password?" link on login; the signed-in page shows a resend link while unverified. Session IDs carry a password fingerprint so a reset ends other sessions. Config: `RESEND_API_KEY`, `EMAIL_BACKEND`, `EMAIL_FROM`, `PUBLIC_BASE_URL`. 94 tests pass (expiry, tampering, reuse, wrong token type, changed email, other-session logout, Host-header injection, rate limit, CSRF, provider failure). Checked by hand in a browser with console email: sign up, verify, forgot password, reset, and reuse of the reset link (rejected). Existing pages are byte-identical.

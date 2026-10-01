@@ -92,7 +92,7 @@ def safe_next_url(target):
 
 
 def after_login_url():
-    return safe_next_url(request.args.get('next')) or url_for('auth.login')
+    return safe_next_url(request.args.get('next')) or url_for('account.account')
 
 
 def external_url(endpoint, **values):
@@ -165,9 +165,7 @@ def signup():
 @limiter.limit('5 per minute;30 per hour', methods=['POST'])
 def login():
     if current_user.is_authenticated:
-        return render_template(
-            'auth/signed_in.html', logout_form=LogoutForm(), resend_form=ResendVerificationForm(),
-        )
+        return redirect(after_login_url())
 
     form = LoginForm()
     error = None
@@ -230,7 +228,7 @@ def reset_password(token):
         db.session.commit()
         login_user(user)
         flash('Your password has been updated.')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('account.account'))
 
     return render_template('auth/reset_password.html', form=form, email=user.email)
 
@@ -251,7 +249,7 @@ def verify_email(token):
     return message_page(
         'Email verified', 'Email verified',
         f'Thanks — {user.email} is confirmed.',
-        link=url_for('auth.login'), link_text='Continue',
+        link=url_for('account.account'), link_text='Continue',
     )
 
 
@@ -266,4 +264,4 @@ def resend_verification():
     else:
         send_verification_email(current_user)
         flash(f'We sent a new verification link to {current_user.email}.')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('account.account'))

@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory,
 from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+import account
 import auth
 import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
 from config import BASE_DIR, load_config
@@ -84,6 +85,7 @@ def create_app(test_config=None):
     login_manager.login_view = 'auth.login' if app.config['ACCOUNTS_ENABLED'] else None
     if app.config['ACCOUNTS_ENABLED']:
         app.register_blueprint(auth.bp)
+        app.register_blueprint(account.bp)
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)
