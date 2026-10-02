@@ -28,8 +28,30 @@
     <div>
       <dt>Subscription</dt>
       <dd>
-        <span class="account-badge">Not subscribed</span>
-        <span class="account-details__note">Bank syncing subscriptions are coming soon.</span>
+        {% if subscribed %}
+          {% set end = subscription.current_period_end %}
+          {% if subscription.status in ('active', 'trialing') %}
+            <span class="account-badge account-badge--good">Active</span>
+          {% else %}
+            <span class="account-badge">{{ subscription.status.replace('_', ' ').capitalize() }}</span>
+          {% endif %}
+          <span>Bank syncing, $8.99/month</span>
+          {% if end %}
+            <span class="account-details__note">
+              {{ 'Ends' if subscription.cancel_at_period_end else 'Renews' }} on {{ end.strftime('%B') }} {{ end.day }}, {{ end.year }}.
+            </span>
+          {% endif %}
+        {% elif config.STRIPE_ENABLED %}
+          <span class="account-badge">Not subscribed</span>
+          <form method="post" action="{{ url_for('billing.checkout') }}" class="account-inline-form">
+            {{ checkout_form.csrf_token }}
+            <button type="submit" class="btn btn--primary account-subscribe">Subscribe for $8.99/month</button>
+          </form>
+          <span class="account-details__note">Sync your bank accounts in the desktop app through Plaid.</span>
+        {% else %}
+          <span class="account-badge">Not subscribed</span>
+          <span class="account-details__note">Bank syncing subscriptions are coming soon.</span>
+        {% endif %}
       </dd>
     </div>
   </dl>

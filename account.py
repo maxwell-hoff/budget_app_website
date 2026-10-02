@@ -1,9 +1,10 @@
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user
 from wtforms import PasswordField
 from wtforms.validators import Length, Optional
 
 from auth import MAX_PASSWORD_LENGTH, LogoutForm, NewPasswordForm, ResendVerificationForm
+from billing import CheckoutForm, is_subscribed
 from extensions import db, limiter
 from google_auth import UnlinkGoogleForm
 
@@ -41,6 +42,12 @@ def account():
             flash('Your password has been updated.' if has_password else 'Your password has been set.')
             return redirect(url_for('account.account'))
 
+    subscribed = is_subscribed(user.subscription)
+    if request.method == 'GET' and request.args.get('checkout') == 'success':
+        # Stripe redirects here before (or just after) the webhook arrives.
+        flash('Thanks for subscribing!' if subscribed else
+              "Thanks for subscribing! It can take a few seconds to show up here; refresh if it doesn't.")
+
     return render_template(
         'account/account.html',
         form=form,
@@ -49,4 +56,7 @@ def account():
         resend_form=ResendVerificationForm(),
         unlink_form=UnlinkGoogleForm(),
         google_identity=user.identity('google'),
+        subscription=user.subscription,
+        subscribed=subscribed,
+        checkout_form=CheckoutForm(),
     )

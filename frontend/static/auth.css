@@ -205,6 +205,10 @@
   display: inline;
   margin: 0;
 }
+.account-subscribe {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+}
 .account-section {
   margin-bottom: 1.5rem;
 }

@@ -8,6 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 import account
 import auth
+import billing
 import google_auth
 import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
 from config import BASE_DIR, load_config
@@ -83,12 +84,15 @@ def create_app(test_config=None):
     login_manager.init_app(app)
     limiter.init_app(app)
     google_auth.init_google(app)
+    billing.init_billing(app)
 
     login_manager.login_view = 'auth.login' if app.config['ACCOUNTS_ENABLED'] else None
     if app.config['ACCOUNTS_ENABLED']:
         app.register_blueprint(auth.bp)
         app.register_blueprint(account.bp)
         app.register_blueprint(google_auth.bp)
+        if app.config['STRIPE_ENABLED']:
+            app.register_blueprint(billing.bp)
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)

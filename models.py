@@ -68,3 +68,35 @@ class OAuthIdentity(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
 
     user = db.relationship('User', backref=db.backref('identities', cascade='all, delete-orphan'))
+
+
+class Subscription(db.Model):
+    """A user's Stripe customer and their current (or most recent) subscription."""
+
+    __tablename__ = 'subscriptions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, unique=True)
+    stripe_customer_id = db.Column(db.String(255), nullable=False, unique=True)
+    stripe_subscription_id = db.Column(db.String(255), nullable=True, unique=True)
+    # Stripe's subscription status (active, past_due, canceled, ...); null until the
+    # customer's first subscription exists.
+    status = db.Column(db.String(32), nullable=True)
+    current_period_end = db.Column(db.DateTime(timezone=True), nullable=True)
+    cancel_at_period_end = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
+
+    user = db.relationship(
+        'User', backref=db.backref('subscription', uselist=False, cascade='all, delete-orphan'),
+    )
+
+
+class StripeEvent(db.Model):
+    """Stripe webhook events already processed; Stripe can deliver an event more than once."""
+
+    __tablename__ = 'stripe_events'
+
+    id = db.Column(db.String(255), primary_key=True)
+    type = db.Column(db.String(255), nullable=False)
+    processed_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)

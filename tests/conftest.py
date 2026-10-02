@@ -25,6 +25,9 @@ def make_app(**overrides):
         'PUBLIC_BASE_URL': None,
         'GOOGLE_CLIENT_ID': '',
         'GOOGLE_CLIENT_SECRET': '',
+        'STRIPE_SECRET_KEY': '',
+        'STRIPE_PRICE_ID': '',
+        'STRIPE_WEBHOOK_SECRET': '',
     }
     config.update(overrides)
     app = create_app(config)
