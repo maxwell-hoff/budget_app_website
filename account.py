@@ -4,7 +4,7 @@ from wtforms import PasswordField
 from wtforms.validators import Length, Optional
 
 from auth import MAX_PASSWORD_LENGTH, LogoutForm, NewPasswordForm, ResendVerificationForm
-from billing import CheckoutForm, is_subscribed
+from billing import BillingForm, subscription_summary
 from extensions import db, limiter
 from google_auth import UnlinkGoogleForm
 
@@ -42,10 +42,10 @@ def account():
             flash('Your password has been updated.' if has_password else 'Your password has been set.')
             return redirect(url_for('account.account'))
 
-    subscribed = is_subscribed(user.subscription)
+    billing = subscription_summary(user)
     if request.method == 'GET' and request.args.get('checkout') == 'success':
         # Stripe redirects here before (or just after) the webhook arrives.
-        flash('Thanks for subscribing!' if subscribed else
+        flash('Thanks for subscribing!' if billing['access'] else
               "Thanks for subscribing! It can take a few seconds to show up here; refresh if it doesn't.")
 
     return render_template(
@@ -56,7 +56,6 @@ def account():
         resend_form=ResendVerificationForm(),
         unlink_form=UnlinkGoogleForm(),
         google_identity=user.identity('google'),
-        subscription=user.subscription,
-        subscribed=subscribed,
-        checkout_form=CheckoutForm(),
+        billing=billing,
+        billing_form=BillingForm(),
     )

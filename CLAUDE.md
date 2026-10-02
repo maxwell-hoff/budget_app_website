@@ -16,7 +16,7 @@ models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent)
 auth.py → account blueprint: sign up/in/out, password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
 account.py → /account page blueprint (details, change password; registered only when ACCOUNTS_ENABLED is on)
 google_auth.py → Sign in with Google (Authlib OIDC): /auth/google, callback, disconnect
-billing.py → Stripe: POST /billing/checkout, POST /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set)
+billing.py → Stripe: POST /billing/checkout, /billing/portal, /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set); has_plaid_access(user) is the only place that decides paid access
 mailer.py → send_email (Resend in production, console in dev, memory in tests)
 tokens.py → signed, expiring tokens for password reset and email verification
 frontend/templates/auth/, account/ → account page templates (auth.css styles them)

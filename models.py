@@ -82,8 +82,11 @@ class Subscription(db.Model):
     # Stripe's subscription status (active, past_due, canceled, ...); null until the
     # customer's first subscription exists.
     status = db.Column(db.String(32), nullable=True)
+    current_period_start = db.Column(db.DateTime(timezone=True), nullable=True)
     current_period_end = db.Column(db.DateTime(timezone=True), nullable=True)
     cancel_at_period_end = db.Column(db.Boolean, nullable=False, default=False)
+    # Stripe's cancellation_details.reason: cancellation_requested, payment_failed, payment_disputed.
+    cancellation_reason = db.Column(db.String(32), nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
 
