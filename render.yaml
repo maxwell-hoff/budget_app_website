@@ -29,3 +29,11 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: PLAID_CLIENT_ID
+        sync: false
+      - key: PLAID_SECRET
+        sync: false
+      - key: PLAID_TOKEN_KEY
+        sync: false
+      - key: PLAID_ENVIRONMENT
+        sync: false

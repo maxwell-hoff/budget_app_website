@@ -13,6 +13,7 @@ import auth
 import billing
 import google_auth
 import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
+import plaid_api
 from config import BASE_DIR, load_config
 from extensions import db, limiter, login_manager, migrate
 
@@ -87,6 +88,7 @@ def create_app(test_config=None):
     limiter.init_app(app)
     google_auth.init_google(app)
     billing.init_billing(app)
+    plaid_api.init_plaid(app)
 
     login_manager.login_view = 'auth.login' if app.config['ACCOUNTS_ENABLED'] else None
     if app.config['ACCOUNTS_ENABLED']:
@@ -97,6 +99,8 @@ def create_app(test_config=None):
         app.register_blueprint(api.bp)
         if app.config['STRIPE_ENABLED']:
             app.register_blueprint(billing.bp)
+        if app.config['PLAID_ENABLED']:
+            app.register_blueprint(plaid_api.bp)
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)

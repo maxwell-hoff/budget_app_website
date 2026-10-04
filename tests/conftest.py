@@ -28,6 +28,10 @@ def make_app(**overrides):
         'STRIPE_SECRET_KEY': '',
         'STRIPE_PRICE_ID': '',
         'STRIPE_WEBHOOK_SECRET': '',
+        'PLAID_CLIENT_ID': '',
+        'PLAID_SECRET': '',
+        'PLAID_ENVIRONMENT': 'sandbox',
+        'PLAID_TOKEN_KEY': '',
     }
     config.update(overrides)
     app = create_app(config)

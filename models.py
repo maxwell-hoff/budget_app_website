@@ -141,6 +141,27 @@ class AppSession(db.Model):
     user = db.relationship('User', backref=db.backref('app_sessions', cascade='all, delete-orphan'))
 
 
+class PlaidItem(db.Model):
+    """A bank connection (Plaid Item). The access token never leaves the server."""
+
+    __tablename__ = 'plaid_items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    item_id = db.Column(db.String(255), nullable=False, unique=True)
+    # Fernet ciphertext; key from PLAID_TOKEN_KEY (see plaid_api.encrypt_token).
+    access_token_encrypted = db.Column(db.Text, nullable=False)
+    institution_id = db.Column(db.String(64), nullable=True)
+    institution_name = db.Column(db.String(255), nullable=True)
+    # ok, relink_required, or error.
+    status = db.Column(db.String(32), nullable=False, default='ok')
+    transactions_cursor = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    last_synced_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('plaid_items', cascade='all, delete-orphan'))
+
+
 class StripeEvent(db.Model):
     """Stripe webhook events already processed; Stripe can deliver an event more than once."""
 

@@ -22,6 +22,8 @@ You are working on the "paid Plaid" project, which spans two repos:
    new decisions in the Decisions log, and write a Handoff notes entry
    (what was done, anything left, the next step).
 8. Summarize what changed and any manual actions I need to take (env vars, dashboards, deploys).
+9. Give me step-by-step live test instructions for this step (exact commands, URLs, and
+   what I should see), and run as much of that live test yourself as you can.
 
 Extra context for this step (optional): <NOTES>
 ```

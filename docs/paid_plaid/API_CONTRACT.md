@@ -89,6 +89,7 @@ Every non-2xx response has this body:
 | 400 | `bad_request` | Invalid input | Show message |
 | 401 | `unauthorized` | Missing, invalid, expired, or revoked session token | Clear token, prompt sign-in |
 | 402 | `plaid_access_required` | Signed in but no active Plaid subscription | Show "Subscribe to sync banks" with link to `/account` |
+| 400 | `item_limit_reached` | Already 10 bank connections (Plaid bills per connection) | Show message; suggest removing one |
 | 404 | `not_found` | Resource does not exist or is not the caller's | Show message |
 | 409 | `plaid_relink_required` | Plaid item needs re-authentication (e.g. `ITEM_LOGIN_REQUIRED`) | Start update-mode Link for that item |
 | 429 | `rate_limited` | Too many requests | Retry after `Retry-After` seconds |
@@ -148,20 +149,47 @@ Errors: 401 `unauthorized` (including an already revoked token).
 
 ### Plaid (all require a session **and** Plaid access; otherwise 401 / 402)
 
-#### `POST /v1/plaid/link-token` — step 11 — TODO
-Create a Plaid Link token for the user. Response: `{ "link_token": "…", "expiration": "…" }`.
+Exception: `DELETE /v1/plaid/items/<item_id>` needs only a session, so a user whose
+subscription lapsed can still remove a bank. The `/v1/plaid` endpoints 404 unless
+`ACCOUNTS_ENABLED` is on and the server has `PLAID_CLIENT_ID`, `PLAID_SECRET`, and
+`PLAID_TOKEN_KEY` set. Any Plaid failure (error response or network) → 502 `plaid_error`.
+Plaid access tokens are stored encrypted on the server and are **never** returned.
 
-#### `POST /v1/plaid/exchange` — step 11 — TODO
-Exchange a Link `public_token`. The server stores the access token; it is **never**
-returned to the client.
-Request: `{ "public_token": "…", "institution": { "id": "…", "name": "…" } }`
-Response: `{ "item": <PlaidItem> }`
+#### `POST /v1/plaid/link-token` — step 11
+Create a Plaid Link token for the user (product `transactions`, 730 days of history
+requested, US, English). No request body. Rate limited (30/hour per IP).
 
-#### `GET /v1/plaid/items` — step 11 — TODO
-Response: `{ "items": [<PlaidItem>, …] }`
+Response 200: `{ "link_token": "link-sandbox-…", "expiration": "2026-10-05T02:00:00Z" }`
 
-#### `DELETE /v1/plaid/items/<item_id>` — step 11 — TODO
-Calls Plaid `/item/remove` and deletes the item. Response 204.
+Errors: 400 `item_limit_reached` if the user already has 10 items; 401; 402; 502.
+
+#### `POST /v1/plaid/exchange` — step 11
+Exchange the `public_token` from Plaid Link's `onSuccess`. Rate limited (20/hour per IP).
+
+Request:
+```json
+{ "public_token": "public-sandbox-…", "institution": { "id": "ins_109508", "name": "First Platypus Bank" } }
+```
+- `institution` is optional (pass Link's `metadata.institution`, renaming `institution_id`
+  to `id`). It's display-only: `id` is cut to 64 characters and `name` to 255.
+- Exchanging a token for an Item the user already has updates it (new access token,
+  institution, `status` back to `ok`).
+
+Response 200: `{ "item": <PlaidItem> }`
+
+Errors: 400 `bad_request` (missing/blank `public_token`, `institution` not an object, or
+Plaid says the public token is invalid or already used); 400 `item_limit_reached`; 401;
+402; 502.
+
+#### `GET /v1/plaid/items` — step 11
+The caller's items, oldest first. Response 200: `{ "items": [<PlaidItem>, …] }`.
+Errors: 401; 402.
+
+#### `DELETE /v1/plaid/items/<item_id>` — step 11
+Calls Plaid `/item/remove` and deletes the item. Response 204, no body. Session only (no
+402). If Plaid says the Item is already gone (`ITEM_NOT_FOUND`, `INVALID_ACCESS_TOKEN`)
+the item is still deleted. Errors: 401; 404 `not_found` (unknown or another user's item);
+502 (the item is kept, so the user can retry).
 
 #### `POST /v1/plaid/sync` — step 12 — TODO
 Returns accounts and transactions in the shape the desktop ingest consumes (see
@@ -174,17 +202,19 @@ Update-mode Link token for an item returning 409. Response: `{ "link_token": "�
 
 ### Shared objects
 
-#### `PlaidItem` (draft)
+#### `PlaidItem` — step 11
 ```json
 {
   "item_id": "…",
   "institution_id": "ins_…",
   "institution_name": "…",
   "status": "ok | relink_required | error",
-  "created_at": "…",
-  "last_synced_at": "…"
+  "created_at": "2026-10-04T23:10:00Z",
+  "last_synced_at": null
 }
 ```
+`institution_id` and `institution_name` may be `null`. `last_synced_at` is `null` until the
+first sync (step 12). Step 11 only ever sets `status` to `ok`; steps 12–13 set the others.
 
 ---
 

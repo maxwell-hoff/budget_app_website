@@ -30,7 +30,8 @@ def api_error(status, code, message, headers=None):
 
 
 @bp.errorhandler(HTTPException)
-def _http_error(exc):
+def json_http_error(exc):
+    """Every HTTP error in the desktop API uses the contract's JSON error format."""
     headers = {}
     if exc.code == 429:
         limit = limiter.current_limit
