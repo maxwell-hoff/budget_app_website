@@ -13,6 +13,13 @@ def utcnow():
     return datetime.now(timezone.utc)
 
 
+def as_utc(value):
+    # SQLite hands back naive datetimes; everything is stored in UTC.
+    if value is not None and value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value
+
+
 def normalize_email(email):
     return (email or '').strip().lower()
 
@@ -93,6 +100,45 @@ class Subscription(db.Model):
     user = db.relationship(
         'User', backref=db.backref('subscription', uselist=False, cascade='all, delete-orphan'),
     )
+
+
+class AuthCode(db.Model):
+    """One-time code from /app-login that the desktop app trades (with its PKCE verifier)
+    for an app session."""
+
+    __tablename__ = 'auth_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    code_hash = db.Column(db.String(64), nullable=False, unique=True)
+    code_challenge = db.Column(db.String(43), nullable=False)
+    redirect_uri = db.Column(db.String(255), nullable=False)
+    device_name = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=False)
+    used_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('auth_codes', cascade='all, delete-orphan'))
+
+
+class AppSession(db.Model):
+    """A desktop app sign-in. The app holds the bearer token; only its hash is stored."""
+
+    __tablename__ = 'app_sessions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    token_hash = db.Column(db.String(64), nullable=False, unique=True)
+    device_name = db.Column(db.String(100), nullable=True)
+    # User.password_fingerprint() when the session was created; the session stops working
+    # when the password changes or is removed, like web sessions do.
+    password_fingerprint = db.Column(db.String(16), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    last_used_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=False)
+    revoked_at = db.Column(db.DateTime(timezone=True), nullable=True)
+
+    user = db.relationship('User', backref=db.backref('app_sessions', cascade='all, delete-orphan'))
 
 
 class StripeEvent(db.Model):

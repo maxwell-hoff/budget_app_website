@@ -7,6 +7,8 @@ from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import account
+import api
+import app_auth
 import auth
 import billing
 import google_auth
@@ -91,6 +93,8 @@ def create_app(test_config=None):
         app.register_blueprint(auth.bp)
         app.register_blueprint(account.bp)
         app.register_blueprint(google_auth.bp)
+        app.register_blueprint(app_auth.bp)
+        app.register_blueprint(api.bp)
         if app.config['STRIPE_ENABLED']:
             app.register_blueprint(billing.bp)
 

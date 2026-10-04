@@ -187,7 +187,7 @@ def logout():
     if not LogoutForm().validate_on_submit():
         abort(400)
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(safe_next_url(request.args.get('next')) or url_for('index'))
 
 
 @bp.route('/forgot-password', methods=['GET', 'POST'])
