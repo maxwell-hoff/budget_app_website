@@ -12,11 +12,13 @@ all Plaid API calls) used by the desktop app in `../budget_app`.
 serve.py → Flask app factory (create_app) + module-level `app`: pages, /download/<platform>, /notify, /healthz
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
-models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent)
+models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, AuthCode, AppSession)
 auth.py → account blueprint: sign up/in/out, password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
 account.py → /account page blueprint (details, change password; registered only when ACCOUNTS_ENABLED is on)
 google_auth.py → Sign in with Google (Authlib OIDC): /auth/google, callback, disconnect
 billing.py → Stripe: POST /billing/checkout, /billing/portal, /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set); has_plaid_access(user) is the only place that decides paid access
+app_auth.py → desktop sign-in: GET/POST /app-login (confirm page, one-time PKCE codes), app session create/lookup (registered only when ACCOUNTS_ENABLED is on)
+api.py → /v1 JSON API for the desktop app: POST /v1/auth/token, GET /v1/me, POST /v1/auth/logout; require_app_session and api_error (registered only when ACCOUNTS_ENABLED is on)
 mailer.py → send_email (Resend in production, console in dev, memory in tests)
 tokens.py → signed, expiring tokens for password reset and email verification
 frontend/templates/auth/, account/ → account page templates (auth.css styles them)

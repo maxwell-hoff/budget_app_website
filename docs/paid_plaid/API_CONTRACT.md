@@ -27,6 +27,9 @@ All `/v1/*` endpoints except `POST /v1/auth/token` require:
 Authorization: Bearer <session_token>
 ```
 
+A missing, unknown, expired, or revoked token gets 401 `unauthorized` with
+`WWW-Authenticate: Bearer`. The whole `/v1` API 404s while `ACCOUNTS_ENABLED` is off.
+
 Session tokens are opaque random strings. The server stores only a hash. The desktop
 app stores the token in the OS keychain (`keyring`), never in SQLite or `.env`.
 
@@ -48,12 +51,30 @@ sequenceDiagram
 
 1. App generates `code_verifier` (random), `code_challenge = BASE64URL(SHA256(verifier))`,
    and `state` (random).
-2. App opens the browser to:
+2. App opens the browser to (all values URL-encoded):
    `GET /app-login?redirect_uri=http://127.0.0.1:5002/auth/callback&code_challenge=<c>&code_challenge_method=S256&state=<s>&device_name=<name>`
-3. Server requires a web login, then redirects to `redirect_uri?code=<one-time code>&state=<s>`.
-   Only `http://127.0.0.1:<port>/auth/callback` and `http://localhost:<port>/auth/callback`
-   are accepted. Codes expire after 5 minutes and are single-use.
-4. App checks `state`, then calls `POST /v1/auth/token`.
+   - `redirect_uri`: exactly `http://127.0.0.1:<port>/auth/callback` or
+     `http://localhost:<port>/auth/callback` (explicit port, no query or fragment).
+   - `code_challenge`: 43 characters (unpadded base64url SHA-256). `code_challenge_method`
+     must be `S256`.
+   - `state`: required, up to 256 characters. Returned unchanged.
+   - `device_name`: optional, shown to the user; whitespace collapsed, cut to 100 characters.
+   - Any missing or invalid parameter → a 400 error page in the browser and **no redirect**
+     (so the app just stops waiting after its own timeout).
+3. Server requires a web login (password or Google; logged-out users go through `/login`
+   and come back), then shows a confirmation page: "The Workbench Budgeting app on
+   <device_name> wants to sign in as <email>" with **Continue**, **Use a different account**
+   (logs out of the website and starts over), and **Cancel**.
+   - Continue → `302 redirect_uri?code=<one-time code>&state=<s>`. Codes expire after
+     5 minutes and are single-use.
+   - Cancel → `redirect_uri?error=access_denied&state=<s>`.
+4. App checks `state` (and handles `error=access_denied` by showing "Sign-in canceled"),
+   then calls `POST /v1/auth/token` with the code and its `code_verifier`.
+
+Session tokens last **180 days** from sign-in (no sliding renewal). A session also ends when
+the user signs out of the app (`POST /v1/auth/logout`), when their password is changed,
+reset, or removed (the same rule that ends other web sessions), or when the account is
+deleted. Any of these → 401 on the next call; the app clears the token and shows Sign in.
 
 ## Error format
 
@@ -79,35 +100,51 @@ Every non-2xx response has this body:
 
 ### Auth
 
-#### `POST /v1/auth/token` — step 10 — TODO
-Exchange a one-time code for a session token. No bearer token required.
+#### `POST /v1/auth/token` — step 10
+Exchange a one-time code for a session token. No bearer token required. Rate limited
+(20/minute per IP; 429).
 
-Request (draft):
+Request:
 ```json
 { "code": "…", "code_verifier": "…", "device_name": "Max's MacBook" }
 ```
-Response 200 (draft):
+- `code_verifier`: 43–128 characters from `A-Z a-z 0-9 - . _ ~` (RFC 7636).
+- `device_name`: optional; overrides the one sent to `/app-login`.
+
+Response 200:
 ```json
-{ "session_token": "…", "expires_at": "2027-03-30T00:00:00Z", "user": { "id": 1, "email": "…" } }
+{ "session_token": "…", "expires_at": "2027-04-02T22:14:00Z", "user": { "id": 1, "email": "…" } }
 ```
 
-#### `GET /v1/me` — step 10 — TODO
+Errors: 400 `bad_request` if the body isn't a JSON object, a field is missing or the wrong
+type, or the code is unknown, expired, already used, or doesn't match the verifier. The
+first redemption attempt uses up the code even if the verifier is wrong, so on any 400 the
+app starts sign-in again.
+
+#### `GET /v1/me` — step 10
 Current user and entitlement. `plaid_access` comes from `billing.has_plaid_access(user)` (step 9): true
 for `active`/`trialing`; `past_due` for 7 days after the failed renewal; `canceled` at the customer's
 request until `current_period_end`; false otherwise (including cancellation for non-payment).
 
-Response 200 (draft):
+Response 200:
 ```json
 {
   "user": { "id": 1, "email": "…", "email_verified": true },
   "plaid_access": true,
-  "subscription": { "status": "active", "current_period_end": "…", "cancel_at_period_end": false },
+  "subscription": { "status": "active", "current_period_end": "2026-11-01T12:30:00Z", "cancel_at_period_end": false },
   "account_url": "https://workbenchbudgeting.com/account"
 }
 ```
+- `subscription` is `null` until the user has started a subscription. `status` is Stripe's
+  status string (`active`, `trialing`, `past_due`, `canceled`, `unpaid`, `incomplete`,
+  `paused`, …); clients should use `plaid_access`, not `status`, to decide what's allowed.
+  `current_period_end` may be `null`.
 
-#### `POST /v1/auth/logout` — step 10 — TODO
-Revokes the calling session token. Response 204.
+Errors: 401 `unauthorized`.
+
+#### `POST /v1/auth/logout` — step 10
+Revokes the calling session token (other devices stay signed in). Response 204, no body.
+Errors: 401 `unauthorized` (including an already revoked token).
 
 ### Plaid (all require a session **and** Plaid access; otherwise 401 / 402)
 
@@ -172,5 +209,6 @@ Listed here so both sides know they exist.
 | `POST /billing/checkout` | 8 | Logged-in only (CSRF token required; rate limited 10/hour): creates the user's Stripe customer on first use, then a Checkout Session for `STRIPE_PRICE_ID` and 303-redirects to it. Success returns to `/account?checkout=success`, cancel to `/account?checkout=canceled`. If the user already has a live subscription (`active`, `trialing`, `past_due`, `unpaid`, `incomplete`, `paused`), redirects to `/account` with a message instead. 404 when the flag is off or any `STRIPE_*` var is unset |
 | `POST /stripe/webhook` | 8 | Stripe events. Verifies `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` (5-minute tolerance; failure → 400). No CSRF token. Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.paid`, `invoice.payment_failed` by re-fetching the subscription from Stripe and copying its status, renewal date, and pending cancellation into `subscriptions`. Other types are acknowledged and ignored. Each event ID is processed once (repeats → 200 `{"received": true, "duplicate": true}`); errors → 500 so Stripe retries. Same 404 rules as checkout |
 | `POST /billing/portal` | 9 | Logged-in only (CSRF token required; rate limited 20/hour): creates a Stripe Customer Portal session for the user's customer and 303-redirects to it; the portal returns to `/account`. Users without a Stripe customer are redirected to `/account` with a message. Stripe errors (e.g. portal not configured) → back to `/account` with a message (Checkout does the same since step 9). Same 404 rules as checkout |
-| `GET /app-login` | 10 | Browser page for the desktop sign-in flow (accepts password or Google web login) |
+| `GET, POST /app-login` | 10 | Browser page for the desktop sign-in flow (see "Desktop sign-in flow" above). Logged-in only (otherwise 302 to `/login?next=…`, where password or Google login both return here). GET checks the parameters (invalid → 400 page, no redirect) and shows the confirmation page; POST (CSRF token required; rate limited 30/hour) issues the one-time code and 302s to the app's loopback `redirect_uri`. 404 when the flag is off |
+| `POST /logout?next=<path>` | 10 | `/logout` (step 4) now honors a local-only `next` path, used by "Use a different account" on `/app-login`; anything else still goes to `/` |
 | `POST /plaid/webhook` | 13 | Plaid item events (JWT-verified) |

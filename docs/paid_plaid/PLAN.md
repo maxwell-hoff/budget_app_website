@@ -195,7 +195,7 @@ flowchart LR
 - **Done when:** Unit tests cover every status branch of `has_plaid_access`; the account
   page shows the right button for each state.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/billing_portal_20261002`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/billing_portal_20261002) (replace with the PR URL once opened)
+- **PR:** [#45](https://github.com/maxwell-hoff/budget_app_website/pull/45)
 
 ## Phase D — Desktop sign-in API (website)
 
@@ -212,8 +212,8 @@ flowchart LR
 - **Done when:** A scripted test performs the full code -> token -> `/v1/me` flow
   (after both a password login and a Google login); tokens are stored hashed;
   revoked/expired tokens get 401. Contract updated.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/app_sessions_20261004`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/app_sessions_20261004) (replace with the PR URL once opened)
 
 ## Phase E — Hosted Plaid (website, Plaid sandbox)
 
@@ -407,6 +407,11 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-02 — `has_plaid_access(user)` lives in `billing.py`. The `past_due` grace period is 7 days (`PAST_DUE_GRACE`), measured from `current_period_start` — Stripe moves the period forward when it creates the renewal invoice, so the start is when the failed payment was first tried, while `current_period_end` is a month out.
 - 2026-10-02 — "Canceled but before `current_period_end`" keeps access only when Stripe's `cancellation_details.reason` is `cancellation_requested`. A subscription canceled for non-payment (`payment_failed`, `payment_disputed`) loses access immediately; otherwise it would get a free month, since its period end was already moved forward. Added `subscriptions.current_period_start` and `subscriptions.cancellation_reason` (migration `ae5881f0b12c`).
 - 2026-10-02 — Stripe API errors in Checkout and the portal send the user back to `/account` with a "couldn't reach our payment provider" message (logged) instead of a 500 page.
+- 2026-10-04 — `/app-login` shows a confirmation page ("The Workbench Budgeting app on <device> wants to sign in as <email>": Continue / Use a different account / Cancel) and only issues a code on a CSRF-protected POST, instead of redirecting straight away — RFC 8252 §8.6: any program on the computer can start a loopback flow, so a code is never handed out without the user clicking. Cancel redirects with `error=access_denied`; bad parameters show a 400 page and never redirect.
+- 2026-10-04 — App session tokens and one-time codes are 256-bit `secrets.token_urlsafe` values stored as SHA-256 hashes (no slow hash needed at that entropy). Codes last 5 minutes and are used up by the first redemption attempt, even with a wrong verifier. Sessions last 180 days from sign-in with no sliding renewal; `last_used_at` is written at most every 5 minutes.
+- 2026-10-04 — App sessions store the user's password fingerprint and stop working when it changes, matching web sessions — so a password reset/change, or Google sign-in removing an unverified account's password (step 7), also signs out the desktop app. Otherwise someone who pre-registered a victim's email could keep a desktop session after the owner takes the account back.
+- 2026-10-04 — The `/v1` API lives in `api.py` (blueprint `api`, prefix `/v1`) with `api_error`, `require_app_session` (sets `g.user`, `g.app_session`), and a blueprint error handler that turns every HTTP error (including 429 with `Retry-After`) into the contract's JSON error format. Steps 11–13 add their endpoints to this blueprint (or another one using these helpers). Email verification isn't required to sign the app in; `/v1/me` reports `email_verified`.
+- 2026-10-04 — `/logout` now honors a local-only `?next=`, used by "Use a different account".
 
 ## Handoff notes
 
@@ -419,6 +424,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-04 — step 10 — budget_app_website — feature/mhoff/app_sessions_20261004
+- Done: Set step 9's PR link to #45. `auth_codes` and `app_sessions` tables (`AuthCode`, `AppSession`; migration `0451270d22eb`). `app_auth.py`: `GET/POST /app-login` (login required; strict loopback `redirect_uri` check, S256-only PKCE, `state`, optional `device_name`; confirmation page `auth/app_login.html`), code issue/redeem, session create/lookup. `api.py`: `POST /v1/auth/token`, `GET /v1/me` (uses `has_plaid_access`), `POST /v1/auth/logout`, `require_app_session`, JSON errors. Both are registered only when `ACCOUNTS_ENABLED` is on. `/logout` honors a local `next`. Contract filled in for all three endpoints and `/app-login`. 321 tests pass (82 new: full code → token → `/v1/me` flow after a password login and after a Google login, hashed storage, single-use/expired/wrong-verifier codes, 17 rejected redirect URIs, invalid parameters never redirect, CSRF, cancel, switch account, revoked/expired/password-changed/deleted-user tokens get 401, rate limit 429 with `Retry-After`). Also ran the flow against a live local server with a script and checked the confirmation page in a browser.
+- Not done / follow-ups: No UI to list or revoke desktop sessions (only the app's own sign-out, or changing the password); add one to `/account` if wanted, and step 13's account deletion removes them by cascade. Expired codes are deleted when new codes are issued; expired or revoked sessions are kept (small table) — prune them later if needed. Unknown `/v1/...` paths and wrong methods still get Flask's HTML 404/405 (they never reach the blueprint), which the desktop client should treat as generic errors. Step 11's Plaid routes should use `@require_app_session` and then return `api_error(402, 'plaid_access_required', ...)` when `has_plaid_access(g.user)` is false.
+- Manual actions needed: Open the PR and paste its URL into step 10's PR line. Deploying runs the new migration via the Pre-Deploy Command (`flask db upgrade`); no new env vars. Nothing is visible in production while `ACCOUNTS_ENABLED=false`.
+- Next step: 11 (needs Plaid sandbox keys first; see its "Before starting" note).
 
 ### 2026-10-02 — step 9 — budget_app_website — feature/mhoff/billing_portal_20261002
 - Done: Step 8 marked done (Max's test-mode subscription worked; PR #44). `POST /billing/portal` (Customer Portal session, returns to `/account`). `has_plaid_access(user)` in `billing.py` per the decisions above, plus `subscription_summary(user)` for the account page. `/account` now shows: Active / Trial with "Renews on" or "Ends on"; "Payment failed" with the grace deadline or "paused"; "Canceled" with "stays on until"; Unpaid / Incomplete as paused; and Subscribe and/or Manage subscription buttons per state. Webhook sync now also records `current_period_start` and `cancellation_reason` (migration `ae5881f0b12c`). Checkout and portal Stripe errors show a friendly message. `CheckoutForm` renamed `BillingForm`. 239 tests pass (unit tests for every `has_plaid_access` branch including exact boundaries and SQLite's naive datetimes; account page for 12 subscription states; portal auth/CSRF/404/errors/params). Account page checked in a browser.

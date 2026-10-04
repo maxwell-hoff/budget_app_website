@@ -1,0 +1,20 @@
+{% extends "auth/base.html" %}
+{% block title %}Sign in to the desktop app{% endblock %}
+{% block card_name %}desktop_sign_in{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">Sign in to the desktop app</h1>
+  <p class="auth-card__text">
+    The Workbench Budgeting app{% if device_name %} on <strong>{{ device_name }}</strong>{% endif %}
+    wants to sign in as <strong>{{ current_user.email }}</strong>.
+    Only continue if you just started signing in from the app.
+  </p>
+  <form method="post" class="auth-form">
+    {{ form.csrf_token }}
+    <button type="submit" class="btn btn--primary auth-form__submit">Continue</button>
+  </form>
+  <form method="post" action="{{ switch_account_url }}" class="auth-card__alt">
+    {{ logout_form.csrf_token }}
+    Not you? <button type="submit" class="auth-link-button">Use a different account</button>
+    · <a href="{{ cancel_url }}">Cancel</a>
+  </form>
+{% endblock %}
