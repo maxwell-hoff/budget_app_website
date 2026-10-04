@@ -28,30 +28,50 @@
     <div>
       <dt>Subscription</dt>
       <dd>
-        {% if subscribed %}
-          {% set end = subscription.current_period_end %}
-          {% if subscription.status in ('active', 'trialing') %}
-            <span class="account-badge account-badge--good">Active</span>
-          {% else %}
-            <span class="account-badge">{{ subscription.status.replace('_', ' ').capitalize() }}</span>
-          {% endif %}
+        {% set state = billing.state %}
+        {% set until = billing.until %}
+        {% set until_text = until.strftime('%B') ~ ' ' ~ until.day ~ ', ' ~ until.year if until else '' %}
+        {% if state in ('active', 'ending') %}
+          <span class="account-badge account-badge--good">{{ 'Trial' if billing.status == 'trialing' else 'Active' }}</span>
           <span>Bank syncing, $8.99/month</span>
-          {% if end %}
-            <span class="account-details__note">
-              {{ 'Ends' if subscription.cancel_at_period_end else 'Renews' }} on {{ end.strftime('%B') }} {{ end.day }}, {{ end.year }}.
-            </span>
-          {% endif %}
-        {% elif config.STRIPE_ENABLED %}
-          <span class="account-badge">Not subscribed</span>
-          <form method="post" action="{{ url_for('billing.checkout') }}" class="account-inline-form">
-            {{ checkout_form.csrf_token }}
-            <button type="submit" class="btn btn--primary account-subscribe">Subscribe for $8.99/month</button>
-          </form>
-          <span class="account-details__note">Sync your bank accounts in the desktop app through Plaid.</span>
+        {% elif state == 'past_due' %}
+          <span class="account-badge account-badge--warn">Payment failed</span>
+        {% elif state == 'canceled' %}
+          <span class="account-badge">Canceled</span>
+        {% elif state == 'paused' %}
+          <span class="account-badge account-badge--warn">{{ billing.status.replace('_', ' ').capitalize() }}</span>
         {% else %}
           <span class="account-badge">Not subscribed</span>
-          <span class="account-details__note">Bank syncing subscriptions are coming soon.</span>
         {% endif %}
+
+        {% if config.STRIPE_ENABLED and (billing.can_manage or billing.can_subscribe) %}
+          <div class="account-actions">
+            {% if billing.can_subscribe %}
+              <form method="post" action="{{ url_for('billing.checkout') }}" class="account-inline-form">
+                {{ billing_form.csrf_token }}
+                <button type="submit" class="btn btn--primary account-subscribe">Subscribe for $8.99/month</button>
+              </form>
+            {% endif %}
+            {% if billing.can_manage %}
+              <form method="post" action="{{ url_for('billing.portal') }}" class="account-inline-form">
+                {{ billing_form.csrf_token }}
+                <button type="submit" class="btn account-subscribe">Manage subscription</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <span class="account-details__note">
+          {%- if state == 'active' and until %}Renews on {{ until_text }}.
+          {%- elif state == 'ending' and until %}Ends on {{ until_text }}. Bank syncing stays on until then.
+          {%- elif state == 'past_due' and billing.access %}Update your payment method by {{ until_text }} to keep bank syncing.
+          {%- elif state == 'past_due' %}Bank syncing is paused until your payment method is updated.
+          {%- elif state == 'canceled' %}Bank syncing stays on until {{ until_text }}.
+          {%- elif state == 'paused' %}Bank syncing is paused. Use Manage subscription to fix your payment.
+          {%- elif config.STRIPE_ENABLED %}Sync your bank accounts in the desktop app through Plaid.
+          {%- else %}Bank syncing subscriptions are coming soon.
+          {%- endif -%}
+        </span>
       </dd>
     </div>
   </dl>

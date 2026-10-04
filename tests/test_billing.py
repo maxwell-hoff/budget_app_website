@@ -47,14 +47,20 @@ class FakeStripe:
         return self.subscriptions[subscription_id]
 
     def set_subscription(self, sub_id, customer_id, status='active', cancel_at_period_end=False,
-                         legacy_shape=False, period_end=PERIOD_END, cancel_at=None):
+                         legacy_shape=False, period_end=PERIOD_END, cancel_at=None, cancellation_reason=None):
+        period_start = period_end - 30 * 86400
         sub = {
             'id': sub_id, 'object': 'subscription', 'customer': customer_id, 'status': status,
             'cancel_at_period_end': cancel_at_period_end, 'cancel_at': cancel_at,
-            'items': {'object': 'list', 'data': [{'id': 'si_1', 'current_period_end': period_end}]},
+            'cancellation_details': {'reason': cancellation_reason, 'comment': None, 'feedback': None},
+            'items': {'object': 'list', 'data': [
+                {'id': 'si_1', 'current_period_start': period_start, 'current_period_end': period_end},
+            ]},
         }
         if legacy_shape:
+            sub['current_period_start'] = period_start
             sub['current_period_end'] = period_end
+            sub['items']['data'][0].pop('current_period_start')
             sub['items']['data'][0].pop('current_period_end')
         self.subscriptions[sub_id] = sub
         return sub
@@ -357,7 +363,7 @@ def test_invoice_payment_failed_marks_past_due(stripe_app, fake_stripe, shape):
 
     send(stripe_app.test_client(), event('invoice.payment_failed', invoice))
     assert row(stripe_app, user_id)['status'] == 'past_due'
-    assert b'Past due' in logged_in_client(stripe_app).get('/account').data
+    assert b'Payment failed' in logged_in_client(stripe_app).get('/account').data
 
 
 def test_invoice_paid_updates_renewal_date(stripe_app, fake_stripe):
@@ -506,7 +512,25 @@ def test_stripe_wrappers_send_the_right_params(stripe_app, monkeypatch):
     assert calls['subscription'] == 'sub_1'
 
 
-def test_period_end_is_utc():
-    sub = {'items': {'data': [{'current_period_end': PERIOD_END}]}}
-    assert billing._period_end(sub) == datetime(2026, 11, 1, tzinfo=timezone.utc)
-    assert billing._period_end({'items': {'data': []}}) is None
+def test_period_bounds_are_utc():
+    sub = {'items': {'data': [{'current_period_start': PERIOD_END - 86400, 'current_period_end': PERIOD_END}]}}
+    assert billing._period_bound(sub, 'current_period_end', max) == datetime(2026, 11, 1, tzinfo=timezone.utc)
+    assert billing._period_bound(sub, 'current_period_start', min) == datetime(2026, 10, 31, tzinfo=timezone.utc)
+    assert billing._period_bound({'items': {'data': []}}, 'current_period_end', max) is None
+
+
+def test_sync_records_period_start_and_cancellation_reason(stripe_app, fake_stripe):
+    user_id = add_user(stripe_app)
+    add_subscription_row(stripe_app, user_id, customer_id='cus_1', stripe_subscription_id='sub_1', status='active')
+    sub = fake_stripe.set_subscription('sub_1', 'cus_1', status='canceled', cancellation_reason='payment_failed')
+    send(stripe_app.test_client(), subscription_event('customer.subscription.deleted', sub))
+    with stripe_app.app_context():
+        saved = db.session.scalar(db.select(Subscription))
+        assert saved.current_period_start == datetime(2026, 10, 2)
+        assert saved.cancellation_reason == 'payment_failed'
+
+    # A reason only matters once the subscription is canceled.
+    sub = fake_stripe.set_subscription('sub_1', 'cus_1', status='active', cancellation_reason='cancellation_requested')
+    send(stripe_app.test_client(), subscription_event('customer.subscription.updated', sub))
+    with stripe_app.app_context():
+        assert db.session.scalar(db.select(Subscription)).cancellation_reason is None

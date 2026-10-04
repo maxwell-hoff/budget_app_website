@@ -201,9 +201,20 @@
   background: rgba(13, 110, 63, 0.06);
   border-color: rgba(13, 110, 63, 0.25);
 }
+.account-badge--warn {
+  color: var(--bad);
+  background: rgba(192, 57, 43, 0.06);
+  border-color: rgba(192, 57, 43, 0.25);
+}
 .account-inline-form {
   display: inline;
   margin: 0;
+}
+.account-actions {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 .account-subscribe {
   padding: 0.45rem 1rem;

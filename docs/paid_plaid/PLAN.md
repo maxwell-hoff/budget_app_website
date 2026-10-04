@@ -182,8 +182,8 @@ flowchart LR
 - **Done when:** In Stripe test mode (Stripe CLI forwarding webhooks), subscribing
   creates an `active` subscription row; canceling updates it. Webhook tests use signed
   fixture payloads; duplicate events are ignored.
-- **Status:** in-progress (code and tests done; waiting on the live test-mode check in the handoff notes)
-- **PR:** [open PR from `feature/mhoff/stripe_checkout_20261001`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/stripe_checkout_20261001) (replace with the PR URL once opened)
+- **Status:** done
+- **PR:** [#44](https://github.com/maxwell-hoff/budget_app_website/pull/44)
 
 ### 9. Customer Portal and the paid-access check
 - **Repo:** budget_app_website
@@ -194,8 +194,8 @@ flowchart LR
   `now < current_period_end`. Show status + Subscribe/Manage buttons on `/account`.
 - **Done when:** Unit tests cover every status branch of `has_plaid_access`; the account
   page shows the right button for each state.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/billing_portal_20261002`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/billing_portal_20261002) (replace with the PR URL once opened)
 
 ## Phase D — Desktop sign-in API (website)
 
@@ -403,6 +403,10 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-01 — `cancel_at_period_end` is true when Stripe reports either `cancel_at_period_end` or a `cancel_at` date (newer Stripe API versions and the portal may use `cancel_at`). The renewal date is read from the subscription or, for API versions from 2025-03-31 on, its items.
 - 2026-10-01 — Billing routes are registered only when `ACCOUNTS_ENABLED` is on **and** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, and `STRIPE_WEBHOOK_SECRET` are all set; otherwise they 404 and `/account` keeps the "coming soon" text. Uses `stripe` (Python SDK) v16 via `StripeClient`, converting responses to plain dicts.
 - 2026-10-01 — The Stripe product is "bank syncing through Plaid"; its name and description come from the Stripe dashboard (shown on the Checkout page), not from code.
+- 2026-10-02 — Stripe Managed Payments (Stripe as merchant of record, handling sales tax/VAT) stays on; the product's tax code is `txcd_10103000` (SaaS, personal use), set in the dashboard. Repeat for the live-mode product at step 18.
+- 2026-10-02 — `has_plaid_access(user)` lives in `billing.py`. The `past_due` grace period is 7 days (`PAST_DUE_GRACE`), measured from `current_period_start` — Stripe moves the period forward when it creates the renewal invoice, so the start is when the failed payment was first tried, while `current_period_end` is a month out.
+- 2026-10-02 — "Canceled but before `current_period_end`" keeps access only when Stripe's `cancellation_details.reason` is `cancellation_requested`. A subscription canceled for non-payment (`payment_failed`, `payment_disputed`) loses access immediately; otherwise it would get a free month, since its period end was already moved forward. Added `subscriptions.current_period_start` and `subscriptions.cancellation_reason` (migration `ae5881f0b12c`).
+- 2026-10-02 — Stripe API errors in Checkout and the portal send the user back to `/account` with a "couldn't reach our payment provider" message (logged) instead of a 500 page.
 
 ## Handoff notes
 
@@ -415,6 +419,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-02 — step 9 — budget_app_website — feature/mhoff/billing_portal_20261002
+- Done: Step 8 marked done (Max's test-mode subscription worked; PR #44). `POST /billing/portal` (Customer Portal session, returns to `/account`). `has_plaid_access(user)` in `billing.py` per the decisions above, plus `subscription_summary(user)` for the account page. `/account` now shows: Active / Trial with "Renews on" or "Ends on"; "Payment failed" with the grace deadline or "paused"; "Canceled" with "stays on until"; Unpaid / Incomplete as paused; and Subscribe and/or Manage subscription buttons per state. Webhook sync now also records `current_period_start` and `cancellation_reason` (migration `ae5881f0b12c`). Checkout and portal Stripe errors show a friendly message. `CheckoutForm` renamed `BillingForm`. 239 tests pass (unit tests for every `has_plaid_access` branch including exact boundaries and SQLite's naive datetimes; account page for 12 subscription states; portal auth/CSRF/404/errors/params). Account page checked in a browser.
+- Not done / follow-ups: The portal needs a saved test-mode configuration in the Stripe dashboard (see manual actions) before Manage works locally. Existing local subscription rows get `current_period_start` on their next webhook. Step 10's `GET /v1/me` should return `has_plaid_access(user)` and step 11's 402 check should call it — nowhere else should look at `subscriptions.status`. Step 8's live cancel check wasn't run separately; canceling through the portal below covers it.
+- Manual actions needed: In Stripe test mode, open Settings → Billing → Customer portal, turn on "Cancel subscriptions" (set to cancel at the end of the billing period) and "Update payment methods", and click Save. Then with `stripe listen` running, click Manage subscription on `/account`, cancel, return, and check the page shows "Ends on …". Production (step 18): save the same portal settings in live mode, and set the live product's tax code. Open the PR and paste its URL into step 9's PR line.
+- Next step: 10.
 
 ### 2026-10-01 — step 8 — budget_app_website — feature/mhoff/stripe_checkout_20261001
 - Done: `subscriptions` and `stripe_events` tables (`Subscription`, `StripeEvent`; migration `3baf908ea7df`). `billing.py`: `POST /billing/checkout` (creates the Stripe customer once, then a Checkout Session; refuses if already subscribed) and `POST /stripe/webhook` (signature check, the six event types from the plan, idempotent by event ID, re-fetches the subscription so ordering doesn't matter, handles old and new Stripe API shapes for the renewal date and invoice → subscription link). `/account` shows Active / Past due / etc. with "Renews on" or "Ends on", or a "Subscribe for $8.99/month" button, or the old "coming soon" text when Stripe isn't configured; `?checkout=success` shows a thank-you message. Env: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` (`.env.example`, `render.yaml`). 193 tests pass (44 new: signed fixture payloads, bad/missing/old signatures, tampering, duplicates, out-of-order events, both API shapes, resubscribe, unknown customers, Stripe errors → 500, exact Checkout params). Account page checked in a browser with placeholder keys.
