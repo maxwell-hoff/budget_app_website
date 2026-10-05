@@ -5,7 +5,8 @@ services:
     plan: starter
     buildCommand: pip install -r requirements.txt
     preDeployCommand: flask db upgrade
-    startCommand: gunicorn --bind 0.0.0.0:$PORT serve:app
+    # /v1/plaid/sync pages through up to 24 months of transactions; gunicorn's 30 s default would kill it.
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --timeout 120 serve:app
     healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION

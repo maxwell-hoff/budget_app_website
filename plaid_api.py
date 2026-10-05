@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import timedelta
 from functools import wraps
 
 import certifi
@@ -15,12 +16,14 @@ from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
 from plaid.model.link_token_transactions import LinkTokenTransactions
 from plaid.model.products import Products
+from plaid.model.transactions_get_request import TransactionsGetRequest
+from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
 from werkzeug.exceptions import HTTPException
 
 from api import api_error, iso_utc, json_http_error, require_app_session
 from billing import has_plaid_access
 from extensions import db, limiter
-from models import PlaidItem
+from models import PlaidItem, utcnow
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +35,13 @@ TRANSACTIONS_DAYS_REQUESTED = 730
 # /item/remove errors that mean the Item is already gone at Plaid.
 ITEM_GONE_ERRORS = frozenset({'ITEM_NOT_FOUND', 'INVALID_ACCESS_TOKEN'})
 PUBLIC_TOKEN_ERRORS = frozenset({'INVALID_PUBLIC_TOKEN'})
+# The user has to sign in to the bank again (update-mode Link, step 13).
+RELINK_ERRORS = frozenset({'ITEM_LOGIN_REQUIRED'})
+# Plaid is still pulling the first batch of history, typically for a few seconds after linking.
+NOT_READY_ERRORS = frozenset({'PRODUCT_NOT_READY'})
+NOT_READY_RETRY_AFTER = 10
+# /transactions/get's maximum page size.
+TRANSACTIONS_PAGE_SIZE = 500
 # Seconds; without a timeout a stalled Plaid call would hold a gunicorn worker indefinitely.
 PLAID_TIMEOUT = 30
 # Plaid's error responses, and network failures reaching Plaid at all.
@@ -105,6 +115,32 @@ def remove_item(access_token):
     _plaid().item_remove(ItemRemoveRequest(access_token=access_token), _request_timeout=PLAID_TIMEOUT)
 
 
+def get_transactions_page(access_token, start_date, end_date, offset):
+    return _plaid().transactions_get(TransactionsGetRequest(
+        access_token=access_token,
+        start_date=start_date,
+        end_date=end_date,
+        options=TransactionsGetRequestOptions(count=TRANSACTIONS_PAGE_SIZE, offset=offset),
+    ), _request_timeout=PLAID_TIMEOUT)
+
+
+def fetch_transactions(access_token, days_back):
+    """Accounts and every transaction from the last `days_back` days, as Plaid's own JSON
+    (field names and values exactly as /transactions/get returns them)."""
+    end_date = utcnow().date()
+    start_date = end_date - timedelta(days=days_back)
+    accounts, transactions = None, []
+    while True:
+        page = get_transactions_page(access_token, start_date, end_date, len(transactions))
+        if accounts is None:
+            accounts = page.accounts
+        transactions.extend(page.transactions)
+        if not page.transactions or len(transactions) >= page.total_transactions:
+            break
+    to_json = plaid.ApiClient.sanitize_for_serialization
+    return to_json(accounts), to_json(transactions)
+
+
 # --- Helpers ---
 
 def _error_body(exc):
@@ -118,13 +154,20 @@ def plaid_error_code(exc):
     return _error_body(exc).get('error_code')
 
 
-def plaid_failure(exc, action):
+PLAID_ERROR_MESSAGE = 'Our bank connection provider had a problem. Please try again in a few minutes.'
+
+
+def log_plaid_failure(exc, action):
     body = _error_body(exc)
     logger.warning(
         'Plaid %s failed for user %s: %s (request %s)',
         action, g.user.id, body.get('error_code') or type(exc).__name__, body.get('request_id'),
     )
-    return api_error(502, 'plaid_error', "Our bank connection provider had a problem. Please try again in a few minutes.")
+
+
+def plaid_failure(exc, action):
+    log_plaid_failure(exc, action)
+    return api_error(502, 'plaid_error', PLAID_ERROR_MESSAGE)
 
 
 def require_plaid_access(view):
@@ -162,6 +205,30 @@ def _optional_string(value, max_length):
     if not isinstance(value, str):
         return None
     return value.strip()[:max_length] or None
+
+
+def _sync_item(item, days_back):
+    """(result, None) on success, or (None, (status, code, message, headers)) on failure."""
+    try:
+        accounts, transactions = fetch_transactions(decrypt_token(item.access_token_encrypted), days_back)
+    except PLAID_ERRORS as exc:
+        code = plaid_error_code(exc)
+        if code in RELINK_ERRORS:
+            item.status = 'relink_required'
+            db.session.commit()
+            return None, (409, 'plaid_relink_required', 'Sign in to this bank again to keep syncing it.', None)
+        if code in NOT_READY_ERRORS:
+            return None, (
+                503, 'plaid_not_ready', 'This bank is still loading its history. Try again in a few seconds.',
+                {'Retry-After': str(NOT_READY_RETRY_AFTER)},
+            )
+        log_plaid_failure(exc, 'transactions_get')
+        return None, (502, 'plaid_error', PLAID_ERROR_MESSAGE, None)
+    item.status = 'ok'
+    item.last_synced_at = utcnow()
+    # Commit per item so a long multi-bank sync doesn't hold a transaction open across Plaid calls.
+    db.session.commit()
+    return {'item': item_json(item), 'accounts': accounts, 'transactions': transactions, 'error': None}, None
 
 
 # --- Endpoints ---
@@ -225,6 +292,44 @@ def items():
         db.select(PlaidItem).filter_by(user_id=g.user.id).order_by(PlaidItem.created_at, PlaidItem.id)
     )
     return jsonify(items=[item_json(item) for item in rows])
+
+
+@bp.route('/sync', methods=['POST'])
+@require_plaid_access
+@limiter.limit('120 per hour')
+def sync():
+    data = request.get_json(silent=True) if request.get_data() else {}
+    if not isinstance(data, dict):
+        return api_error(400, 'bad_request', 'The request body must be a JSON object.')
+    days_back = data.get('days_back', TRANSACTIONS_DAYS_REQUESTED)
+    if type(days_back) is not int or not 1 <= days_back <= TRANSACTIONS_DAYS_REQUESTED:
+        return api_error(400, 'bad_request', f'days_back must be a whole number from 1 to {TRANSACTIONS_DAYS_REQUESTED}.')
+    item_id = data.get('item_id')
+    if item_id is not None and (not isinstance(item_id, str) or not item_id.strip()):
+        return api_error(400, 'bad_request', 'item_id must be a non-empty string.')
+
+    if item_id is not None:
+        item = db.session.scalar(db.select(PlaidItem).filter_by(user_id=g.user.id, item_id=item_id.strip()))
+        if item is None:
+            return api_error(404, 'not_found', 'No bank connection with that ID.')
+        result, error = _sync_item(item, days_back)
+        if error:
+            return api_error(*error)
+        return jsonify(items=[result])
+
+    # Every item: one bank's failure is reported in its entry instead of failing the rest.
+    results = []
+    rows = db.session.scalars(
+        db.select(PlaidItem).filter_by(user_id=g.user.id).order_by(PlaidItem.created_at, PlaidItem.id)
+    ).all()
+    for item in rows:
+        result, error = _sync_item(item, days_back)
+        if error:
+            _status, code, message, _headers = error
+            result = {'item': item_json(item), 'accounts': [], 'transactions': [],
+                      'error': {'code': code, 'message': message}}
+        results.append(result)
+    return jsonify(items=results)
 
 
 @bp.route('/items/<item_id>', methods=['DELETE'])

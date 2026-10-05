@@ -114,8 +114,10 @@ def assert_api_error(resp, status, code):
 
 ENDPOINTS = [
     ('post', '/v1/plaid/link-token'), ('post', '/v1/plaid/exchange'),
-    ('get', '/v1/plaid/items'), ('delete', '/v1/plaid/items/item-1'),
+    ('get', '/v1/plaid/items'), ('post', '/v1/plaid/sync'), ('delete', '/v1/plaid/items/item-1'),
 ]
+# Every endpoint except DELETE needs Plaid access.
+PAID_ENDPOINTS = ENDPOINTS[:-1]
 
 
 # --- Availability and configuration ---------------------------------------------
@@ -157,7 +159,7 @@ def test_401_without_session(plaid_app, fake_plaid, method, path):
 
 
 @pytest.mark.parametrize('status', [None, 'canceled', 'unpaid', 'incomplete'])
-@pytest.mark.parametrize('method,path', ENDPOINTS[:3])
+@pytest.mark.parametrize('method,path', PAID_ENDPOINTS)
 def test_402_without_plaid_access(plaid_app, fake_plaid, method, path, status):
     user_id = add_user(plaid_app)
     if status:
