@@ -1,4 +1,11 @@
-# Paid Plaid — API Contract (desktop app <-> website server)
+# Paid App — API Contract (desktop app <-> website server)
+
+> **Pending renames (step 13a):** the subscription now unlocks the whole app, not just
+> Plaid. Step 13a renames `plaid_access` → `paid_access` in `/v1/me`, adds
+> `access_until` and `trial_available` (1-week free trial), and renames error
+> `plaid_access_required` → `subscription_required`.
+> Until 13a merges, the server sends the old names. Desktop steps (14 and later) build
+> against the new names. Step 13a updates the entries below and removes this note.
 
 This is the interface between the desktop app (`budget_app`, the **client**) and the
 website server (`budget_app_website`, the **server**). Both sides build against this
@@ -88,7 +95,7 @@ Every non-2xx response has this body:
 | --- | --- | --- | --- |
 | 400 | `bad_request` | Invalid input | Show message |
 | 401 | `unauthorized` | Missing, invalid, expired, or revoked session token | Clear token, prompt sign-in |
-| 402 | `plaid_access_required` | Signed in but no active Plaid subscription | Show "Subscribe to sync banks" with link to `/account` |
+| 402 | `plaid_access_required` (→ `subscription_required` in step 13a) | Signed in but no active subscription | Refresh `/v1/me` and show the lock screen (step 14a) with a link to `/account` |
 | 400 | `item_limit_reached` | Already 10 bank connections (Plaid bills per connection) | Show message; suggest removing one |
 | 404 | `not_found` | Resource does not exist or is not the caller's | Show message |
 | 409 | `plaid_relink_required` | Plaid item needs re-authentication (e.g. `ITEM_LOGIN_REQUIRED`) | Start update-mode Link for that item |
@@ -141,6 +148,13 @@ Response 200:
   status string (`active`, `trialing`, `past_due`, `canceled`, `unpaid`, `incomplete`,
   `paused`, …); clients should use `plaid_access`, not `status`, to decide what's allowed.
   `current_period_end` may be `null`.
+- Step 13a: `plaid_access` becomes `paid_access` (same rules; it now unlocks the whole
+  app), and a new `access_until` field gives the time until which access is already
+  guaranteed without another payment (ISO 8601 UTC, or `null` when `paid_access` is
+  false). During the free trial (`status` `trialing`) it's the trial's end. The desktop
+  stays unlocked offline until `access_until` plus its offline grace. A new
+  `trial_available` boolean is true when the user has never had a trial, so the desktop
+  can label its Subscribe button "Start your free week".
 
 Errors: 401 `unauthorized`.
 
@@ -148,7 +162,7 @@ Errors: 401 `unauthorized`.
 Revokes the calling session token (other devices stay signed in). Response 204, no body.
 Errors: 401 `unauthorized` (including an already revoked token).
 
-### Plaid (all require a session **and** Plaid access; otherwise 401 / 402)
+### Plaid (all require a session **and** an active subscription; otherwise 401 / 402)
 
 Exception: `DELETE /v1/plaid/items/<item_id>` needs only a session, so a user whose
 subscription lapsed can still remove a bank. The `/v1/plaid` endpoints 404 unless

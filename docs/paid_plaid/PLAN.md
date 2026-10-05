@@ -1,9 +1,14 @@
-# Paid Plaid — Master Plan
+# Paid App — Master Plan
 
-**Goal:** Users pay **$8.99/month** to use Plaid bank syncing in the Workbench Budgeting
-desktop app. Everything else in the app stays free. The website
-(`budget_app_website`) becomes the hosted server that owns accounts, billing, and all
-Plaid API calls. The desktop app (`budget_app`) becomes a client of that server.
+**Goal:** A **$8.99/month** subscription unlocks the whole Workbench Budgeting desktop
+app. Plaid bank syncing is included at no extra cost. The reserved **Sample** profile
+stays free for anyone, with no account needed, so people can try the app first. The
+website (`budget_app_website`) becomes the hosted server that owns accounts, billing,
+and all Plaid API calls. The desktop app (`budget_app`) becomes a client of that server.
+
+The project started as "paid Plaid" (only bank syncing was paid) and changed scope on
+2026-10-05 (see the Decisions log). The folder is still `docs/paid_plaid/` so existing
+links keep working.
 
 - API contract (desktop <-> server): [API_CONTRACT.md](API_CONTRACT.md)
 - Prompt for running a step with an agent: [AGENT_PROMPT.md](AGENT_PROMPT.md)
@@ -32,7 +37,9 @@ step is always the lowest-numbered one that is not `done`.
 | 11 | Plaid link and exchange on the server | website |
 | 12 | Transaction sync endpoint | website |
 | 13 | Plaid connection lifecycle | website |
+| 13a | Whole-app paid access and a 1-week free trial | website |
 | 14 | Desktop cloud client and sign-in | desktop |
+| 14a | Lock everything except the Sample profile behind the subscription | desktop |
 | 15 | Route desktop Plaid through the server | desktop |
 | 16 | Re-link prompt for existing connections | desktop |
 | 17 | Legal pages | website |
@@ -43,7 +50,9 @@ step is always the lowest-numbered one that is not `done`.
 Update the status in the step section below; this table is only an index.
 
 There is no step 2: it (serving downloads from GitHub Releases) was dropped, and the
-other steps keep their numbers so existing references stay valid.
+other steps keep their numbers so existing references stay valid. For the same reason,
+the steps added for the whole-app subscription are 13a and 14a: run them in table order
+(13 → 13a → 14 → 14a → 15).
 
 ---
 
@@ -70,8 +79,11 @@ flowchart LR
 3. **Feature flags:**
    - Website: new public-facing account/billing features stay behind
      `ACCOUNTS_ENABLED` (default **off** in production) until step 19.
-   - Desktop: cloud Plaid behavior stays behind `BUDGET_APP_CLOUD_PLAID` (default
-     **off**) until step 19. Today's direct Plaid path keeps working until then.
+   - Desktop: everything cloud-related (sign-in, the subscription lock from step 14a,
+     and Plaid through the server) stays behind `BUDGET_APP_CLOUD` (default **off**)
+     until step 19. With it off, the app is free and unlocked exactly as today, and
+     today's direct Plaid path keeps working. (This flag was called
+     `BUDGET_APP_CLOUD_PLAID` before 2026-10-05; nothing used that name yet.)
 4. **Contract first.** Any new or changed endpoint updates
    [API_CONTRACT.md](API_CONTRACT.md) in the same PR.
 5. **Branch naming:** `feature/mhoff/<short_topic>_<yyyymmdd>`.
@@ -259,34 +271,141 @@ flowchart LR
 - **Done when:** Tests cover subscription-ended -> items removed, and webhook-driven
   status changes. Contract updated.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/plaid_lifecycle_20261005`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/plaid_lifecycle_20261005) (replace with the PR URL once opened)
+- **PR:** [#49](https://github.com/maxwell-hoff/budget_app_website/pull/49) (merged)
 
-## Phase F — Desktop client (budget_app, behind `BUDGET_APP_CLOUD_PLAID`)
+### 13a. Whole-app paid access and a 1-week free trial
+- **Repo:** budget_app_website
+- **Depends on:** 13
+- **Scope:** Renames and wording, plus the free trial. Who has access stays the same
+  (every status rule from step 9 is kept; `trialing` already counts as paid).
+  - `billing.has_plaid_access` → `has_paid_access`, still the **single** place that
+    decides access. `plaid_api.require_plaid_access` → `require_paid_access`.
+  - API (no desktop client exists yet, so renaming now breaks nothing): `/v1/me`
+    `plaid_access` → `paid_access`, and add `access_until`, the time until which access
+    is already guaranteed with no further payment (`current_period_end` for
+    `active`/`trialing`/canceled-at-request, the grace deadline for `past_due`, `null`
+    when there's no access). The desktop uses it to keep working offline (step 14a).
+    Error 402 `plaid_access_required` → `subscription_required`.
+  - The Plaid endpoints keep requiring the subscription, so bank syncing is simply one of
+    the things the subscription unlocks. Removing banks when a subscription ends
+    (step 13) is unchanged.
+  - `/account` copy: "Workbench Budgeting, $8.99/month (includes bank syncing)" instead
+    of "Bank syncing, $8.99/month"; the status lines say the app, not bank syncing,
+    stays on until a date.
+  - **Free trial (7 days):**
+    - `/billing/checkout` adds `subscription_data.trial_period_days` from a new
+      `TRIAL_DAYS` setting (default 7; 0 turns trials off) for users who haven't had a
+      trial yet. Nobody gets a second trial: a new `subscriptions.trial_used_at`
+      column (migration) is set when Stripe first reports a subscription with a
+      trial, and resubscribing after that has no trial.
+    - The card is collected up front (Checkout's default). Stripe charges $8.99 when
+      the trial ends unless the user cancels first. Canceling during the trial keeps
+      access until the trial's end, the same rule as canceling a paid month.
+    - Handle `customer.subscription.trial_will_end` (Stripe sends it 3 days before the
+      trial ends) by emailing a reminder through `mailer.py`: the end date, the
+      $8.99/month charge, and a link to `/account` to cancel. Add the event to the
+      `stripe listen --events` list and the webhook docs.
+    - `/account`: "Start your free week" (with "then $8.99/month, cancel anytime")
+      when the user can still get a trial, otherwise "Subscribe for $8.99/month";
+      while trialing, "Free trial: ends on <date>, then $8.99/month".
+    - `/v1/me`: `access_until` for `trialing` is the trial's end. Add
+      `trial_available` (true when the user has never had a trial) so the desktop lock
+      screen can say "Start your free week".
+    - Trial users can link banks like any paid user, within the existing 10-bank cap.
+  - Update `scripts/desktop_flow_check.py`, tests, `CLAUDE.md`, and `API_CONTRACT.md`.
+- **Before starting (manual):** In the Stripe dashboard (test mode), rename the product
+  to "Workbench Budgeting" with a description like "Full access to the Workbench
+  Budgeting app, including bank syncing". The price and tax code stay the same. If
+  `stripe listen` is running, restart it with `customer.subscription.trial_will_end`
+  added to `--events`.
+- **Done when:** All existing tests pass with the new names; `/v1/me` returns
+  `paid_access`, `trial_available`, and a correct `access_until` for every
+  subscription state (tests); no `plaid_access` names remain outside the Decisions log
+  and Handoff notes. Trial tests: a first Checkout includes the 7-day trial, a second
+  one (after `trial_used_at` is set) doesn't, `TRIAL_DAYS=0` turns it off, and
+  `trial_will_end` sends one reminder email (not repeated for a duplicate event). Live
+  in Stripe test mode with a test clock: subscribe → `trialing` with access → advance
+  4 days → reminder email → advance past day 7 → `active` and the first $8.99
+  invoice paid; a second test user cancels during the trial and loses access at the
+  trial's end.
+- **Status:** todo
+- **PR:** —
+
+## Phase F — Desktop client (budget_app, behind `BUDGET_APP_CLOUD`)
 
 ### 14. Desktop cloud client and sign-in
 - **Repo:** budget_app
-- **Depends on:** 10
+- **Depends on:** 10, 13a
 - **Scope:** `backend/cloud_client.py` (base URL from `BUDGET_APP_CLOUD_URL`, bearer
   token, typed errors for 401/402/409). Routes in `serve.py`: `/auth/start` (generates
   PKCE + state, opens browser to `/app-login`), `/auth/callback` (exchanges code, stores
   token via `keyring`), `/api/cloud/me`, `/api/cloud/logout`. Actions menu in
   `frontend/templates/index.html`: Sign in / Signed in as ... / Manage subscription.
-  Only visible when the flag is on. **No Plaid behavior changes.**
-- **Done when:** With the flag on, sign-in round-trips against a local website server;
-  with it off, nothing in the UI changes. Tests mock the server.
+  Only visible when the flag is on. **No Plaid behavior changes and nothing is locked
+  yet** (step 14a adds the lock).
+- **Done when:** With the flag on, sign-in round-trips against a local website server
+  and the menu shows the subscription status from `/v1/me`; with it off, nothing in the
+  UI changes. Tests mock the server.
+- **Status:** todo
+- **PR:** —
+
+### 14a. Lock everything except the Sample profile behind the subscription
+- **Repo:** budget_app
+- **Depends on:** 13a, 14
+- **Before starting (decide, then log in the Decisions log):**
+  - What a lapsed or never-subscribed user sees on their own profiles. Default: **fully
+    locked** (a lock screen; the data stays untouched on disk and comes back when they
+    subscribe). Alternative: read-only (view and export, no edits or imports), which is
+    more work because every write endpoint has to be sorted.
+  - (Free trial: decided on 2026-10-05, one week, built in step 13a.)
+  - Offline grace. Default: keep working until `access_until` plus **3 days** without
+    reaching the server.
+  - Existing users of today's free version. Default: same rules as everyone (they see
+    the lock until they subscribe; their data is kept). Alternative: a time-limited
+    grace period for installs that already have non-Sample profiles.
+- **Scope:** With `BUDGET_APP_CLOUD` on:
+  - `backend/entitlement.py` keeps `{user_id, paid_access, access_until, checked_at}`
+    from `/v1/me` in the keychain next to the session token. Refresh on startup, on
+    sign-in, every 6 hours while running, and from an "I've subscribed, check again"
+    button. Unlocked while `paid_access` is true and `now < access_until` (+ offline
+    grace when the server can't be reached). 401 clears it.
+  - A `before_request` guard in `serve.py`: any `/api/*` request whose profile
+    (`_get_profile_id_from_request() or _active_profile_id`) isn't the Sample profile
+    (`_is_sample_profile`) gets 402 `subscription_required` unless unlocked. A short
+    allowlist stays open: listing and switching profiles (so the user can pick Sample),
+    the sign-in and `/api/cloud/*` routes, and static files.
+  - `frontend/templates/index.html`: on a 402, show a lock screen ("Subscribe to use
+    your own budgets. The Sample profile is free.") with Sign in / Subscribe (opens
+    `account_url`; labeled "Start your free week" when `/v1/me` says
+    `trial_available` or the user isn't signed in yet) / "I've subscribed, check
+    again" / "Open the Sample profile". The profile picker marks locked profiles.
+  - Creating a profile and the guided setup (`gui.py`, `setup_wizard.py`) ask the user
+    to sign in and subscribe first; "Use the Sample profile" (`gui.py`
+    `_use_sample_profile`) stays available without an account.
+  - No profile other than the reserved one can be named or renamed "Sample".
+  - The Sample profile can't connect banks (hide Connect bank there); the server would
+    refuse anyway without a subscription.
+  - Locking never deletes or changes data.
+- **Done when:** Flag off: identical to today. Flag on and signed out: the Sample
+  profile works fully, other profiles show the lock screen, and a test walks
+  `app.url_map` to prove every non-allowlisted `/api/*` route returns 402 for a
+  non-Sample profile. Subscribed: everything works. Expired `access_until`: locks.
+  Offline within the grace period: works; past it: locks. Tests mock the server and
+  the clock.
 - **Status:** todo
 - **PR:** —
 
 ### 15. Route desktop Plaid through the server
 - **Repo:** budget_app
-- **Depends on:** 12, 14
+- **Depends on:** 12, 14a
 - **Scope:** When the flag is on, the local Plaid routes in `serve.py`
   (`/api/plaid/create-link-token`, `/api/plaid/exchange-public-token`,
   `/api/plaid/connections`, `.../refresh`, `DELETE .../<id>`) call `cloud_client`
   instead of Plaid directly; synced data flows into the existing ingest code.
-  `frontend/templates/plaid_connect.html` keeps calling the local endpoints. 402 ->
-  "Subscribe to sync banks" prompt linking to the account page; 409 -> re-link prompt
-  using the relink-token endpoint from step 13.
+  `frontend/templates/plaid_connect.html` keeps calling the local endpoints. A 402
+  `subscription_required` from the server (the subscription lapsed since the last
+  check) refreshes the entitlement and shows step 14a's lock screen; 409 -> re-link
+  prompt using the relink-token endpoint from step 13.
 - **Done when:** With the flag on, link + sync + re-link works end to end against
   sandbox via the local website server; with the flag off, behavior is identical to today.
 - **Status:** todo
@@ -296,12 +415,13 @@ flowchart LR
 - **Repo:** budget_app
 - **Depends on:** 13, 15
 - **Scope:** With the flag on, detect connections that exist only locally (direct-path
-  tokens in `plaid_tokens`) and show a one-time prompt to sign in, subscribe, and
-  re-link them through the cloud; keep their existing transactions. The flag stays
-  **off by default** in this step; turning it on happens at launch (step 19).
+  tokens in `plaid_tokens`) and, once the user is subscribed (step 14a's lock comes
+  first), show a one-time prompt to re-link them through the cloud; keep their existing
+  transactions. The flag stays **off by default** in this step; turning it on happens at
+  launch (step 19).
 - **Done when:** With the flag on, an app with existing local connections keeps all its
-  data and walks the user through re-linking; CSV import still works signed out. With
-  the flag off, nothing changes.
+  data and, after subscribing, walks the user through re-linking. With the flag off,
+  nothing changes.
 - **Status:** todo
 - **PR:** —
 
@@ -312,7 +432,11 @@ flowchart LR
 - **Depends on:** 1
 - **Scope:** `/privacy`, `/terms`, `/refunds` pages linked in the footer (Stripe,
   Plaid, and Google all require them). Content drafted for you to review. These are
-  public from the start (not behind `ACCOUNTS_ENABLED`).
+  public from the start (not behind `ACCOUNTS_ENABLED`). The terms describe one
+  $8.99/month subscription for the whole app (bank syncing included, the Sample
+  profile free), the 1-week free trial (one per person, card required, charged
+  $8.99/month when it ends unless canceled first), what happens to local data when a subscription ends (kept on the
+  user's computer, locked until they resubscribe), and the refund policy.
 - **Done when:** Pages render and are linked from every page footer.
 - **Status:** todo
 - **PR:** —
@@ -320,7 +444,9 @@ flowchart LR
 ### 18. Go live with Stripe, Plaid, and Google (manual — you)
 - **Repo:** — (dashboards)
 - **Depends on:** 13, 17
-- **Scope:** Stripe live mode (product, price, webhook endpoint, portal config); Plaid
+- **Scope:** Stripe live mode (product named "Workbench Budgeting" for the whole app,
+  price, webhook endpoint including `customer.subscription.trial_will_end`, portal
+  config; `TRIAL_DAYS` left at 7 on Render); Plaid
   production access and security questionnaire; Google OAuth consent screen published
   with the production redirect URI (`https://workbenchbudgeting.com/auth/google/callback`),
   privacy policy and terms links, and brand verification if Google requests it; set
@@ -329,22 +455,28 @@ flowchart LR
   if Plaid support has restored an Admin, otherwise the new "Workbench Budgeting" team
   (apply for production access there).
 - **Done when:** With `ACCOUNTS_ENABLED` turned on briefly for yourself (or on a
-  staging service), a real $8.99 subscription and a real bank link work in production.
+  staging service), a real $8.99 subscription unlocks the app and a real bank link
+  works in production.
 - **Status:** todo
 - **PR:** —
 
 ### 19. Launch
 - **Repo:** both (one PR in each, plus a production env change)
 - **Depends on:** 16, 18
-- **Scope:** Desktop PR: default `BUDGET_APP_CLOUD_PLAID` to on, point
-  `BUDGET_APP_CLOUD_URL` at production, bump the app version, update release notes,
-  and publish the release. Website PR: replace the installers in
+- **Scope:** Desktop PR: default `BUDGET_APP_CLOUD` to on, point
+  `BUDGET_APP_CLOUD_URL` at production, bump the app version, and publish the
+  release. The release notes tell existing users plainly that the app now needs a
+  subscription (except the Sample profile), that their data is kept, and about any
+  grace period chosen in step 14a. Website PR: replace the installers in
   `frontend/static/downloads/` with the new release's builds and update the
-  marketing copy for the paid Plaid feature. Then set `ACCOUNTS_ENABLED=true` in
+  marketing copy and pricing section: $8.99/month for the app, bank syncing
+  included, a 1-week free trial, and the Sample profile free to explore. Then set `ACCOUNTS_ENABLED=true` in
   production. Order: set the env var and merge the website PR first, then publish the
   desktop release, so the app never points users at sign-up pages that 404.
-- **Done when:** A new user can download, sign up, subscribe, and sync a bank; an
-  existing user who upgrades is walked through re-linking.
+- **Done when:** A new user can download, explore the Sample profile without an
+  account, sign up, start the free week, create their own profile, and sync a bank; an existing
+  user who upgrades sees the lock screen until they subscribe, keeps all their data,
+  and is then walked through re-linking.
 - **Status:** todo
 - **PR:** —
 
@@ -353,8 +485,8 @@ flowchart LR
 - **Depends on:** 19 (released and stable for a while)
 - **Scope:** Remove direct Plaid calls and `PLAID_SECRET` handling from the shipped build
   (`serve.py`, `backend/env_config.py`, `setup_wizard.py`, `budget_app.spec`,
-  local `plaid_tokens` usage) and the `BUDGET_APP_CLOUD_PLAID` flag. Keep local data
-  tables intact.
+  local `plaid_tokens` usage). Remove the `BUDGET_APP_CLOUD` flag, so sign-in, the
+  subscription lock, and cloud Plaid are always on. Keep local data tables intact.
 - **Done when:** The built app contains no Plaid secret handling; tests updated.
 - **Status:** todo
 - **PR:** —
@@ -436,7 +568,10 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-05 — Plaid webhook JWTs are verified with `cryptography` directly (ES256 pinned, key by `kid` from `/webhook_verification_key/get`, cached 1 hour, `iat` within 5 minutes, body SHA-256 compared in constant time), not Authlib's JOSE module, which is deprecated in Authlib 1.8. No new dependency.
 - 2026-10-05 — The webhook URL comes only from `PUBLIC_BASE_URL` (`<base>/plaid/webhook`, set per Item by `link-token`), never from the request's Host header. Without `PUBLIC_BASE_URL` no webhook is registered. Items linked before step 13 have no webhook; they still work (sync reports 409), and step 16 re-links everyone anyway.
 - 2026-10-05 — Banks are removed at Plaid only when the subscription has ended for good: `canceled` or `incomplete_expired` with no paid time left (`billing.subscription_ended`). `unpaid` and `past_due` keep them, because a payment restores access without re-linking. The Stripe webhook does it in `_sync`; a failed Plaid removal is logged and doesn't fail the webhook (Stripe would resend an event already handled). `flask plaid-remove-lapsed` retries failures and catches the case no Stripe event announces (a subscription canceled immediately keeps access until `current_period_end`).
-- 2026-10-05 — Account deletion (`POST /account/delete`) asks for the email and, if set, the password, then removes banks at Plaid and **deletes the Stripe customer**, which cancels any subscription immediately without a refund. It's one call that also covers incomplete or past-due subscriptions. If Plaid or Stripe fails, the account is kept so nothing is left billing without an owner. The local database cascade removes sign-in methods, desktop sessions, the subscription row, and bank rows. Stripe's later `customer.subscription.deleted` for the vanished customer is acknowledged.
+- 2026-10-05 — Account deletion (`POST /account/delete`) asks for the email and, if set, the password, then removes banks at Plaid and **deletes the Stripe customer**, which cancels any subscription immediately without a refund. It's one call that also covers incomplete or past-due subscriptions.   If Plaid or Stripe fails, the account is kept so nothing is left billing without an owner. The local database cascade removes sign-in methods, desktop sessions, the subscription row, and bank rows. Stripe's later `customer.subscription.deleted` for the vanished customer is acknowledged.
+- 2026-10-05 — **Scope change:** the $8.99/month subscription now unlocks the whole desktop app, with Plaid included at no extra cost; only the reserved Sample profile stays free. The server's access rules don't change (steps 8–13 stand as built); step 13a renames the Plaid-specific names (`has_plaid_access` → `has_paid_access`, `plaid_access` → `paid_access`, `plaid_access_required` → `subscription_required`) and adds `access_until` to `/v1/me`. Renaming is done now because no desktop client uses these names yet. New step 14a adds the desktop lock. The desktop flag `BUDGET_APP_CLOUD_PLAID` becomes `BUDGET_APP_CLOUD`, covering sign-in, the lock, and cloud Plaid. Step 14a's open choices (lapsed users fully locked vs read-only, free trial, offline grace, existing users) have defaults listed in the step and are settled before it starts.
+- 2026-10-05 — A **1-week free trial**, built in step 13a with Stripe's own trial (`trial_period_days`, from `TRIAL_DAYS`, default 7). One trial per account (`subscriptions.trial_used_at`); the card is collected up front and charged $8.99 when the trial ends unless canceled; trial users get full access, including bank syncing. A reminder email goes out on `customer.subscription.trial_will_end`. People could make extra accounts for extra trials; accepted for now, since each needs a card and the trial is short. Trial users' banks cost Plaid fees even if they never pay; watch this after launch, and lower the bank cap for trials if it becomes a problem. This settles step 14a's free-trial choice.
+- 2026-10-05 — The desktop lock is a client-side check and can't stop someone who modifies the app's code; it's there to keep honest users honest. Bank syncing stays enforced on the server, because the Plaid secret never leaves it. A server-signed entitlement could make the local check harder to tamper with later if that becomes a problem.
 
 ## Handoff notes
 
@@ -449,6 +584,18 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-05 — plan update (free trial, step 13 merged) — budget_app_website — feature/mhoff/paid_app_plan_20261005
+- Done: Step 13's PR line set to #49 (merged; its status was already `done`). Added a 1-week free trial to step 13a (renamed "Whole-app paid access and a 1-week free trial"). Updated step 14a's lock screen wording and removed its free-trial choice. Updated steps 17, 18, and 19, the Decisions log, and `API_CONTRACT.md` (`trial_available`, `access_until` during a trial). No code changed.
+- Not done / follow-ups: None.
+- Manual actions needed: Same as the entry below, plus restarting `stripe listen` with `customer.subscription.trial_will_end` before step 13a's live test.
+- Next step: 13a.
+
+### 2026-10-05 — plan update (whole-app subscription) — both repos — feature/mhoff/paid_app_plan_20261005
+- Done: Changed the goal: the subscription unlocks the whole app, Plaid included, Sample profile free. Added step 13a (website: rename the paid-access check and API fields, add `access_until`, update `/account` copy) and step 14a (desktop: lock non-Sample profiles). Updated steps 14, 15, 16, 17, 18, 19, and 20 to match; renamed the desktop flag to `BUDGET_APP_CLOUD`. Updated `API_CONTRACT.md` (marked the renames as coming in 13a), `AGENT_PROMPT.md`, and both repos' `CLAUDE.md`. No code changed.
+- Not done / follow-ups: Step 13's follow-ups below still apply to step 15. Where they say 402 or `plaid_access`, read them with 13a's new names.
+- Manual actions needed: Merge this branch in both repos (the desktop branch is cut from `feature/mhoff/paid_init_20260930`, so merge that first). Before step 13a, rename the Stripe test-mode product (see the step). Before step 14a, settle its remaining choices (the free trial is already decided; see the entry above).
+- Next step: 13a.
 
 ### 2026-10-05 — step 13 — budget_app_website — feature/mhoff/plaid_lifecycle_20261005
 - Done: Step 12's PR link set to #48 (merged). New `plaid_webhook.py`: `POST /plaid/webhook`, JWT-verified, updating item status (table in the contract's `PlaidItem` section). `plaid_api.py`: `link-token` registers `<PUBLIC_BASE_URL>/plaid/webhook`; new `POST /v1/plaid/items/<id>/relink-token` (update mode) and `.../relink-complete`; new status `relink_recommended`; sync and relink-token set `error` when the Item is gone; `remove_items_at_plaid` / `remove_items_if_subscription_ended`; CLI `flask plaid-remove-lapsed`. `billing.py`: `subscription_ended`, `delete_customer`, and `_sync` removes the user's banks when the subscription has ended for good. `account.py`: `POST /account/delete` plus a collapsed "Delete account" section on `/account` (email + password confirmation). No new tables or env vars, so no migration. Tests: 542 pass, including 5 live sandbox tests. The live re-link test now goes `ITEM_LOGIN_REQUIRED` → relink-token → relink-complete → sync 409 again, because sandbox `reset_login` isn't fixed until a real update-mode Link. 121 new mocked tests cover every verification failure, the status table, relink endpoints, subscription-ended removal for each Stripe status, the CLI, and account deletion (including Plaid/Stripe failures keeping the account). Live runs: (1) `scripts/plaid_webhook_check.py` through a cloudflared tunnel. A forged webhook got 400. Six real signed Plaid webhooks were verified and applied: `PENDING_DISCONNECT` → `relink_recommended`, `LOGIN_REPAIRED` → `ok`, `USER_PERMISSION_REVOKED` → `error`, `TRANSACTIONS` `INITIAL_UPDATE`/`HISTORICAL_UPDATE` ignored, `ITEM` `ERROR` → `relink_required`. (2) Stripe test clock with `stripe listen`. A subscription whose first payment failed went `incomplete` → `incomplete_expired` through real webhooks; the server removed the bank and Plaid answered `ITEM_NOT_FOUND`. (3) Deleting an account in the browser for a paying test user with a sandbox bank: the Stripe customer was deleted and the subscription `canceled`, Plaid said `ITEM_NOT_FOUND`, and every row for the user was gone. The follow-up `customer.subscription.deleted` webhook got 200. That run caught duplicate `id="current_password"` inputs on `/account` (both forms); the delete form now uses its own ids.

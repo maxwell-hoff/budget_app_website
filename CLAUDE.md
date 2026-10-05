@@ -33,7 +33,7 @@ docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_r
 frontend/templates/ → index.html (landing page), about.html
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
 render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
-docs/paid_plaid/ → Cross-repo plan for the paid Plaid feature
+docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription)
 ```
 
 ## Running the App
@@ -50,10 +50,12 @@ pytest
 After adding or changing models, create a migration with `flask db migrate -m "<what>"`,
 review the generated file in `migrations/versions/`, and commit it.
 
-## Paid Plaid project (cross-repo)
+## Paid app project (cross-repo)
 
-The $8.99/month Plaid feature is built in small steps across this repo and
-`../budget_app`. Before working on it, read:
+A $8.99/month subscription unlocks the whole desktop app (bank syncing through Plaid
+included; the Sample profile stays free). It is built in small steps across this repo
+and `../budget_app`, with docs in `docs/paid_plaid/` (the folder keeps its original
+name). Before working on it, read:
 
 - `docs/paid_plaid/PLAN.md` — steps, status, decisions log, handoff notes (source of truth)
 - `docs/paid_plaid/API_CONTRACT.md` — endpoints between the desktop app and this server
