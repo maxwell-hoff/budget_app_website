@@ -341,6 +341,28 @@ Errors: 401; 402; 404 `not_found`.
 
 Typical flow: sync → 409 → `relink-token` → Link (update mode) → `relink-complete` → sync.
 
+#### How the desktop uses the Plaid endpoints (step 15; no server change)
+With `BUDGET_APP_CLOUD` on, the desktop's local Plaid routes call these endpoints
+instead of Plaid (`backend/cloud_plaid.py`); the desktop never sees an access token.
+- A linked bank is a local `plaid_connections` row with `token_label` `cloud:<item_id>`.
+  Rows linked before (direct-path tokens) keep the direct path until step 16 re-links them.
+- Link: `link-token` → Plaid Link → `exchange` (with `institution` built from Link's
+  metadata) → `sync` for that item right away (retrying `plaid_not_ready` up to 4 times,
+  waiting `Retry-After`, at most 10 s) → one more `sync` about 45 s later to pick up
+  Plaid's backfill.
+- Refresh: one `sync` per item (`days_back` 730, client timeout 120 s), one at a time.
+  The JSON is wrapped in `SimpleNamespace` and saved by the same code as the direct path.
+- `GET /items` (5 s timeout) is called when the connections list is shown, only if the
+  profile has cloud rows, to show the server's `status`; it isn't stored locally.
+- 409 → local status `relink_required` and a Reconnect button: `relink-token` → Link in
+  update mode → `relink-complete` → `sync` (never `exchange`). `relink_recommended`
+  offers Reconnect too; `error` or an item missing on the server says to remove and add
+  the bank again.
+- Remove: `DELETE /items/<item_id>` first (404 counts as done); if that fails the local
+  row is kept and the error shown.
+- 401 or 402 from any of these → the desktop refreshes its entitlement and answers its
+  own UI with 402 `subscription_required`, which opens the lock screen (step 14a).
+
 ### Shared objects
 
 #### `PlaidItem` — step 11
