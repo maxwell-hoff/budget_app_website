@@ -232,7 +232,7 @@ flowchart LR
 - **Done when:** Against Plaid sandbox, a test user can create a link token, exchange a
   sandbox public token, list, and delete items. Access tokens are never returned to
   the client. Contract updated.
-- **Status:** in-progress (code and mocked tests done; set to `done` once the live sandbox tests pass with Max's sandbox keys)
+- **Status:** done
 - **PR:** [open PR from `feature/mhoff/plaid_link_20261004`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/plaid_link_20261004) (replace with the PR URL once opened)
 
 ### 12. Transaction sync endpoint
@@ -325,6 +325,9 @@ flowchart LR
   with the production redirect URI (`https://workbenchbudgeting.com/auth/google/callback`),
   privacy policy and terms links, and brand verification if Google requests it; set
   production env vars. Keep `ACCOUNTS_ENABLED=false` until step 19.
+  First decide which Plaid team goes live (see the 2026-10-05 decision): the original team
+  if Plaid support has restored an Admin, otherwise the new "Workbench Budgeting" team
+  (apply for production access there).
 - **Done when:** With `ACCOUNTS_ENABLED` turned on briefly for yourself (or on a
   staging service), a real $8.99 subscription and a real bank link work in production.
 - **Status:** todo
@@ -420,6 +423,8 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-04 — Every Plaid failure, including network errors and timeouts (30 s per call), returns 502 `plaid_error`; only Plaid's error code and request ID are logged, never tokens. The Plaid client uses `certifi`'s CA bundle (python.org's macOS Python has no system CA store).
 - 2026-10-04 — Institution ID and name on exchange come from the client (Plaid Link's metadata) and are display-only. They aren't looked up from Plaid, which saves two API calls per link.
 - 2026-10-04 — Live Plaid tests use separate `PLAID_SANDBOX_CLIENT_ID` / `PLAID_SANDBOX_SECRET` variables and skip without them. Max's `~/.zshrc` exports `PLAID_CLIENT_ID`/`PLAID_SECRET` (rejected by the sandbox as `INVALID_API_KEYS`), and real environment variables override `.env`, so tests must never pick those up. Every step now ends with live test instructions (`AGENT_PROMPT.md` item 9).
+- 2026-10-05 — Sandbox keys come from a new Plaid team, "Workbench Budgeting", which Max created and administers. His original team has no Admin or Team Management members, so its keys page is blocked, and Max has asked Plaid support to restore Admin. The desktop app's current direct-path keys (`~/.zshrc`) likely belong to the original team. Production access, billing, and OAuth registrations are per team, so step 18 picks the team: the original if Admin is restored, otherwise the new one. If the new team is used, existing desktop users still re-link at step 16, and the old team's items stop billing once removed (step 20).
+- 2026-10-05 — Plaid answers a repeat `/item/public_token/exchange` of the same public token with the same Item and access token, as found in the live sandbox test; it doesn't error. `/v1/plaid/exchange` therefore updates the existing row, so a retried exchange never creates a duplicate.
 
 ## Handoff notes
 
@@ -432,6 +437,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-05 — step 11 (live run) — budget_app_website — feature/mhoff/plaid_link_20261004
+- Done: With sandbox keys from the new Plaid team in `.env`, ran the live tests: link token → sandbox public token → exchange → list → delete passes against Plaid's sandbox. The live run showed Plaid accepts a repeat exchange of the same public token, so that test now checks the repeat keeps a single item; added a live test that an invalid public token gets 400. 381 tests pass (3 live). Contract wording fixed. Step 11 marked `done`.
+- Not done / follow-ups: Same as the entry below (step 13: remove items at Plaid on account deletion and set the link token `webhook`; step 15: send `institution: {id, name}`).
+- Manual actions needed: Keep chasing Plaid support to restore Admin on the original team (only matters for step 18). Open the PR and paste its URL into step 11's PR line.
+- Next step: 12.
 
 ### 2026-10-04 — step 11 — budget_app_website — feature/mhoff/plaid_link_20261004
 - Done: Step 10's PR link set to #46. `plaid_items` table (`PlaidItem`, migration `176bff1b7811`). `plaid_api.py`: `POST /v1/plaid/link-token`, `POST /v1/plaid/exchange`, `GET /v1/plaid/items`, `DELETE /v1/plaid/items/<item_id>`, `require_plaid_access` (401, then 402 via `has_plaid_access`), Fernet/MultiFernet token encryption, Plaid client ported from the desktop's `plaid_data_retreiver.py` (plaid-python 45). Config `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENVIRONMENT`, `PLAID_TOKEN_KEY` (`.env.example`, `render.yaml`). Contract filled in for all four endpoints, `PlaidItem`, and the new `item_limit_reached` error. 57 new mocked tests (378 pass): 401/402 on every endpoint, 404 when unconfigured, startup checks, the access token never appears in any response and is stored encrypted, key rotation, Plaid error and network-failure mapping, re-exchanging an item, another user's item, item limit, deleting lapsed/gone/failed items, and the exact link-token request. 2 live sandbox tests (`tests/test_plaid_sandbox.py`: link token → sandbox public token → exchange → list → delete, plus public-token reuse) are written but skipped until sandbox keys are set. New `scripts/desktop_flow_check.py` plays the desktop app against a running server; I ran it: real browser sign-in → token → `/v1/me` (`plaid_access: true`) → link-token, which returned 502 `plaid_error` because the only Plaid keys available were the `~/.zshrc` ones, which the sandbox rejects as `INVALID_API_KEYS`.

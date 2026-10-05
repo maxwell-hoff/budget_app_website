@@ -173,12 +173,14 @@ Request:
 - `institution` is optional (pass Link's `metadata.institution`, renaming `institution_id`
   to `id`). It's display-only: `id` is cut to 64 characters and `name` to 255.
 - Exchanging a token for an Item the user already has updates it (new access token,
-  institution, `status` back to `ok`).
+  institution, `status` back to `ok`). Plaid answers a repeat exchange of the same
+  `public_token` with the same Item, so retrying after a timeout is safe and never
+  creates a duplicate.
 
 Response 200: `{ "item": <PlaidItem> }`
 
 Errors: 400 `bad_request` (missing/blank `public_token`, `institution` not an object, or
-Plaid says the public token is invalid or already used); 400 `item_limit_reached`; 401;
+Plaid says the public token is invalid or expired); 400 `item_limit_reached`; 401;
 402; 502.
 
 #### `GET /v1/plaid/items` — step 11

@@ -82,7 +82,9 @@ def test_link_exchange_list_delete_against_sandbox(live_app):
     assert client.get('/v1/plaid/items', headers=headers).get_json() == {'items': []}
 
 
-def test_reused_public_token_is_rejected_by_sandbox(live_app):
+def test_exchanging_the_same_public_token_twice_keeps_one_item(live_app):
+    # Plaid answers a repeat exchange with the same Item and access token (e.g. the app
+    # retried after a timeout), so it must not create a second row.
     user_id = add_user(live_app)
     subscribe(live_app, user_id)
     headers = {'Authorization': f'Bearer {sign_in(live_app)}'}
@@ -90,10 +92,21 @@ def test_reused_public_token_is_rejected_by_sandbox(live_app):
     public_token = sandbox_public_token(live_app)
 
     first = client.post('/v1/plaid/exchange', headers=headers, json={'public_token': public_token})
-    assert first.status_code == 200
     again = client.post('/v1/plaid/exchange', headers=headers, json={'public_token': public_token})
-    assert again.status_code == 400
-    assert again.get_json()['error']['code'] == 'bad_request'
-
+    assert first.status_code == again.status_code == 200
     item_id = first.get_json()['item']['item_id']
+    assert again.get_json()['item']['item_id'] == item_id
+    assert [i['item_id'] for i in client.get('/v1/plaid/items', headers=headers).get_json()['items']] == [item_id]
+
     assert client.delete(f'/v1/plaid/items/{item_id}', headers=headers).status_code == 204
+
+
+def test_invalid_public_token_is_a_bad_request(live_app):
+    user_id = add_user(live_app)
+    subscribe(live_app, user_id)
+    headers = {'Authorization': f'Bearer {sign_in(live_app)}'}
+    resp = live_app.test_client().post('/v1/plaid/exchange', headers=headers, json={
+        'public_token': 'public-sandbox-00000000-0000-0000-0000-000000000000',
+    })
+    assert resp.status_code == 400
+    assert resp.get_json()['error']['code'] == 'bad_request'
