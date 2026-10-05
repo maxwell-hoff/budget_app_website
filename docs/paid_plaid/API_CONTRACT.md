@@ -2,7 +2,8 @@
 
 > **Pending renames (step 13a):** the subscription now unlocks the whole app, not just
 > Plaid. Step 13a renames `plaid_access` → `paid_access` in `/v1/me`, adds
-> `access_until`, and renames error `plaid_access_required` → `subscription_required`.
+> `access_until` and `trial_available` (1-week free trial), and renames error
+> `plaid_access_required` → `subscription_required`.
 > Until 13a merges, the server sends the old names. Desktop steps (14 and later) build
 > against the new names. Step 13a updates the entries below and removes this note.
 
@@ -150,7 +151,10 @@ Response 200:
 - Step 13a: `plaid_access` becomes `paid_access` (same rules; it now unlocks the whole
   app), and a new `access_until` field gives the time until which access is already
   guaranteed without another payment (ISO 8601 UTC, or `null` when `paid_access` is
-  false). The desktop stays unlocked offline until `access_until` plus its offline grace.
+  false). During the free trial (`status` `trialing`) it's the trial's end. The desktop
+  stays unlocked offline until `access_until` plus its offline grace. A new
+  `trial_available` boolean is true when the user has never had a trial, so the desktop
+  can label its Subscribe button "Start your free week".
 
 Errors: 401 `unauthorized`.
 
