@@ -176,6 +176,16 @@ Response 200:
 
 Errors: 401 `unauthorized`.
 
+How the desktop uses it (step 14a; no server change): it keeps `paid_access`,
+`access_until`, and the time of the check in the keychain and stays unlocked while
+`paid_access` is true and `now < max(access_until, checked_at) + 3 days` (from
+`checked_at` alone when `access_until` is `null`). It calls `/v1/me` at startup, every
+6 hours, on sign-in, when the user opens the Account menu or clicks "I've subscribed,
+check again", and, once
+`access_until` has passed, before allowing a request (at most every 15 minutes). A 401
+signs the app out and locks it; a network error or 5xx keeps the stored answer for the
+offline grace.
+
 #### `POST /v1/auth/logout` — step 10
 Revokes the calling session token (other devices stay signed in). Response 204, no body.
 Errors: 401 `unauthorized` (including an already revoked token).
