@@ -4,21 +4,26 @@ Plays the desktop app's part: listens on http://127.0.0.1:5002/auth/callback (qu
 desktop app first), opens your browser to /app-login, and when you click Continue it
 trades the code for a session token and calls GET /v1/me. With --plaid it then links
 Plaid's sandbox bank (First Platypus Bank) through POST /v1/plaid/link-token and
-/v1/plaid/exchange, lists items, and deletes the item again (add --keep to leave it).
+/v1/plaid/exchange, syncs it with POST /v1/plaid/sync (retrying while it's 503
+plaid_not_ready), lists items, and deletes the item again (add --keep to leave it).
+--save-sync PATH writes the sync response to a file, for
+scripts/check_sync_fixture_with_desktop.py.
 
 The server must run with ACCOUNTS_ENABLED=true and, for --plaid, sandbox Plaid keys.
 --plaid needs the signed-in account to have an active (test-mode) subscription, and
 PLAID_SANDBOX_CLIENT_ID / PLAID_SANDBOX_SECRET in .env to fake the Link step.
 
 Run from the repo root:
-    python scripts/desktop_flow_check.py [--plaid] [--keep] [--server http://127.0.0.1:5001]
+    python scripts/desktop_flow_check.py [--plaid] [--keep] [--save-sync PATH] [--server http://127.0.0.1:5001]
 """
 import argparse
 import base64
 import hashlib
+import json
 import os
 import secrets
 import sys
+import time
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -81,11 +86,34 @@ def sandbox_public_token():
     return resp.json()['public_token']
 
 
+def sync(server, headers, item_id, save_to=None):
+    deadline = time.monotonic() + 60
+    while True:
+        resp = requests.post(f'{server}/v1/plaid/sync', headers=headers, json={'item_id': item_id}, timeout=150)
+        if resp.status_code != 503 or time.monotonic() > deadline:
+            break
+        wait = int(resp.headers.get('Retry-After', '5'))
+        print(f"POST /v1/plaid/sync: HTTP 503 {resp.json()['error']['code']}, retrying in {wait} s", flush=True)
+        time.sleep(wait)
+    if resp.status_code != 200:
+        return show('POST /v1/plaid/sync', resp)
+    print('POST /v1/plaid/sync: HTTP 200')
+    for entry in resp.json()['items']:
+        print(f"   {entry['item']['institution_name']}: {len(entry['accounts'])} accounts, "
+              f"{len(entry['transactions'])} transactions, last_synced_at={entry['item']['last_synced_at']}, "
+              f"error={entry['error']}")
+    if save_to:
+        Path(save_to).write_text(json.dumps(resp.json(), indent=2) + '\n')
+        print(f'   saved to {save_to}')
+    return resp
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--server', default='http://127.0.0.1:5001')
     parser.add_argument('--plaid', action='store_true', help='also link, list, and delete a sandbox bank')
     parser.add_argument('--keep', action='store_true', help='with --plaid, leave the linked item in place')
+    parser.add_argument('--save-sync', metavar='PATH', help='with --plaid, write the sync response to PATH')
     parser.add_argument('--no-browser', action='store_true', help='print the sign-in URL instead of opening it')
     args = parser.parse_args()
     server = args.server.rstrip('/')
@@ -123,9 +151,11 @@ def main():
             'public_token': sandbox_public_token(),
             'institution': {'id': 'ins_109508', 'name': 'First Platypus Bank'},
         }, timeout=60))
+        item_id = resp.json()['item']['item_id'] if resp.status_code == 200 else None
+        if item_id:
+            sync(server, headers, item_id, args.save_sync)
         show('GET /v1/plaid/items', requests.get(f'{server}/v1/plaid/items', headers=headers, timeout=30))
-        if resp.status_code == 200 and not args.keep:
-            item_id = resp.json()['item']['item_id']
+        if item_id and not args.keep:
             show(f'DELETE /v1/plaid/items/{item_id}',
                  requests.delete(f'{server}/v1/plaid/items/{item_id}', headers=headers, timeout=60))
 

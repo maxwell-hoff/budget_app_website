@@ -233,7 +233,7 @@ flowchart LR
   sandbox public token, list, and delete items. Access tokens are never returned to
   the client. Contract updated.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/plaid_link_20261004`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/plaid_link_20261004) (replace with the PR URL once opened)
+- **PR:** [#47](https://github.com/maxwell-hoff/budget_app_website/pull/47)
 
 ### 12. Transaction sync endpoint
 - **Repo:** budget_app_website
@@ -245,8 +245,8 @@ flowchart LR
   stored. Map Plaid `ITEM_LOGIN_REQUIRED` to 409.
 - **Done when:** Sandbox sync returns data that the desktop ingest code accepts
   unchanged (verified with a fixture shared in the contract). Contract updated.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/plaid_sync_20261005`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/plaid_sync_20261005) (replace with the PR URL once opened)
 
 ### 13. Plaid connection lifecycle
 - **Repo:** budget_app_website
@@ -425,6 +425,12 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-04 — Live Plaid tests use separate `PLAID_SANDBOX_CLIENT_ID` / `PLAID_SANDBOX_SECRET` variables and skip without them. Max's `~/.zshrc` exports `PLAID_CLIENT_ID`/`PLAID_SECRET` (rejected by the sandbox as `INVALID_API_KEYS`), and real environment variables override `.env`, so tests must never pick those up. Every step now ends with live test instructions (`AGENT_PROMPT.md` item 9).
 - 2026-10-05 — Sandbox keys come from a new Plaid team, "Workbench Budgeting", which Max created and administers. His original team has no Admin or Team Management members, so its keys page is blocked, and Max has asked Plaid support to restore Admin. The desktop app's current direct-path keys (`~/.zshrc`) likely belong to the original team. Production access, billing, and OAuth registrations are per team, so step 18 picks the team: the original if Admin is restored, otherwise the new one. If the new team is used, existing desktop users still re-link at step 16, and the old team's items stop billing once removed (step 20).
 - 2026-10-05 — Plaid answers a repeat `/item/public_token/exchange` of the same public token with the same Item and access token, as found in the live sandbox test; it doesn't error. `/v1/plaid/exchange` therefore updates the existing row, so a retried exchange never creates a duplicate.
+- 2026-10-05 — `POST /v1/plaid/sync` uses Plaid's `/transactions/get` over a `days_back` window (all pages, 500 per page), not `/transactions/sync` with the stored cursor. The desktop ingest only inserts and dedupes by `hash_id`, so it can't apply `/transactions/sync`'s modified/removed deltas, and a cursor kept on the server would tie sync state to one device. `plaid_items.transactions_cursor` stays unused.
+- 2026-10-05 — Sync passes Plaid's own `/transactions/get` JSON through unchanged (`plaid.ApiClient.sanitize_for_serialization`), per item, rather than reshaping it into desktop records. The desktop's existing conversion code (sign flips, account-type mapping, `hash_id`) then stays the single source of truth. Because that code reads attributes, the desktop wraps the JSON in `SimpleNamespace` (step 15); this saves rows identical to today's direct path, so hash IDs match and nothing duplicates.
+- 2026-10-05 — Shared fixture `docs/paid_plaid/fixtures/plaid_sync_response.json` is a trimmed real sandbox response. Server tests require the endpoint to reproduce it exactly; `scripts/check_sync_fixture_with_desktop.py` runs the desktop's unchanged `fetch_and_save_plaid_data` on it.
+- 2026-10-05 — With `item_id`, sync errors are HTTP statuses (409 `plaid_relink_required`, 503 `plaid_not_ready`, 502). Without it, the response is 200 and each failed bank carries its own `error`, so one bad bank doesn't block the rest. Only `ITEM_LOGIN_REQUIRED` marks an item `relink_required`; other failures leave `status` alone (step 13's webhook handles the rest). A successful sync sets `status` back to `ok`.
+- 2026-10-05 — Plaid's `PRODUCT_NOT_READY` (seen live for about a second right after linking) maps to a new error, 503 `plaid_not_ready` with `Retry-After: 10`, rather than 502, so the desktop knows to retry instead of showing a failure.
+- 2026-10-05 — gunicorn's worker timeout is raised to 120 s (`render.yaml` `startCommand`): a first 24-month pull is several Plaid calls of up to 30 s each, and the 30 s default would kill the worker mid-sync. The desktop should sync one item per request.
 
 ## Handoff notes
 
@@ -437,6 +443,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-05 — step 12 — budget_app_website — feature/mhoff/plaid_sync_20261005
+- Done: Step 11's PR link set to #47 (merged). `POST /v1/plaid/sync` in `plaid_api.py` (session + Plaid access; one item via `item_id` or all items; `days_back` 1–730, default 730; pages through `/transactions/get`; sets `status`/`last_synced_at`; `ITEM_LOGIN_REQUIRED` → 409 and `relink_required`; `PRODUCT_NOT_READY` → 503 `plaid_not_ready` with `Retry-After`; other failures → 502). No new tables, so no migration. Shared fixture `docs/paid_plaid/fixtures/plaid_sync_response.json` (real sandbox data: checking, savings, credit card, IRA, student loan; 14 transactions). `scripts/check_sync_fixture_with_desktop.py` runs the desktop's unchanged `fetch_and_save_plaid_data` on a sync response, once with plaid-python objects (today's path) and once with `SimpleNamespace`-wrapped JSON. I ran it with the desktop's Python 3.11 on the fixture and on a full untrimmed sandbox response: all transactions saved (fixture: 8 checking, 6 credit card), and both paths saved identical rows including `hash_id`. Plain dicts save 0 rows, which is why the wrapper is needed. Live HTTP run: `scripts/desktop_flow_check.py --plaid` (now also syncs, retrying on 503, with `--save-sync PATH`) against gunicorn with `--timeout 120` and sandbox keys: browser sign-in → link → sync (one 503, then 14 accounts / 48 transactions) → items show `last_synced_at` → delete → logout; the check script accepted the saved live response too (48 saved, identical rows). Contract filled in (endpoint, `plaid_not_ready` error, `PlaidItem.status` meanings). `render.yaml` gunicorn `--timeout 120`. Tests: 421 pass, including 5 live sandbox tests; new live ones sync a real sandbox item (waiting out `PRODUCT_NOT_READY`, checking the fields match the fixture's) and force `ITEM_LOGIN_REQUIRED` with `/sandbox/item/reset_login` to get 409. 38 new mocked tests: fixture round trip, pagination, date window, every error mapping, per-item errors in all-items mode, bad input, 401/402/404.
+- Not done / follow-ups: Step 15 must wrap the JSON in `SimpleNamespace` before the existing ingest (see the contract), sync one item per request with a client timeout of at least 120 s, and retry on 503 `plaid_not_ready` (the first sync right after exchange hits it). Even the first 200 can be partial: Plaid backfills older history for a while after linking (sandbox: 16 transactions at 1 s, 48 at 12 s), so step 15 should sync again shortly after linking, and step 13 could use Plaid's `HISTORICAL_UPDATE` webhook to know when the backfill is done. Today's direct desktop path calls `/transactions/get` without `options`, so it only ever gets Plaid's default 100 newest transactions per refresh; the server pages through everything, so a user's first cloud sync will add older transactions they never had (new rows, not duplicates). Step 13: the webhook should set `relink_required`/`error`, and `ITEM_NOT_FOUND`/`INVALID_ACCESS_TOKEN` at sync currently give 502 without changing `status`.
+- Manual actions needed: Render dashboard → the web service → Settings → Start Command: change to `gunicorn --bind 0.0.0.0:$PORT --timeout 120 serve:app` (the service is dashboard-managed, so `render.yaml` doesn't apply it). Not urgent while `ACCOUNTS_ENABLED=false`, but needed before launch. No new env vars, no migration. Open the PR and paste its URL into step 12's PR line.
+- Next step: 13.
 
 ### 2026-10-05 — step 11 (live run) — budget_app_website — feature/mhoff/plaid_link_20261004
 - Done: With sandbox keys from the new Plaid team in `.env`, ran the live tests: link token → sandbox public token → exchange → list → delete passes against Plaid's sandbox. The live run showed Plaid accepts a repeat exchange of the same public token, so that test now checks the repeat keeps a single item; added a live test that an invalid public token gets 400. 381 tests pass (3 live). Contract wording fixed. Step 11 marked `done`.

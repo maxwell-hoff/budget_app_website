@@ -19,16 +19,18 @@ google_auth.py → Sign in with Google (Authlib OIDC): /auth/google, callback, d
 billing.py → Stripe: POST /billing/checkout, /billing/portal, /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set); has_plaid_access(user) is the only place that decides paid access
 app_auth.py → desktop sign-in: GET/POST /app-login (confirm page, one-time PKCE codes), app session create/lookup (registered only when ACCOUNTS_ENABLED is on)
 api.py → /v1 JSON API for the desktop app: POST /v1/auth/token, GET /v1/me, POST /v1/auth/logout; require_app_session and api_error (registered only when ACCOUNTS_ENABLED is on)
-plaid_api.py → /v1/plaid: link-token, exchange, items, delete; Fernet-encrypted access tokens (PLAID_TOKEN_KEY); registered only when ACCOUNTS_ENABLED and PLAID_CLIENT_ID/PLAID_SECRET/PLAID_TOKEN_KEY are set
+plaid_api.py → /v1/plaid: link-token, exchange, items, sync (pass-through of Plaid's /transactions/get JSON, not stored), delete; Fernet-encrypted access tokens (PLAID_TOKEN_KEY); registered only when ACCOUNTS_ENABLED and PLAID_CLIENT_ID/PLAID_SECRET/PLAID_TOKEN_KEY are set
 mailer.py → send_email (Resend in production, console in dev, memory in tests)
 tokens.py → signed, expiring tokens for password reset and email verification
 frontend/templates/auth/, account/ → account page templates (auth.css styles them)
 migrations/ → Alembic migrations (flask db ...)
 tests/ → pytest suite (conftest.py has app/client fixtures); test_plaid_sandbox.py makes live Plaid sandbox calls, skipped unless PLAID_SANDBOX_CLIENT_ID/PLAID_SANDBOX_SECRET are set
 scripts/desktop_flow_check.py → live check of the desktop sign-in and /v1 API against a running local server (plays the desktop app on port 5002)
+scripts/check_sync_fixture_with_desktop.py → runs the desktop's unchanged Plaid ingest on a /v1/plaid/sync response (run with the desktop's Python)
+docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_response.json)
 frontend/templates/ → index.html (landing page), about.html
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
-render.yaml → Render service definition (gunicorn serve:app)
+render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
 docs/paid_plaid/ → Cross-repo plan for the paid Plaid feature
 ```
 

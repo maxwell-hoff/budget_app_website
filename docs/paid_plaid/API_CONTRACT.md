@@ -94,6 +94,7 @@ Every non-2xx response has this body:
 | 409 | `plaid_relink_required` | Plaid item needs re-authentication (e.g. `ITEM_LOGIN_REQUIRED`) | Start update-mode Link for that item |
 | 429 | `rate_limited` | Too many requests | Retry after `Retry-After` seconds |
 | 502 | `plaid_error` | Upstream Plaid failure | Show message, allow retry |
+| 503 | `plaid_not_ready` | Plaid is still loading a newly linked bank's history (`PRODUCT_NOT_READY`, usually a few seconds after linking) | Retry after `Retry-After` seconds |
 
 ---
 
@@ -152,7 +153,8 @@ Errors: 401 `unauthorized` (including an already revoked token).
 Exception: `DELETE /v1/plaid/items/<item_id>` needs only a session, so a user whose
 subscription lapsed can still remove a bank. The `/v1/plaid` endpoints 404 unless
 `ACCOUNTS_ENABLED` is on and the server has `PLAID_CLIENT_ID`, `PLAID_SECRET`, and
-`PLAID_TOKEN_KEY` set. Any Plaid failure (error response or network) → 502 `plaid_error`.
+`PLAID_TOKEN_KEY` set. Any Plaid failure (error response or network) → 502 `plaid_error`,
+except the specific errors listed for each endpoint (e.g. sync's 409 and 503).
 Plaid access tokens are stored encrypted on the server and are **never** returned.
 
 #### `POST /v1/plaid/link-token` — step 11
@@ -193,11 +195,73 @@ Calls Plaid `/item/remove` and deletes the item. Response 204, no body. Session 
 the item is still deleted. Errors: 401; 404 `not_found` (unknown or another user's item);
 502 (the item is kept, so the user can retry).
 
-#### `POST /v1/plaid/sync` — step 12 — TODO
-Returns accounts and transactions in the shape the desktop ingest consumes (see
-`budget_app/backend/plaid_data_fetcher.py`). Transaction data is not stored on the server.
-Request (draft): `{ "item_id": "…optional…", "days_back": 730 }`
-Response: TODO (define with a shared fixture at step 12).
+#### `POST /v1/plaid/sync` — step 12
+Fetches accounts and transactions from Plaid (`/transactions/get`, every page) and passes
+them straight through. Transaction data is **not stored** on the server; only the item's
+`status` and `last_synced_at` change. Rate limited (120/hour per IP).
+
+Request (the body is optional; `{}` or no body means every item, 730 days):
+```json
+{ "item_id": "…", "days_back": 730 }
+```
+- `item_id`: optional. Given → sync just that item; omitted → every item of the caller's,
+  oldest first.
+- `days_back`: optional whole number, 1–730 (default 730). Transactions dated from
+  `today − days_back` through today (UTC dates). Plaid only has the history requested at
+  link time (730 days, see `link-token`).
+
+Response 200:
+```json
+{
+  "items": [
+    {
+      "item": <PlaidItem>,
+      "accounts": [ <Plaid account>, … ],
+      "transactions": [ <Plaid transaction>, … ],
+      "error": null
+    }
+  ]
+}
+```
+- `accounts` and `transactions` are Plaid's own `/transactions/get` JSON, unchanged (same
+  field names and values; dates as `YYYY-MM-DD` strings; `amount` positive for money
+  leaving the account, Plaid's convention). Newest transactions first. Includes pending
+  transactions. Clients must ignore fields they don't use; Plaid adds fields over time.
+- **Shared fixture:** [`fixtures/plaid_sync_response.json`](fixtures/plaid_sync_response.json)
+  is a real sandbox response (5 accounts: checking, savings, credit card, IRA, student
+  loan; 14 transactions). The server's tests check that it produces this file exactly.
+  `scripts/check_sync_fixture_with_desktop.py` runs the desktop's unchanged
+  `fetch_and_save_plaid_data` on it (run with the desktop's Python).
+- **Desktop ingest (step 15):** the desktop's ingest code reads Plaid *objects* by
+  attribute (`account.balances.current`), so plain dicts save nothing. Wrap the JSON
+  recursively in `types.SimpleNamespace` (or rebuild plaid-python models) before passing
+  it to `PlaidDataRetriever.save_data` / the grouping in `fetch_and_save_plaid_data`. The
+  check script confirms the SimpleNamespace path saves exactly the same rows, including
+  `hash_id`, as today's direct Plaid path, so moving a bank to the server doesn't
+  duplicate transactions.
+- On success the item's `status` becomes `ok` and `last_synced_at` is set.
+
+Errors with `item_id` (returned as the HTTP status):
+- 409 `plaid_relink_required`: Plaid says `ITEM_LOGIN_REQUIRED`. The item's `status`
+  becomes `relink_required` (also shown by `GET /v1/plaid/items`); start update-mode Link
+  (step 13). The next successful sync sets it back to `ok`.
+- 503 `plaid_not_ready` with `Retry-After` (seconds): right after linking, Plaid is still
+  loading history. The desktop should retry; in the sandbox it takes about a second.
+  Even after that, Plaid fills in older history over the next seconds to minutes (in the
+  sandbox, a sync 1 s after linking returned 16 transactions and one 12 s after returned
+  48). Sync again a little later; repeats are safe because the desktop dedupes by `hash_id`.
+- 502 `plaid_error`: any other Plaid failure or timeout; the item is unchanged.
+- 404 `not_found` (unknown or another user's item); 400 `bad_request` (body not a JSON
+  object, bad `days_back` or `item_id`); 401; 402.
+
+Without `item_id`, one bank's failure doesn't fail the rest: the response is still 200,
+and that entry has `"accounts": []`, `"transactions": []`, and
+`"error": { "code": "plaid_relink_required" | "plaid_not_ready" | "plaid_error", "message": "…" }`
+(same meanings and item updates as above). 401/402/400 still apply to the whole request.
+
+Large first pulls make many Plaid calls, so a request can take tens of seconds. Prefer one
+request per item (the desktop already refreshes connections one by one) and allow a
+client timeout of at least 120 seconds.
 
 #### `POST /v1/plaid/items/<item_id>/relink-token` — step 13 — TODO
 Update-mode Link token for an item returning 409. Response: `{ "link_token": "…" }`.
@@ -216,7 +280,9 @@ Update-mode Link token for an item returning 409. Response: `{ "link_token": "�
 }
 ```
 `institution_id` and `institution_name` may be `null`. `last_synced_at` is `null` until the
-first sync (step 12). Step 11 only ever sets `status` to `ok`; steps 12–13 set the others.
+first successful sync. `status` is `ok` after linking or a successful sync, and
+`relink_required` after a sync hits `ITEM_LOGIN_REQUIRED` (step 12); step 13's webhook
+also sets `relink_required` and `error`.
 
 ---
 
