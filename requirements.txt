@@ -11,3 +11,6 @@ Flask-Limiter
 Authlib
 requests
 stripe>=16
+plaid-python>=45
+cryptography
+certifi

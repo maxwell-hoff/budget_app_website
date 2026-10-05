@@ -213,7 +213,7 @@ flowchart LR
   (after both a password login and a Google login); tokens are stored hashed;
   revoked/expired tokens get 401. Contract updated.
 - **Status:** done
-- **PR:** [open PR from `feature/mhoff/app_sessions_20261004`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/app_sessions_20261004) (replace with the PR URL once opened)
+- **PR:** [#46](https://github.com/maxwell-hoff/budget_app_website/pull/46)
 
 ## Phase E — Hosted Plaid (website, Plaid sandbox)
 
@@ -232,8 +232,8 @@ flowchart LR
 - **Done when:** Against Plaid sandbox, a test user can create a link token, exchange a
   sandbox public token, list, and delete items. Access tokens are never returned to
   the client. Contract updated.
-- **Status:** todo
-- **PR:** —
+- **Status:** done
+- **PR:** [open PR from `feature/mhoff/plaid_link_20261004`](https://github.com/maxwell-hoff/budget_app_website/pull/new/feature/mhoff/plaid_link_20261004) (replace with the PR URL once opened)
 
 ### 12. Transaction sync endpoint
 - **Repo:** budget_app_website
@@ -325,6 +325,9 @@ flowchart LR
   with the production redirect URI (`https://workbenchbudgeting.com/auth/google/callback`),
   privacy policy and terms links, and brand verification if Google requests it; set
   production env vars. Keep `ACCOUNTS_ENABLED=false` until step 19.
+  First decide which Plaid team goes live (see the 2026-10-05 decision): the original team
+  if Plaid support has restored an Admin, otherwise the new "Workbench Budgeting" team
+  (apply for production access there).
 - **Done when:** With `ACCOUNTS_ENABLED` turned on briefly for yourself (or on a
   staging service), a real $8.99 subscription and a real bank link work in production.
 - **Status:** todo
@@ -412,6 +415,16 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-04 — App sessions store the user's password fingerprint and stop working when it changes, matching web sessions — so a password reset/change, or Google sign-in removing an unverified account's password (step 7), also signs out the desktop app. Otherwise someone who pre-registered a victim's email could keep a desktop session after the owner takes the account back.
 - 2026-10-04 — The `/v1` API lives in `api.py` (blueprint `api`, prefix `/v1`) with `api_error`, `require_app_session` (sets `g.user`, `g.app_session`), and a blueprint error handler that turns every HTTP error (including 429 with `Retry-After`) into the contract's JSON error format. Steps 11–13 add their endpoints to this blueprint (or another one using these helpers). Email verification isn't required to sign the app in; `/v1/me` reports `email_verified`.
 - 2026-10-04 — `/logout` now honors a local-only `?next=`, used by "Use a different account".
+- 2026-10-04 — Plaid endpoints live in `plaid_api.py` (blueprint `plaid_api`, prefix `/v1/plaid`, reusing `api.json_http_error` for JSON errors) and are registered only when `ACCOUNTS_ENABLED` is on and `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_TOKEN_KEY` are all set. `PLAID_ENVIRONMENT` is `sandbox` (default) or `production`; Plaid's `development` environment no longer exists. A bad environment or malformed key stops the app at startup, but only while `ACCOUNTS_ENABLED` is on, so production can't be taken down by them before launch.
+- 2026-10-04 — Access tokens are encrypted with `MultiFernet`: `PLAID_TOKEN_KEY` is one key, or `NEW,OLD` during rotation (the first encrypts, any decrypts). Losing the key means every user re-links.
+- 2026-10-04 — Link tokens request `transactions` with `days_requested=730`. Plaid only gathers 90 days unless asked at link time, and the desktop's first pull is 24 months. `client_user_id` is the user's ID.
+- 2026-10-04 — At most 10 Plaid items per user (`MAX_ITEMS_PER_USER`; 400 `item_limit_reached`, checked before creating a link token and before exchanging), because Plaid bills per item per month.
+- 2026-10-04 — `DELETE /v1/plaid/items/<id>` needs only an app session, not Plaid access, so a lapsed subscriber can still stop Plaid billing for their banks. If Plaid says the item is already gone, it's still deleted here; other Plaid errors keep the row and return 502.
+- 2026-10-04 — Every Plaid failure, including network errors and timeouts (30 s per call), returns 502 `plaid_error`; only Plaid's error code and request ID are logged, never tokens. The Plaid client uses `certifi`'s CA bundle (python.org's macOS Python has no system CA store).
+- 2026-10-04 — Institution ID and name on exchange come from the client (Plaid Link's metadata) and are display-only. They aren't looked up from Plaid, which saves two API calls per link.
+- 2026-10-04 — Live Plaid tests use separate `PLAID_SANDBOX_CLIENT_ID` / `PLAID_SANDBOX_SECRET` variables and skip without them. Max's `~/.zshrc` exports `PLAID_CLIENT_ID`/`PLAID_SECRET` (rejected by the sandbox as `INVALID_API_KEYS`), and real environment variables override `.env`, so tests must never pick those up. Every step now ends with live test instructions (`AGENT_PROMPT.md` item 9).
+- 2026-10-05 — Sandbox keys come from a new Plaid team, "Workbench Budgeting", which Max created and administers. His original team has no Admin or Team Management members, so its keys page is blocked, and Max has asked Plaid support to restore Admin. The desktop app's current direct-path keys (`~/.zshrc`) likely belong to the original team. Production access, billing, and OAuth registrations are per team, so step 18 picks the team: the original if Admin is restored, otherwise the new one. If the new team is used, existing desktop users still re-link at step 16, and the old team's items stop billing once removed (step 20).
+- 2026-10-05 — Plaid answers a repeat `/item/public_token/exchange` of the same public token with the same Item and access token, as found in the live sandbox test; it doesn't error. `/v1/plaid/exchange` therefore updates the existing row, so a retried exchange never creates a duplicate.
 
 ## Handoff notes
 
@@ -424,6 +437,18 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-05 — step 11 (live run) — budget_app_website — feature/mhoff/plaid_link_20261004
+- Done: With sandbox keys from the new Plaid team in `.env`, ran the live tests: link token → sandbox public token → exchange → list → delete passes against Plaid's sandbox. The live run showed Plaid accepts a repeat exchange of the same public token, so that test now checks the repeat keeps a single item; added a live test that an invalid public token gets 400. 381 tests pass (3 live). Contract wording fixed. Step 11 marked `done`.
+- Not done / follow-ups: Same as the entry below (step 13: remove items at Plaid on account deletion and set the link token `webhook`; step 15: send `institution: {id, name}`).
+- Manual actions needed: Keep chasing Plaid support to restore Admin on the original team (only matters for step 18). Open the PR and paste its URL into step 11's PR line.
+- Next step: 12.
+
+### 2026-10-04 — step 11 — budget_app_website — feature/mhoff/plaid_link_20261004
+- Done: Step 10's PR link set to #46. `plaid_items` table (`PlaidItem`, migration `176bff1b7811`). `plaid_api.py`: `POST /v1/plaid/link-token`, `POST /v1/plaid/exchange`, `GET /v1/plaid/items`, `DELETE /v1/plaid/items/<item_id>`, `require_plaid_access` (401, then 402 via `has_plaid_access`), Fernet/MultiFernet token encryption, Plaid client ported from the desktop's `plaid_data_retreiver.py` (plaid-python 45). Config `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENVIRONMENT`, `PLAID_TOKEN_KEY` (`.env.example`, `render.yaml`). Contract filled in for all four endpoints, `PlaidItem`, and the new `item_limit_reached` error. 57 new mocked tests (378 pass): 401/402 on every endpoint, 404 when unconfigured, startup checks, the access token never appears in any response and is stored encrypted, key rotation, Plaid error and network-failure mapping, re-exchanging an item, another user's item, item limit, deleting lapsed/gone/failed items, and the exact link-token request. 2 live sandbox tests (`tests/test_plaid_sandbox.py`: link token → sandbox public token → exchange → list → delete, plus public-token reuse) are written but skipped until sandbox keys are set. New `scripts/desktop_flow_check.py` plays the desktop app against a running server; I ran it: real browser sign-in → token → `/v1/me` (`plaid_access: true`) → link-token, which returned 502 `plaid_error` because the only Plaid keys available were the `~/.zshrc` ones, which the sandbox rejects as `INVALID_API_KEYS`.
+- Not done / follow-ups: The "Done when" sandbox run needs Max's sandbox keys (see manual actions); then set this step to `done`. Deleting a user (cascade) removes `plaid_items` rows without calling Plaid `/item/remove`; step 13's `/account/delete` must remove items at Plaid first. Desktop's `plaid_connect.html` posts `institution_id`/`institution_name` flat; step 15 must send `institution: {id, name}` instead. No webhook URL is set on link tokens yet (step 13 adds `webhook`).
+- Manual actions needed: Add to `.env`: `PLAID_SANDBOX_CLIENT_ID` and `PLAID_SANDBOX_SECRET` (Plaid Dashboard → Developers → Keys, Sandbox), and `PLAID_TOKEN_KEY` (generate with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`). `pip install -r requirements.txt`, `flask db upgrade`. Production (not needed to merge): set `PLAID_TOKEN_KEY` on Render (keep a copy in a password manager) and the Plaid keys at step 18. Open the PR and paste its URL into step 11's PR line.
+- Next step: 11 until the live sandbox run passes, then 12.
 
 ### 2026-10-04 — step 10 — budget_app_website — feature/mhoff/app_sessions_20261004
 - Done: Set step 9's PR link to #45. `auth_codes` and `app_sessions` tables (`AuthCode`, `AppSession`; migration `0451270d22eb`). `app_auth.py`: `GET/POST /app-login` (login required; strict loopback `redirect_uri` check, S256-only PKCE, `state`, optional `device_name`; confirmation page `auth/app_login.html`), code issue/redeem, session create/lookup. `api.py`: `POST /v1/auth/token`, `GET /v1/me` (uses `has_plaid_access`), `POST /v1/auth/logout`, `require_app_session`, JSON errors. Both are registered only when `ACCOUNTS_ENABLED` is on. `/logout` honors a local `next`. Contract filled in for all three endpoints and `/app-login`. 321 tests pass (82 new: full code → token → `/v1/me` flow after a password login and after a Google login, hashed storage, single-use/expired/wrong-verifier codes, 17 rejected redirect URIs, invalid parameters never redirect, CSRF, cancel, switch account, revoked/expired/password-changed/deleted-user tokens get 401, rate limit 429 with `Retry-After`). Also ran the flow against a live local server with a script and checked the confirmation page in a browser.
