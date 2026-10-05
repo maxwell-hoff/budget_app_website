@@ -13,7 +13,9 @@ See [PLAN.md](PLAN.md) for steps and status.
 
 - Production: `https://workbenchbudgeting.com/v1`
 - Local dev: `http://127.0.0.1:5001/v1` (website `serve.py` default port)
-- The desktop app reads the base URL from `BUDGET_APP_CLOUD_URL`.
+- The desktop app reads the server's **site root** from `BUDGET_APP_CLOUD_URL` (default
+  `https://workbenchbudgeting.com`; a trailing `/` or `/v1` is ignored) and adds `/v1` for
+  the API and `/app-login` for browser sign-in. For local dev, set it to `http://127.0.0.1:5001`.
 - Breaking changes require a new version prefix (`/v2`); additive changes (new optional
   fields, new endpoints) do not. Clients must ignore unknown response fields.
 - All requests and responses are JSON (`Content-Type: application/json`), UTF-8.
@@ -70,6 +72,13 @@ sequenceDiagram
    - Cancel → `redirect_uri?error=access_denied&state=<s>`.
 4. App checks `state` (and handles `error=access_denied` by showing "Sign-in canceled"),
    then calls `POST /v1/auth/token` with the code and its `code_verifier`.
+
+Desktop side (step 14): the app's UI runs in the user's browser, so "Sign in" opens the
+app's own `GET /auth/start` in a new tab, which redirects to `/app-login`. The
+`redirect_uri` uses the host and port the UI is on (`127.0.0.1` or `localhost`), so the
+callback lands on the same origin and the UI tab notices the sign-in. Each `state` and
+its verifier are kept in memory for 10 minutes and used once. The token goes into the OS
+keychain, one entry per server URL.
 
 Session tokens last **180 days** from sign-in (no sliding renewal). A session also ends when
 the user signs out of the app (`POST /v1/auth/logout`), when their password is changed,
