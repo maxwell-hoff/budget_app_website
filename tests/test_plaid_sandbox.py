@@ -125,6 +125,15 @@ def test_item_login_required_against_sandbox_is_409(live_app):
         assert resp.get_json()['error']['code'] == 'plaid_relink_required'
         [item] = client.get('/v1/plaid/items', headers=headers).get_json()['items']
         assert item['status'] == 'relink_required'
+
+        # Update mode: Plaid gives a Link token for the existing Item.
+        resp = client.post(f'/v1/plaid/items/{item_id}/relink-token', headers=headers)
+        assert resp.status_code == 200, resp.get_json()
+        assert resp.get_json()['link_token'].startswith('link-sandbox-')
+        resp = client.post(f'/v1/plaid/items/{item_id}/relink-complete', headers=headers)
+        assert resp.get_json()['item']['status'] == 'ok'
+        # The sandbox Item still needs its login (no one went through Link), so sync says so again.
+        assert sync_when_ready(client, headers, {'item_id': item_id}).status_code == 409
     finally:
         assert client.delete(f'/v1/plaid/items/{item_id}', headers=headers).status_code == 204
 

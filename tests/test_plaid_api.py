@@ -114,7 +114,9 @@ def assert_api_error(resp, status, code):
 
 ENDPOINTS = [
     ('post', '/v1/plaid/link-token'), ('post', '/v1/plaid/exchange'),
-    ('get', '/v1/plaid/items'), ('post', '/v1/plaid/sync'), ('delete', '/v1/plaid/items/item-1'),
+    ('get', '/v1/plaid/items'), ('post', '/v1/plaid/sync'),
+    ('post', '/v1/plaid/items/item-1/relink-token'), ('post', '/v1/plaid/items/item-1/relink-complete'),
+    ('delete', '/v1/plaid/items/item-1'),
 ]
 # Every endpoint except DELETE needs Plaid access.
 PAID_ENDPOINTS = ENDPOINTS[:-1]

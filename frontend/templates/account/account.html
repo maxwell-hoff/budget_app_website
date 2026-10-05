@@ -144,4 +144,21 @@
     {{ logout_form.csrf_token }}
     <button type="submit" class="btn auth-form__submit">Log out</button>
   </form>
+
+  <details class="account-section account-optional account-delete">
+    <summary id="delete-heading" class="account-section__title">Delete account</summary>
+    <p class="account-details__note">
+      This permanently deletes your account. Your bank connections are disconnected from Plaid,
+      any subscription is canceled right away, and the desktop app is signed out. The budget
+      data in your desktop app stays on your computer. This can't be undone.
+    </p>
+    <form method="post" action="{{ url_for('account.delete_account') }}" class="auth-form" novalidate>
+      {{ delete_form.csrf_token }}
+      {{ field(delete_form.confirm_email, "off") }}
+      {% if has_password %}
+        {{ field(delete_form.current_password, "current-password") }}
+      {% endif %}
+      <button type="submit" class="btn auth-form__submit account-delete__submit">Delete my account</button>
+    </form>
+  </details>
 {% endblock %}

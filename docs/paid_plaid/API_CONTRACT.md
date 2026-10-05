@@ -165,6 +165,10 @@ Response 200: `{ "link_token": "link-sandbox-…", "expiration": "2026-10-05T02:
 
 Errors: 400 `item_limit_reached` if the user already has 10 items; 401; 402; 502.
 
+Since step 13 the token also registers the server's webhook (`<PUBLIC_BASE_URL>/plaid/webhook`)
+on the new Item, so Plaid reports login problems to the server. Without `PUBLIC_BASE_URL`
+(local dev) no webhook is set; nothing else changes for the client.
+
 #### `POST /v1/plaid/exchange` — step 11
 Exchange the `public_token` from Plaid Link's `onSuccess`. Rate limited (20/hour per IP).
 
@@ -239,7 +243,9 @@ Response 200:
   check script confirms the SimpleNamespace path saves exactly the same rows, including
   `hash_id`, as today's direct Plaid path, so moving a bank to the server doesn't
   duplicate transactions.
-- On success the item's `status` becomes `ok` and `last_synced_at` is set.
+- On success `last_synced_at` is set and the item's `status` becomes `ok`, except that
+  `relink_recommended` stays (the bank still works, but its consent ends soon; see
+  `relink-complete`).
 
 Errors with `item_id` (returned as the HTTP status):
 - 409 `plaid_relink_required`: Plaid says `ITEM_LOGIN_REQUIRED`. The item's `status`
@@ -250,7 +256,9 @@ Errors with `item_id` (returned as the HTTP status):
   Even after that, Plaid fills in older history over the next seconds to minutes (in the
   sandbox, a sync 1 s after linking returned 16 transactions and one 12 s after returned
   48). Sync again a little later; repeats are safe because the desktop dedupes by `hash_id`.
-- 502 `plaid_error`: any other Plaid failure or timeout; the item is unchanged.
+- 502 `plaid_error`: any other Plaid failure or timeout; the item is unchanged, except
+  that if Plaid says the Item no longer exists (`ITEM_NOT_FOUND`, `INVALID_ACCESS_TOKEN`)
+  its `status` becomes `error` (since step 13): remove it and link the bank again.
 - 404 `not_found` (unknown or another user's item); 400 `bad_request` (body not a JSON
   object, bad `days_back` or `item_id`); 401; 402.
 
@@ -263,8 +271,30 @@ Large first pulls make many Plaid calls, so a request can take tens of seconds. 
 request per item (the desktop already refreshes connections one by one) and allow a
 client timeout of at least 120 seconds.
 
-#### `POST /v1/plaid/items/<item_id>/relink-token` — step 13 — TODO
-Update-mode Link token for an item returning 409. Response: `{ "link_token": "…" }`.
+#### `POST /v1/plaid/items/<item_id>/relink-token` — step 13
+Update-mode Link token for one item: open Plaid Link with it when the item's `status` is
+`relink_required` (sync returned 409) or `relink_recommended`. The user signs in to the
+bank again; the Item and its access token stay the same, so **don't** call `exchange`
+afterwards. No request body. Rate limited (30/hour per IP).
+
+Response 200: `{ "link_token": "link-sandbox-…", "expiration": "2026-10-05T02:00:00Z" }`
+
+Errors: 401; 402; 404 `not_found` (unknown or another user's item); 502 `plaid_error`. If
+Plaid says the Item no longer exists, the item's `status` becomes `error` and the 502 is
+returned; update mode can't fix that, so remove the item and link the bank again.
+
+#### `POST /v1/plaid/items/<item_id>/relink-complete` — step 13
+Call after update-mode Link's `onSuccess`. Sets the item's `status` from
+`relink_required` or `relink_recommended` back to `ok` (other statuses are left alone).
+Plaid doesn't notify the server when update mode succeeds, so the client has to. If the
+bank still needs a login, the next sync returns 409 and sets `relink_required` again.
+No request body. Rate limited (30/hour per IP).
+
+Response 200: `{ "item": <PlaidItem> }`
+
+Errors: 401; 402; 404 `not_found`.
+
+Typical flow: sync → 409 → `relink-token` → Link (update mode) → `relink-complete` → sync.
 
 ### Shared objects
 
@@ -274,15 +304,24 @@ Update-mode Link token for an item returning 409. Response: `{ "link_token": "�
   "item_id": "…",
   "institution_id": "ins_…",
   "institution_name": "…",
-  "status": "ok | relink_required | error",
+  "status": "ok | relink_recommended | relink_required | error",
   "created_at": "2026-10-04T23:10:00Z",
   "last_synced_at": null
 }
 ```
 `institution_id` and `institution_name` may be `null`. `last_synced_at` is `null` until the
-first successful sync. `status` is `ok` after linking or a successful sync, and
-`relink_required` after a sync hits `ITEM_LOGIN_REQUIRED` (step 12); step 13's webhook
-also sets `relink_required` and `error`.
+first successful sync.
+
+| `status` | Meaning | Set by | Cleared by |
+| --- | --- | --- | --- |
+| `ok` | Syncing works | Linking, a successful sync, `relink-complete`, Plaid's `LOGIN_REPAIRED` webhook | — |
+| `relink_recommended` | Still syncs, but the bank's consent ends soon. Suggest re-linking (update mode) | Plaid's `PENDING_EXPIRATION` / `PENDING_DISCONNECT` webhooks (only when the item was `ok`) | `relink-complete`, `LOGIN_REPAIRED`, a re-exchange. A successful sync does **not** clear it |
+| `relink_required` | Sync returns 409 until the user goes through update mode | A sync hitting `ITEM_LOGIN_REQUIRED`; Plaid's `ITEM` `ERROR` webhook | `relink-complete` (or `LOGIN_REPAIRED`) then a successful sync |
+| `error` | The Item is gone at Plaid (user revoked access, or Plaid says it doesn't exist). Update mode can't fix it | Plaid's `USER_PERMISSION_REVOKED` webhook or an `ITEM` `ERROR` with `ITEM_NOT_FOUND`; sync or relink-token getting `ITEM_NOT_FOUND` / `INVALID_ACCESS_TOKEN` | Remove the item (`DELETE`) and link the bank again |
+
+Items can also disappear from `GET /v1/plaid/items` without a client call: the server
+removes every bank at Plaid when the subscription ends for good, or when the account is
+deleted (step 13; see the server-only table).
 
 ---
 
@@ -300,13 +339,15 @@ Listed here so both sides know they exist.
 | `GET, POST /reset-password/<token>` | 5 | Choose a new password. Token expires after 1 hour and is single-use (it stops working once the password changes); invalid → 400 page. A successful reset also marks the email verified, logs the user in, and ends their other sessions. 404 when the flag is off |
 | `GET /verify-email/<token>` | 5 | Mark the email verified. Token expires after 48 hours and is tied to the address it was sent to; reusing a valid link is harmless. Invalid → 400 page. 404 when the flag is off |
 | `POST /verify-email/resend` | 5 | Logged-in only (CSRF token required): send a new verification link. Rate limited (3/hour). 404 when the flag is off |
-| `GET, POST /account` | 6 | Logged-in only (otherwise 302 to `/login?next=/account`). Shows email, verification status (with resend), subscription status with Subscribe and/or Manage subscription buttons (steps 8–9), and change-password / set-password. POST changes the password (CSRF token required; current password required if one is set; rate limited 10/hour) and ends other sessions. 404 when the flag is off |
+| `GET, POST /account` | 6 | Logged-in only (otherwise 302 to `/login?next=/account`). Shows email, verification status (with resend), subscription status with Subscribe and/or Manage subscription buttons (steps 8–9), and change-password / set-password, and (step 13) a collapsed "Delete account" section posting to `/account/delete`. POST changes the password (CSRF token required; current password required if one is set; rate limited 10/hour) and ends other sessions. 404 when the flag is off |
 | `GET /auth/google` | 7 | Start "Sign in with Google": redirects to Google with `state` and `nonce` (stored in the session). Optional local-only `?next=`. Rate limited (20/hour). 404 when the flag is off or `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` are unset |
 | `GET /auth/google/callback` | 7 | Google OpenID Connect callback. Checks `state`, exchanges the code, verifies the ID token and `nonce`, then matches the account: by Google `sub` first; if logged in, connects Google to the current account; otherwise (verified Google email only) links to the user with that email or creates one. Logs in and redirects to `next` or `/account`. Any failure (bad/missing/replayed state, user cancelled, unverified email, Google account linked elsewhere) → 400 page. Same 404 rules as above |
 | `POST /account/google/unlink` | 7 | Logged-in only (CSRF token required): disconnect Google. Refused (with a message) if the user has no password, so the last sign-in method can't be removed. 404 when the flag is off |
 | `POST /billing/checkout` | 8 | Logged-in only (CSRF token required; rate limited 10/hour): creates the user's Stripe customer on first use, then a Checkout Session for `STRIPE_PRICE_ID` and 303-redirects to it. Success returns to `/account?checkout=success`, cancel to `/account?checkout=canceled`. If the user already has a live subscription (`active`, `trialing`, `past_due`, `unpaid`, `incomplete`, `paused`), redirects to `/account` with a message instead. 404 when the flag is off or any `STRIPE_*` var is unset |
-| `POST /stripe/webhook` | 8 | Stripe events. Verifies `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` (5-minute tolerance; failure → 400). No CSRF token. Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.paid`, `invoice.payment_failed` by re-fetching the subscription from Stripe and copying its status, renewal date, and pending cancellation into `subscriptions`. Other types are acknowledged and ignored. Each event ID is processed once (repeats → 200 `{"received": true, "duplicate": true}`); errors → 500 so Stripe retries. Same 404 rules as checkout |
+| `POST /stripe/webhook` | 8 | Stripe events. Verifies `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` (5-minute tolerance; failure → 400). No CSRF token. Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.paid`, `invoice.payment_failed` by re-fetching the subscription from Stripe and copying its status, renewal date, and pending cancellation into `subscriptions`. Other types are acknowledged and ignored. Each event ID is processed once (repeats → 200 `{"received": true, "duplicate": true}`); errors → 500 so Stripe retries. Since step 13, when Plaid is enabled and the subscription has ended for good (`canceled` or `incomplete_expired`, with no paid time left), it also removes the user's banks at Plaid and here, because Plaid bills per connected bank. A failed removal is logged and the bank kept for `flask plaid-remove-lapsed`; it doesn't fail the webhook. `unpaid` and `past_due` keep the banks, since a payment can still restore access. Events for a deleted user's customer are acknowledged. Same 404 rules as checkout |
 | `POST /billing/portal` | 9 | Logged-in only (CSRF token required; rate limited 20/hour): creates a Stripe Customer Portal session for the user's customer and 303-redirects to it; the portal returns to `/account`. Users without a Stripe customer are redirected to `/account` with a message. Stripe errors (e.g. portal not configured) → back to `/account` with a message (Checkout does the same since step 9). Same 404 rules as checkout |
 | `GET, POST /app-login` | 10 | Browser page for the desktop sign-in flow (see "Desktop sign-in flow" above). Logged-in only (otherwise 302 to `/login?next=…`, where password or Google login both return here). GET checks the parameters (invalid → 400 page, no redirect) and shows the confirmation page; POST (CSRF token required; rate limited 30/hour) issues the one-time code and 302s to the app's loopback `redirect_uri`. 404 when the flag is off |
 | `POST /logout?next=<path>` | 10 | `/logout` (step 4) now honors a local-only `next` path, used by "Use a different account" on `/app-login`; anything else still goes to `/` |
-| `POST /plaid/webhook` | 13 | Plaid item events (JWT-verified) |
+| `POST /plaid/webhook` | 13 | Plaid Item events. Plaid calls it because `link-token` sets `<PUBLIC_BASE_URL>/plaid/webhook` on each Item. Verifies the `Plaid-Verification` JWT: ES256 only, signing key fetched from Plaid by `kid` (cached 1 hour; expired keys refused), issued no more than 5 minutes ago, and its `request_body_sha256` must match the raw body. Any failure → 400. No CSRF token; rate limited 300/minute. Updates the item's `status` (see the `PlaidItem` table): `ITEM` `ERROR` → `relink_required` (`error` if the code is `ITEM_NOT_FOUND`), `PENDING_EXPIRATION` / `PENDING_DISCONNECT` → `relink_recommended`, `USER_PERMISSION_REVOKED` → `error`, `LOGIN_REPAIRED` → `ok`. Everything else (e.g. `TRANSACTIONS` updates), unknown items, and events for another Plaid environment → 200 `{"received": true}` with no change. 404 unless accounts and Plaid are both enabled |
+| `POST /account/delete` | 13 | Logged-in only (CSRF token required; rate limited 5/hour). The user types their email (case-insensitive) and, if they have a password, their current password. Then: removes every bank at Plaid (already-gone Items are fine), deletes the Stripe customer (Stripe cancels any subscription right away, no refund), and deletes the user with their sign-in methods, desktop sessions (the desktop's next call gets 401), subscription row, and bank rows. If Plaid or Stripe fails, the account is kept and `/account` shows a message so the user can retry. Success logs out and redirects to `/login` with "Your account has been deleted." 404 when the flag is off |
+| `flask plaid-remove-lapsed` | 13 | CLI, not HTTP. Removes the banks (at Plaid and here) of every user whose subscription has ended (see `/stripe/webhook`). Catches what no Stripe event announces (a subscription canceled immediately keeps access until its period ends) and retries removals that failed. Safe to run any time, e.g. from a daily Render Cron Job. Only registered when Plaid is enabled |

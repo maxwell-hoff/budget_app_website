@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 # Stripe statuses where the customer has a subscription that is (or may become) billable.
 # A new Checkout is refused in these states so nobody pays twice.
 LIVE_STATUSES = frozenset({'active', 'trialing', 'past_due', 'unpaid', 'incomplete', 'paused'})
+# Stripe statuses a subscription never leaves; resubscribing creates a new subscription.
+ENDED_STATUSES = frozenset({'canceled', 'incomplete_expired'})
 
 WEBHOOK_TOLERANCE_SECONDS = 300
 
@@ -69,6 +71,15 @@ def fetch_subscription(subscription_id):
     return _stripe().v1.subscriptions.retrieve(subscription_id).to_dict()
 
 
+def delete_customer(customer_id):
+    """Deleting the customer also cancels their subscriptions immediately."""
+    try:
+        _stripe().v1.customers.delete(customer_id)
+    except stripe.InvalidRequestError as exc:
+        if exc.code != 'resource_missing':
+            raise
+
+
 def create_portal_session(customer_id):
     session = _stripe().v1.billing_portal.sessions.create(params={
         'customer': customer_id,
@@ -110,6 +121,15 @@ def has_plaid_access(user, now=None):
         end = _aware(sub.current_period_end)
         return sub.cancellation_reason == 'cancellation_requested' and end is not None and now < end
     return False
+
+
+def subscription_ended(user, now=None):
+    """No access and no way back to it without a new subscription. Unlike `unpaid` or a
+    lapsed `past_due`, which a payment can still fix."""
+    sub = user.subscription
+    if has_plaid_access(user, now):
+        return False
+    return sub is None or sub.status is None or sub.status in ENDED_STATUSES
 
 
 def subscription_summary(user, now=None):
@@ -299,6 +319,16 @@ def _sync(row, subscription_id):
     row.current_period_end = _period_bound(sub, 'current_period_end', max)
     row.cancel_at_period_end = sub['status'] != 'canceled' and bool(sub.get('cancel_at_period_end') or sub.get('cancel_at'))
     row.cancellation_reason = (sub.get('cancellation_details') or {}).get('reason') if sub['status'] == 'canceled' else None
+    _remove_plaid_items_if_ended(row.user)
+
+
+def _remove_plaid_items_if_ended(user):
+    if not current_app.config.get('PLAID_ENABLED'):
+        return
+    import plaid_api  # plaid_api imports this module
+    # Failures are logged and the items kept for `flask plaid-remove-lapsed`; they don't
+    # fail the webhook, which would make Stripe resend an event that was handled.
+    plaid_api.remove_items_if_subscription_ended(user)
 
 
 def _period_bound(sub, field, pick):

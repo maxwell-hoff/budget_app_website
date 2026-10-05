@@ -241,6 +241,15 @@
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
 }
+.account-delete {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.account-delete__submit {
+  color: var(--bad);
+  border-color: rgba(192, 57, 43, 0.4);
+}
 @media (max-width: 480px) {
   .account-details > div {
     grid-template-columns: 1fr;
