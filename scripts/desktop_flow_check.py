@@ -144,8 +144,8 @@ def main():
     me = show('GET /v1/me', requests.get(f'{server}/v1/me', headers=headers, timeout=30)).json()
 
     if args.plaid:
-        if not me.get('plaid_access'):
-            print('Note: this account has no Plaid access, so expect 402s. Subscribe on /account first.')
+        if not me.get('paid_access'):
+            print('Note: this account has no paid access, so expect 402 subscription_required. Subscribe on /account first.')
         show('POST /v1/plaid/link-token', requests.post(f'{server}/v1/plaid/link-token', headers=headers, timeout=60))
         resp = show('POST /v1/plaid/exchange', requests.post(f'{server}/v1/plaid/exchange', headers=headers, json={
             'public_token': sandbox_public_token(),

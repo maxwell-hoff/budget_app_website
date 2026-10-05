@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from auth import external_url
 from extensions import db, limiter
+from mailer import send_email
 from models import StripeEvent, Subscription, User, utcnow
 
 logger = logging.getLogger(__name__)
@@ -22,8 +23,11 @@ ENDED_STATUSES = frozenset({'canceled', 'incomplete_expired'})
 
 WEBHOOK_TOLERANCE_SECONDS = 300
 
-# How long bank syncing keeps working after a renewal payment fails, while Stripe retries.
+# How long the app keeps working after a renewal payment fails, while Stripe retries.
 PAST_DUE_GRACE = timedelta(days=7)
+
+# Stripe's limit for subscription_data.trial_period_days.
+MAX_TRIAL_DAYS = 730
 
 # Only registered when ACCOUNTS_ENABLED is on and Stripe is configured (see create_app).
 bp = Blueprint('billing', __name__)
@@ -37,6 +41,10 @@ def init_billing(app):
     app.config['STRIPE_ENABLED'] = all(
         app.config.get(name) for name in ('STRIPE_SECRET_KEY', 'STRIPE_PRICE_ID', 'STRIPE_WEBHOOK_SECRET')
     )
+    trial = app.config.get('TRIAL_DAYS')
+    if app.config['STRIPE_ENABLED'] and app.config['ACCOUNTS_ENABLED']:
+        if not isinstance(trial, int) or isinstance(trial, bool) or not 0 <= trial <= MAX_TRIAL_DAYS:
+            raise RuntimeError(f'TRIAL_DAYS must be a whole number from 0 to {MAX_TRIAL_DAYS}.')
 
 
 def is_subscribed(subscription):
@@ -54,13 +62,18 @@ def create_customer(user):
     return customer.id
 
 
-def create_checkout_session(customer_id, user):
+def create_checkout_session(customer_id, user, trial_days=0):
+    subscription_data = {'metadata': {'user_id': str(user.id)}}
+    if trial_days:
+        # Checkout collects a card up front even with a trial (payment_method_collection
+        # defaults to `always`), so Stripe charges when the trial ends unless canceled.
+        subscription_data['trial_period_days'] = trial_days
     session = _stripe().v1.checkout.sessions.create(params={
         'mode': 'subscription',
         'customer': customer_id,
         'client_reference_id': str(user.id),
         'line_items': [{'price': current_app.config['STRIPE_PRICE_ID'], 'quantity': 1}],
-        'subscription_data': {'metadata': {'user_id': str(user.id)}},
+        'subscription_data': subscription_data,
         'success_url': external_url('account.account', checkout='success'),
         'cancel_url': external_url('account.account', checkout='canceled'),
     })
@@ -102,8 +115,9 @@ def past_due_grace_end(subscription):
     return start + PAST_DUE_GRACE if start else None
 
 
-def has_plaid_access(user, now=None):
-    """The only place that decides whether a user may use Plaid bank syncing."""
+def has_paid_access(user, now=None):
+    """The only place that decides whether a user has paid access: the whole desktop app
+    (beyond the free Sample profile), bank syncing included."""
     sub = user.subscription if user is not None else None
     if sub is None or not sub.status:
         return False
@@ -123,11 +137,34 @@ def has_plaid_access(user, now=None):
     return False
 
 
+def access_until(user, now=None):
+    """Until when access is already guaranteed with no further payment, or None without
+    access. Lets the desktop keep working offline. For `active`/`trialing` it's the period
+    end (the trial's end while trialing), which can be in the past for a moment while a
+    renewal webhook is late; None if Stripe hasn't reported a period end."""
+    if not has_paid_access(user, now):
+        return None
+    sub = user.subscription
+    if sub.status == 'past_due':
+        return past_due_grace_end(sub)
+    return _aware(sub.current_period_end)
+
+
+def trial_days():
+    return current_app.config.get('TRIAL_DAYS') or 0
+
+
+def trial_available(user):
+    """Trials are on and this user has never had one (one per account)."""
+    sub = user.subscription
+    return trial_days() > 0 and (sub is None or sub.trial_used_at is None)
+
+
 def subscription_ended(user, now=None):
     """No access and no way back to it without a new subscription. Unlike `unpaid` or a
     lapsed `past_due`, which a payment can still fix."""
     sub = user.subscription
-    if has_plaid_access(user, now):
+    if has_paid_access(user, now):
         return False
     return sub is None or sub.status is None or sub.status in ENDED_STATUSES
 
@@ -135,7 +172,7 @@ def subscription_ended(user, now=None):
 def subscription_summary(user, now=None):
     """What the account page shows: a state name, the date that goes with it, and buttons."""
     sub = user.subscription
-    access = has_plaid_access(user, now)
+    access = has_paid_access(user, now)
     status = sub.status if sub else None
     if status in ('active', 'trialing'):
         state = 'ending' if sub.cancel_at_period_end else 'active'
@@ -155,6 +192,7 @@ def subscription_summary(user, now=None):
         'until': until,
         'can_subscribe': not is_subscribed(sub),
         'can_manage': bool(sub and sub.stripe_subscription_id),
+        'trial_days': trial_days() if trial_available(user) else 0,
     }
 
 
@@ -182,7 +220,8 @@ def checkout():
             except IntegrityError:
                 # A simultaneous request created the row first; use that customer instead.
                 db.session.rollback()
-        url = create_checkout_session(user.subscription.stripe_customer_id, user)
+        trial = trial_days() if trial_available(user) else 0
+        url = create_checkout_session(user.subscription.stripe_customer_id, user, trial)
     except stripe.StripeError:
         logger.exception('Stripe Checkout failed for user %s', user.id)
         flash(PAYMENT_PROVIDER_ERROR)
@@ -265,11 +304,40 @@ def _on_invoice_event(invoice):
         _sync(row, subscription_id)
 
 
+def _on_trial_will_end(subscription):
+    """Stripe sends this 3 days before a trial ends. Remind the user they'll be charged,
+    unless they've already canceled. A failed email raises, so Stripe resends the event."""
+    user_id = (subscription.get('metadata') or {}).get('user_id')
+    row = _row_for_customer(_id(subscription.get('customer')), user_id)
+    if row is None:
+        return
+    sub = _sync(row, subscription['id'])
+    if sub is None or row.stripe_subscription_id != sub['id']:
+        return
+    if sub['status'] != 'trialing' or row.cancel_at_period_end:
+        return
+    trial_end = _timestamp(sub.get('trial_end')) or row.current_period_end
+    send_email(row.user.email, 'Your Workbench Budgeting free trial ends soon', _trial_reminder_text(trial_end))
+
+
+def _trial_reminder_text(trial_end):
+    end = f'{trial_end:%B} {trial_end.day}, {trial_end.year}' if trial_end else 'in a few days'
+    return (
+        f'Your free trial of Workbench Budgeting ends on {end}.\n\n'
+        'After that, your subscription continues at $8.99/month, charged to the card you '
+        'entered. You don\'t need to do anything to keep using the app.\n\n'
+        'If you don\'t want to continue, cancel before the trial ends and you won\'t be '
+        'charged. You can cancel from your account page:\n\n'
+        f"{external_url('account.account')}\n"
+    )
+
+
 _HANDLERS = {
     'checkout.session.completed': _on_checkout_completed,
     'customer.subscription.created': _on_subscription_event,
     'customer.subscription.updated': _on_subscription_event,
     'customer.subscription.deleted': _on_subscription_event,
+    'customer.subscription.trial_will_end': _on_trial_will_end,
     'invoice.paid': _on_invoice_event,
     'invoice.payment_failed': _on_invoice_event,
 }
@@ -305,14 +373,18 @@ def _row_for_customer(customer_id, user_id=None):
 
 def _sync(row, subscription_id):
     """Copy the subscription's current state from Stripe. Fetching it (instead of trusting
-    the event body) keeps the row right even when events arrive out of order."""
+    the event body) keeps the row right even when events arrive out of order. Returns the
+    fetched subscription."""
     sub = fetch_subscription(subscription_id)
+    if row.trial_used_at is None and (sub.get('trial_start') or sub.get('trial_end')):
+        # Recorded even for a subscription ignored below: any trial uses up the user's one.
+        row.trial_used_at = _timestamp(sub.get('trial_start')) or utcnow()
     if row.stripe_subscription_id not in (None, sub['id']) and is_subscribed(row):
         logger.warning(
             'Ignoring subscription %s for customer %s; %s is still %s',
             sub['id'], row.stripe_customer_id, row.stripe_subscription_id, row.status,
         )
-        return
+        return sub
     row.stripe_subscription_id = sub['id']
     row.status = sub['status']
     row.current_period_start = _period_bound(sub, 'current_period_start', min)
@@ -320,6 +392,7 @@ def _sync(row, subscription_id):
     row.cancel_at_period_end = sub['status'] != 'canceled' and bool(sub.get('cancel_at_period_end') or sub.get('cancel_at'))
     row.cancellation_reason = (sub.get('cancellation_details') or {}).get('reason') if sub['status'] == 'canceled' else None
     _remove_plaid_items_if_ended(row.user)
+    return sub
 
 
 def _remove_plaid_items_if_ended(user):
@@ -337,4 +410,8 @@ def _period_bound(sub, field, pick):
     if not timestamp:
         items = (sub.get('items') or {}).get('data') or []
         timestamp = pick((item.get(field) for item in items if item.get(field)), default=None)
-    return datetime.fromtimestamp(timestamp, tz=timezone.utc) if timestamp else None
+    return _timestamp(timestamp)
+
+
+def _timestamp(value):
+    return datetime.fromtimestamp(value, tz=timezone.utc) if value else None

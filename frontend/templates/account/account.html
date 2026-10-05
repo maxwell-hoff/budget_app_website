@@ -31,9 +31,10 @@
         {% set state = billing.state %}
         {% set until = billing.until %}
         {% set until_text = until.strftime('%B') ~ ' ' ~ until.day ~ ', ' ~ until.year if until else '' %}
+        {% set trialing = billing.status == 'trialing' %}
         {% if state in ('active', 'ending') %}
-          <span class="account-badge account-badge--good">{{ 'Trial' if billing.status == 'trialing' else 'Active' }}</span>
-          <span>Bank syncing, $8.99/month</span>
+          <span class="account-badge account-badge--good">{{ 'Free trial' if trialing else 'Active' }}</span>
+          <span>Workbench Budgeting, $8.99/month (includes bank syncing)</span>
         {% elif state == 'past_due' %}
           <span class="account-badge account-badge--warn">Payment failed</span>
         {% elif state == 'canceled' %}
@@ -49,7 +50,13 @@
             {% if billing.can_subscribe %}
               <form method="post" action="{{ url_for('billing.checkout') }}" class="account-inline-form">
                 {{ billing_form.csrf_token }}
-                <button type="submit" class="btn btn--primary account-subscribe">Subscribe for $8.99/month</button>
+                {% if billing.trial_days %}
+                  <button type="submit" class="btn btn--primary account-subscribe">
+                    {{- 'Start your free week' if billing.trial_days == 7 else 'Start your ' ~ billing.trial_days ~ '-day free trial' -}}
+                  </button>
+                {% else %}
+                  <button type="submit" class="btn btn--primary account-subscribe">Subscribe for $8.99/month</button>
+                {% endif %}
               </form>
             {% endif %}
             {% if billing.can_manage %}
@@ -58,18 +65,23 @@
                 <button type="submit" class="btn account-subscribe">Manage subscription</button>
               </form>
             {% endif %}
+            {% if billing.can_subscribe and billing.trial_days %}
+              <span class="account-details__note">Then $8.99/month, cancel anytime.</span>
+            {% endif %}
           </div>
         {% endif %}
 
         <span class="account-details__note">
-          {%- if state == 'active' and until %}Renews on {{ until_text }}.
-          {%- elif state == 'ending' and until %}Ends on {{ until_text }}. Bank syncing stays on until then.
-          {%- elif state == 'past_due' and billing.access %}Update your payment method by {{ until_text }} to keep bank syncing.
-          {%- elif state == 'past_due' %}Bank syncing is paused until your payment method is updated.
-          {%- elif state == 'canceled' %}Bank syncing stays on until {{ until_text }}.
-          {%- elif state == 'paused' %}Bank syncing is paused. Use Manage subscription to fix your payment.
-          {%- elif config.STRIPE_ENABLED %}Sync your bank accounts in the desktop app through Plaid.
-          {%- else %}Bank syncing subscriptions are coming soon.
+          {%- if state == 'active' and trialing and until %}Free trial: ends on {{ until_text }}, then $8.99/month.
+          {%- elif state == 'active' and until %}Renews on {{ until_text }}.
+          {%- elif state == 'ending' and trialing and until %}Free trial: ends on {{ until_text }}. You won't be charged, and the app stays on until then.
+          {%- elif state == 'ending' and until %}Ends on {{ until_text }}. The app stays on until then.
+          {%- elif state == 'past_due' and billing.access %}Update your payment method by {{ until_text }} to keep using the app.
+          {%- elif state == 'past_due' %}The app is paused until your payment method is updated.
+          {%- elif state == 'canceled' %}The app stays on until {{ until_text }}.
+          {%- elif state == 'paused' %}The app is paused. Use Manage subscription to fix your payment.
+          {%- elif config.STRIPE_ENABLED %}Use the desktop app with your own budgets, including bank syncing through Plaid. The Sample profile is always free.
+          {%- else %}Subscriptions are coming soon.
           {%- endif -%}
         </span>
       </dd>

@@ -156,7 +156,9 @@ def test_full_flow_after_password_login(accounts_app, user_id):
     assert resp.status_code == 200
     assert resp.get_json() == {
         'user': {'id': user_id, 'email': 'user@example.com', 'email_verified': True},
-        'plaid_access': False,
+        'paid_access': False,
+        'access_until': None,
+        'trial_available': True,
         'subscription': None,
         'account_url': 'http://localhost/account',
     }
@@ -185,7 +187,7 @@ def test_full_flow_after_google_login(google):  # noqa: F811
     assert body['user']['email_verified'] is True
 
 
-def test_me_reports_plaid_access_and_subscription(accounts_app, user_id):
+def test_me_reports_paid_access_and_subscription(accounts_app, user_id):
     with accounts_app.app_context():
         db.session.add(Subscription(
             user_id=user_id, stripe_customer_id='cus_1', stripe_subscription_id='sub_1', status='active',
@@ -195,7 +197,7 @@ def test_me_reports_plaid_access_and_subscription(accounts_app, user_id):
         ))
         db.session.commit()
     body = me(accounts_app.test_client(), sign_in(accounts_app)).get_json()
-    assert body['plaid_access'] is True
+    assert body['paid_access'] is True
     assert body['subscription'] == {
         'status': 'active', 'current_period_end': '2026-11-01T12:30:00Z', 'cancel_at_period_end': True,
     }
@@ -206,7 +208,7 @@ def test_me_without_access_for_lapsed_subscription(accounts_app, user_id):
         db.session.add(Subscription(user_id=user_id, stripe_customer_id='cus_1', status='unpaid'))
         db.session.commit()
     body = me(accounts_app.test_client(), sign_in(accounts_app)).get_json()
-    assert body['plaid_access'] is False
+    assert body['paid_access'] is False
     assert body['subscription']['status'] == 'unpaid'
 
 

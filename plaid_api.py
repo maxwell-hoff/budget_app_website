@@ -23,7 +23,7 @@ from plaid.model.transactions_get_request_options import TransactionsGetRequestO
 from werkzeug.exceptions import HTTPException
 
 from api import api_error, iso_utc, json_http_error, require_app_session
-from billing import has_plaid_access, subscription_ended
+from billing import has_paid_access, subscription_ended
 from extensions import db, limiter
 from models import PlaidItem, User, utcnow
 
@@ -202,13 +202,13 @@ def plaid_failure(exc, action):
     return api_error(502, 'plaid_error', PLAID_ERROR_MESSAGE)
 
 
-def require_plaid_access(view):
+def require_paid_access(view):
     """An app session (else 401) and an active subscription (else 402)."""
     @require_app_session
     @wraps(view)
     def wrapper(*args, **kwargs):
-        if not has_plaid_access(g.user):
-            return api_error(402, 'plaid_access_required', 'Bank syncing needs an active subscription.')
+        if not has_paid_access(g.user):
+            return api_error(402, 'subscription_required', 'This needs an active Workbench Budgeting subscription.')
         return view(*args, **kwargs)
     return wrapper
 
@@ -324,7 +324,7 @@ def _sync_item(item, days_back):
 # --- Endpoints ---
 
 @bp.route('/link-token', methods=['POST'])
-@require_plaid_access
+@require_paid_access
 @limiter.limit('30 per hour')
 def link_token():
     error = _item_limit_error()
@@ -338,7 +338,7 @@ def link_token():
 
 
 @bp.route('/exchange', methods=['POST'])
-@require_plaid_access
+@require_paid_access
 @limiter.limit('20 per hour')
 def exchange():
     data = request.get_json(silent=True)
@@ -376,7 +376,7 @@ def exchange():
 
 
 @bp.route('/items')
-@require_plaid_access
+@require_paid_access
 def items():
     rows = db.session.scalars(
         db.select(PlaidItem).filter_by(user_id=g.user.id).order_by(PlaidItem.created_at, PlaidItem.id)
@@ -385,7 +385,7 @@ def items():
 
 
 @bp.route('/sync', methods=['POST'])
-@require_plaid_access
+@require_paid_access
 @limiter.limit('120 per hour')
 def sync():
     data = request.get_json(silent=True) if request.get_data() else {}
@@ -423,7 +423,7 @@ def sync():
 
 
 @bp.route('/items/<item_id>/relink-token', methods=['POST'])
-@require_plaid_access
+@require_paid_access
 @limiter.limit('30 per hour')
 def relink_token(item_id):
     item = _own_item(item_id)
@@ -438,7 +438,7 @@ def relink_token(item_id):
 
 
 @bp.route('/items/<item_id>/relink-complete', methods=['POST'])
-@require_plaid_access
+@require_paid_access
 @limiter.limit('30 per hour')
 def relink_complete(item_id):
     item = _own_item(item_id)

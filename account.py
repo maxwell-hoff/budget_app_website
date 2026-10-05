@@ -63,8 +63,12 @@ def account():
     billing_summary = subscription_summary(user)
     if request.method == 'GET' and request.args.get('checkout') == 'success':
         # Stripe redirects here before (or just after) the webhook arrives.
-        flash('Thanks for subscribing!' if billing_summary['access'] else
-              "Thanks for subscribing! It can take a few seconds to show up here; refresh if it doesn't.")
+        if not billing_summary['access']:
+            flash("Thanks for subscribing! It can take a few seconds to show up here; refresh if it doesn't.")
+        elif billing_summary['status'] == 'trialing':
+            flash('Your free trial has started. Enjoy!')
+        else:
+            flash('Thanks for subscribing!')
 
     return render_template(
         'account/account.html',
