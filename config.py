@@ -51,6 +51,15 @@ def public_base_url(on_render):
     return 'https://workbenchbudgeting.com' if on_render else None
 
 
+def trial_days():
+    value = os.environ.get('TRIAL_DAYS', '').strip()
+    if not value:
+        return 7
+    # A typo must not take the site down (this is read even while ACCOUNTS_ENABLED is
+    # off); billing.init_billing rejects it at startup once billing is on.
+    return int(value) if value.isdigit() else value
+
+
 def load_config(instance_path):
     on_render = env_flag('RENDER')
     resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
@@ -64,6 +73,7 @@ def load_config(instance_path):
         'STRIPE_SECRET_KEY': os.environ.get('STRIPE_SECRET_KEY', '').strip(),
         'STRIPE_PRICE_ID': os.environ.get('STRIPE_PRICE_ID', '').strip(),
         'STRIPE_WEBHOOK_SECRET': os.environ.get('STRIPE_WEBHOOK_SECRET', '').strip(),
+        'TRIAL_DAYS': trial_days(),
         'PLAID_CLIENT_ID': os.environ.get('PLAID_CLIENT_ID', '').strip(),
         'PLAID_SECRET': os.environ.get('PLAID_SECRET', '').strip(),
         'PLAID_ENVIRONMENT': (os.environ.get('PLAID_ENVIRONMENT') or 'sandbox').strip().lower(),

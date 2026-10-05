@@ -162,13 +162,13 @@ def test_401_without_session(plaid_app, fake_plaid, method, path):
 
 @pytest.mark.parametrize('status', [None, 'canceled', 'unpaid', 'incomplete'])
 @pytest.mark.parametrize('method,path', PAID_ENDPOINTS)
-def test_402_without_plaid_access(plaid_app, fake_plaid, method, path, status):
+def test_402_without_paid_access(plaid_app, fake_plaid, method, path, status):
     user_id = add_user(plaid_app)
     if status:
         subscribe(plaid_app, user_id, status)
     headers = {'Authorization': f'Bearer {sign_in(plaid_app)}'}
     resp = call(plaid_app, method, path, headers, json={'public_token': 'public-sandbox-1'})
-    assert_api_error(resp, 402, 'plaid_access_required')
+    assert_api_error(resp, 402, 'subscription_required')
     assert not fake_plaid.link_tokens_for and not fake_plaid.exchanged
 
 
@@ -380,7 +380,7 @@ def test_delete_allowed_after_subscription_lapses(plaid_app, fake_plaid, subscri
     with plaid_app.app_context():
         db.session.scalar(db.select(Subscription)).status = 'unpaid'
         db.session.commit()
-    assert_api_error(call(plaid_app, 'get', '/v1/plaid/items', headers), 402, 'plaid_access_required')
+    assert_api_error(call(plaid_app, 'get', '/v1/plaid/items', headers), 402, 'subscription_required')
     assert call(plaid_app, 'delete', '/v1/plaid/items/item-1', headers).status_code == 204
     assert fake_plaid.removed == [ACCESS_TOKEN]
 

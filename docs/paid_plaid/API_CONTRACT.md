@@ -1,12 +1,5 @@
 # Paid App — API Contract (desktop app <-> website server)
 
-> **Pending renames (step 13a):** the subscription now unlocks the whole app, not just
-> Plaid. Step 13a renames `plaid_access` → `paid_access` in `/v1/me`, adds
-> `access_until` and `trial_available` (1-week free trial), and renames error
-> `plaid_access_required` → `subscription_required`.
-> Until 13a merges, the server sends the old names. Desktop steps (14 and later) build
-> against the new names. Step 13a updates the entries below and removes this note.
-
 This is the interface between the desktop app (`budget_app`, the **client**) and the
 website server (`budget_app_website`, the **server**). Both sides build against this
 document. Any step that adds or changes an endpoint updates its entry here in the same
@@ -88,14 +81,14 @@ deleted. Any of these → 401 on the next call; the app clears the token and sho
 Every non-2xx response has this body:
 
 ```json
-{ "error": { "code": "plaid_access_required", "message": "Human-readable explanation" } }
+{ "error": { "code": "subscription_required", "message": "Human-readable explanation" } }
 ```
 
 | HTTP | `code` | Meaning | Client behavior |
 | --- | --- | --- | --- |
 | 400 | `bad_request` | Invalid input | Show message |
 | 401 | `unauthorized` | Missing, invalid, expired, or revoked session token | Clear token, prompt sign-in |
-| 402 | `plaid_access_required` (→ `subscription_required` in step 13a) | Signed in but no active subscription | Refresh `/v1/me` and show the lock screen (step 14a) with a link to `/account` |
+| 402 | `subscription_required` | Signed in but no active subscription (see `paid_access` in `/v1/me`) | Refresh `/v1/me` and show the lock screen (step 14a) with a link to `/account` |
 | 400 | `item_limit_reached` | Already 10 bank connections (Plaid bills per connection) | Show message; suggest removing one |
 | 404 | `not_found` | Resource does not exist or is not the caller's | Show message |
 | 409 | `plaid_relink_required` | Plaid item needs re-authentication (e.g. `ITEM_LOGIN_REQUIRED`) | Start update-mode Link for that item |
@@ -130,8 +123,9 @@ type, or the code is unknown, expired, already used, or doesn't match the verifi
 first redemption attempt uses up the code even if the verifier is wrong, so on any 400 the
 app starts sign-in again.
 
-#### `GET /v1/me` — step 10
-Current user and entitlement. `plaid_access` comes from `billing.has_plaid_access(user)` (step 9): true
+#### `GET /v1/me` — steps 10 and 13a
+Current user and entitlement. `paid_access` comes from `billing.has_paid_access(user)` (steps 9
+and 13a) and unlocks the whole desktop app (the Sample profile is free without it): true
 for `active`/`trialing`; `past_due` for 7 days after the failed renewal; `canceled` at the customer's
 request until `current_period_end`; false otherwise (including cancellation for non-payment).
 
@@ -139,22 +133,37 @@ Response 200:
 ```json
 {
   "user": { "id": 1, "email": "…", "email_verified": true },
-  "plaid_access": true,
+  "paid_access": true,
+  "access_until": "2026-11-01T12:30:00Z",
+  "trial_available": false,
   "subscription": { "status": "active", "current_period_end": "2026-11-01T12:30:00Z", "cancel_at_period_end": false },
   "account_url": "https://workbenchbudgeting.com/account"
 }
 ```
+- `access_until` (step 13a): the time until which access is already guaranteed with no
+  further payment, ISO 8601 UTC. The desktop stays unlocked offline until `access_until`
+  plus its offline grace (step 14a). Always `null` when `paid_access` is false.
+
+  | State | `paid_access` | `access_until` |
+  | --- | --- | --- |
+  | `active` (renewing or set to cancel) | true | `current_period_end` |
+  | `trialing` (free trial, including a canceled trial) | true | the trial's end (Stripe's `current_period_end` during a trial) |
+  | `past_due`, within 7 days of the failed renewal | true | the end of those 7 days |
+  | `canceled` at the customer's request, before `current_period_end` | true | `current_period_end` |
+  | Anything else (no subscription, grace over, canceled for non-payment, `unpaid`, `incomplete`, `paused`, …) | false | `null` |
+
+  Two edge cases while `paid_access` is true: `access_until` is `null` if Stripe hasn't
+  reported a period end yet, and for a moment around renewal it can be slightly in the
+  past (the renewal webhook hasn't arrived). Online, trust `paid_access`; use
+  `access_until` only for deciding how long to stay unlocked offline.
+- `trial_available` (step 13a): true when the user has never had a free trial and trials
+  are on (`TRIAL_DAYS` > 0, 7 by default). Label the Subscribe button "Start your free
+  week" when true. A trial is used up as soon as Stripe reports a subscription with one;
+  canceling the trial doesn't bring it back.
 - `subscription` is `null` until the user has started a subscription. `status` is Stripe's
   status string (`active`, `trialing`, `past_due`, `canceled`, `unpaid`, `incomplete`,
-  `paused`, …); clients should use `plaid_access`, not `status`, to decide what's allowed.
+  `paused`, …); clients should use `paid_access`, not `status`, to decide what's allowed.
   `current_period_end` may be `null`.
-- Step 13a: `plaid_access` becomes `paid_access` (same rules; it now unlocks the whole
-  app), and a new `access_until` field gives the time until which access is already
-  guaranteed without another payment (ISO 8601 UTC, or `null` when `paid_access` is
-  false). During the free trial (`status` `trialing`) it's the trial's end. The desktop
-  stays unlocked offline until `access_until` plus its offline grace. A new
-  `trial_available` boolean is true when the user has never had a trial, so the desktop
-  can label its Subscribe button "Start your free week".
 
 Errors: 401 `unauthorized`.
 
@@ -163,6 +172,9 @@ Revokes the calling session token (other devices stay signed in). Response 204, 
 Errors: 401 `unauthorized` (including an already revoked token).
 
 ### Plaid (all require a session **and** an active subscription; otherwise 401 / 402)
+
+Bank syncing is one of the things the subscription unlocks (free trial included); the
+402 is `subscription_required`, the same check as `paid_access` in `/v1/me`.
 
 Exception: `DELETE /v1/plaid/items/<item_id>` needs only a session, so a user whose
 subscription lapsed can still remove a bank. The `/v1/plaid` endpoints 404 unless
@@ -353,12 +365,12 @@ Listed here so both sides know they exist.
 | `GET, POST /reset-password/<token>` | 5 | Choose a new password. Token expires after 1 hour and is single-use (it stops working once the password changes); invalid → 400 page. A successful reset also marks the email verified, logs the user in, and ends their other sessions. 404 when the flag is off |
 | `GET /verify-email/<token>` | 5 | Mark the email verified. Token expires after 48 hours and is tied to the address it was sent to; reusing a valid link is harmless. Invalid → 400 page. 404 when the flag is off |
 | `POST /verify-email/resend` | 5 | Logged-in only (CSRF token required): send a new verification link. Rate limited (3/hour). 404 when the flag is off |
-| `GET, POST /account` | 6 | Logged-in only (otherwise 302 to `/login?next=/account`). Shows email, verification status (with resend), subscription status with Subscribe and/or Manage subscription buttons (steps 8–9), and change-password / set-password, and (step 13) a collapsed "Delete account" section posting to `/account/delete`. POST changes the password (CSRF token required; current password required if one is set; rate limited 10/hour) and ends other sessions. 404 when the flag is off |
+| `GET, POST /account` | 6 | Logged-in only (otherwise 302 to `/login?next=/account`). Shows email, verification status (with resend), subscription status with Subscribe and/or Manage subscription buttons (steps 8–9; since step 13a the Subscribe button reads "Start your free week" when `trial_available`, and a trial shows "Free trial: ends on <date>, then $8.99/month"), and change-password / set-password, and (step 13) a collapsed "Delete account" section posting to `/account/delete`. POST changes the password (CSRF token required; current password required if one is set; rate limited 10/hour) and ends other sessions. 404 when the flag is off |
 | `GET /auth/google` | 7 | Start "Sign in with Google": redirects to Google with `state` and `nonce` (stored in the session). Optional local-only `?next=`. Rate limited (20/hour). 404 when the flag is off or `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` are unset |
 | `GET /auth/google/callback` | 7 | Google OpenID Connect callback. Checks `state`, exchanges the code, verifies the ID token and `nonce`, then matches the account: by Google `sub` first; if logged in, connects Google to the current account; otherwise (verified Google email only) links to the user with that email or creates one. Logs in and redirects to `next` or `/account`. Any failure (bad/missing/replayed state, user cancelled, unverified email, Google account linked elsewhere) → 400 page. Same 404 rules as above |
 | `POST /account/google/unlink` | 7 | Logged-in only (CSRF token required): disconnect Google. Refused (with a message) if the user has no password, so the last sign-in method can't be removed. 404 when the flag is off |
-| `POST /billing/checkout` | 8 | Logged-in only (CSRF token required; rate limited 10/hour): creates the user's Stripe customer on first use, then a Checkout Session for `STRIPE_PRICE_ID` and 303-redirects to it. Success returns to `/account?checkout=success`, cancel to `/account?checkout=canceled`. If the user already has a live subscription (`active`, `trialing`, `past_due`, `unpaid`, `incomplete`, `paused`), redirects to `/account` with a message instead. 404 when the flag is off or any `STRIPE_*` var is unset |
-| `POST /stripe/webhook` | 8 | Stripe events. Verifies `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` (5-minute tolerance; failure → 400). No CSRF token. Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.paid`, `invoice.payment_failed` by re-fetching the subscription from Stripe and copying its status, renewal date, and pending cancellation into `subscriptions`. Other types are acknowledged and ignored. Each event ID is processed once (repeats → 200 `{"received": true, "duplicate": true}`); errors → 500 so Stripe retries. Since step 13, when Plaid is enabled and the subscription has ended for good (`canceled` or `incomplete_expired`, with no paid time left), it also removes the user's banks at Plaid and here, because Plaid bills per connected bank. A failed removal is logged and the bank kept for `flask plaid-remove-lapsed`; it doesn't fail the webhook. `unpaid` and `past_due` keep the banks, since a payment can still restore access. Events for a deleted user's customer are acknowledged. Same 404 rules as checkout |
+| `POST /billing/checkout` | 8 | Logged-in only (CSRF token required; rate limited 10/hour): creates the user's Stripe customer on first use, then a Checkout Session for `STRIPE_PRICE_ID` and 303-redirects to it. Since step 13a, a user who has never had a trial gets `subscription_data.trial_period_days` = `TRIAL_DAYS` (default 7; 0 turns trials off): Checkout still collects a card, and Stripe charges $8.99 when the trial ends unless the user cancels first. Success returns to `/account?checkout=success`, cancel to `/account?checkout=canceled`. If the user already has a live subscription (`active`, `trialing`, `past_due`, `unpaid`, `incomplete`, `paused`), redirects to `/account` with a message instead. 404 when the flag is off or any `STRIPE_*` var is unset |
+| `POST /stripe/webhook` | 8 | Stripe events. Verifies `Stripe-Signature` against `STRIPE_WEBHOOK_SECRET` (5-minute tolerance; failure → 400). No CSRF token. Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.paid`, `invoice.payment_failed` by re-fetching the subscription from Stripe and copying its status, renewal date, and pending cancellation into `subscriptions`. Other types are acknowledged and ignored. Each event ID is processed once (repeats → 200 `{"received": true, "duplicate": true}`); errors → 500 so Stripe retries. Since step 13, when Plaid is enabled and the subscription has ended for good (`canceled` or `incomplete_expired`, with no paid time left), it also removes the user's banks at Plaid and here, because Plaid bills per connected bank. A failed removal is logged and the bank kept for `flask plaid-remove-lapsed`; it doesn't fail the webhook. `unpaid` and `past_due` keep the banks, since a payment can still restore access. Events for a deleted user's customer are acknowledged. Since step 13a, any synced subscription with a trial sets `subscriptions.trial_used_at` (never cleared; one trial per account), and `customer.subscription.trial_will_end` (Stripe sends it 3 days before a trial ends) emails the user a reminder with the end date, the $8.99/month charge, and a link to `/account` to cancel. No email if the trial was already canceled or is no longer `trialing`; a failed email → 500 so Stripe resends, and a duplicate event sends nothing. `stripe listen --events` must include it. Same 404 rules as checkout |
 | `POST /billing/portal` | 9 | Logged-in only (CSRF token required; rate limited 20/hour): creates a Stripe Customer Portal session for the user's customer and 303-redirects to it; the portal returns to `/account`. Users without a Stripe customer are redirected to `/account` with a message. Stripe errors (e.g. portal not configured) → back to `/account` with a message (Checkout does the same since step 9). Same 404 rules as checkout |
 | `GET, POST /app-login` | 10 | Browser page for the desktop sign-in flow (see "Desktop sign-in flow" above). Logged-in only (otherwise 302 to `/login?next=…`, where password or Google login both return here). GET checks the parameters (invalid → 400 page, no redirect) and shows the confirmation page; POST (CSRF token required; rate limited 30/hour) issues the one-time code and 302s to the app's loopback `redirect_uri`. 404 when the flag is off |
 | `POST /logout?next=<path>` | 10 | `/logout` (step 4) now honors a local-only `next` path, used by "Use a different account" on `/app-login`; anything else still goes to `/` |

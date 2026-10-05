@@ -28,6 +28,7 @@ def make_app(**overrides):
         'STRIPE_SECRET_KEY': '',
         'STRIPE_PRICE_ID': '',
         'STRIPE_WEBHOOK_SECRET': '',
+        'TRIAL_DAYS': 7,
         'PLAID_CLIENT_ID': '',
         'PLAID_SECRET': '',
         'PLAID_ENVIRONMENT': 'sandbox',

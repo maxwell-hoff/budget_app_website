@@ -29,6 +29,7 @@ class FakeStripe:
     def __init__(self):
         self.customers = []
         self.sessions = []
+        self.trial_days = []
         self.subscriptions = {}
         self.fetches = []
         self._ids = itertools.count(1)
@@ -38,8 +39,9 @@ class FakeStripe:
         self.customers.append((customer_id, user.email))
         return customer_id
 
-    def create_checkout_session(self, customer_id, user):
+    def create_checkout_session(self, customer_id, user, trial_days=0):
         self.sessions.append((customer_id, user.id))
+        self.trial_days.append(trial_days)
         return f'https://checkout.stripe.com/c/pay/cs_test_{len(self.sessions)}'
 
     def fetch_subscription(self, subscription_id):
@@ -47,11 +49,13 @@ class FakeStripe:
         return self.subscriptions[subscription_id]
 
     def set_subscription(self, sub_id, customer_id, status='active', cancel_at_period_end=False,
-                         legacy_shape=False, period_end=PERIOD_END, cancel_at=None, cancellation_reason=None):
+                         legacy_shape=False, period_end=PERIOD_END, cancel_at=None, cancellation_reason=None,
+                         trial_start=None, trial_end=None):
         period_start = period_end - 30 * 86400
         sub = {
             'id': sub_id, 'object': 'subscription', 'customer': customer_id, 'status': status,
             'cancel_at_period_end': cancel_at_period_end, 'cancel_at': cancel_at,
+            'trial_start': trial_start, 'trial_end': trial_end,
             'cancellation_details': {'reason': cancellation_reason, 'comment': None, 'feedback': None},
             'items': {'object': 'list', 'data': [
                 {'id': 'si_1', 'current_period_start': period_start, 'current_period_end': period_end},
@@ -166,7 +170,7 @@ def test_routes_404_when_stripe_not_configured(missing):
 def test_account_page_without_stripe_shows_coming_soon(accounts_app, make_user):
     make_user(email='payer@example.com', password=PASSWORD)
     page = logged_in_client(accounts_app).get('/account').data
-    assert b'Bank syncing subscriptions are coming soon.' in page
+    assert b'Subscriptions are coming soon.' in page
     assert b'/billing/checkout' not in page
 
 
@@ -196,7 +200,8 @@ def test_account_page_shows_subscribe_button(stripe_app, fake_stripe):
     page = logged_in_client(stripe_app).get('/account').data
     assert b'Not subscribed' in page
     assert b'action="/billing/checkout"' in page
-    assert b'Subscribe for $8.99/month' in page
+    assert b'Start your free week' in page
+    assert b'Then $8.99/month, cancel anytime.' in page
 
 
 def test_checkout_creates_customer_and_redirects_to_stripe(stripe_app, fake_stripe):
@@ -329,7 +334,7 @@ def test_full_lifecycle_subscribe_cancel_end(stripe_app, fake_stripe):
     send(client, subscription_event('customer.subscription.deleted', sub))
     assert row(stripe_app, user_id)['status'] == 'canceled'
     assert row(stripe_app, user_id)['cancel_at_period_end'] is False
-    assert b'Subscribe for $8.99/month' in client.get('/account').data
+    assert b'action="/billing/checkout"' in client.get('/account').data
 
 
 def test_cancel_at_date_counts_as_ending(stripe_app, fake_stripe):

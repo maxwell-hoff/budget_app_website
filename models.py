@@ -94,6 +94,9 @@ class Subscription(db.Model):
     cancel_at_period_end = db.Column(db.Boolean, nullable=False, default=False)
     # Stripe's cancellation_details.reason: cancellation_requested, payment_failed, payment_disputed.
     cancellation_reason = db.Column(db.String(32), nullable=True)
+    # When the user's one free trial started; set the first time Stripe reports a
+    # subscription with a trial, and never cleared, so resubscribing gets no second trial.
+    trial_used_at = db.Column(db.DateTime(timezone=True), nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow, onupdate=utcnow)
 

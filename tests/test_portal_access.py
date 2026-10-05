@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 import billing
-from billing import PAST_DUE_GRACE, has_plaid_access
+from billing import PAST_DUE_GRACE, has_paid_access
 from extensions import db
 from models import Subscription, User
 from tests.conftest import make_app
@@ -19,19 +19,19 @@ def user_with(**fields):
     return types.SimpleNamespace(subscription=sub)
 
 
-# --- has_plaid_access: every status branch ---
+# --- has_paid_access: every status branch ---
 
 def test_no_user_or_subscription():
-    assert has_plaid_access(None, NOW) is False
-    assert has_plaid_access(user_with(), NOW) is False
-    assert has_plaid_access(user_with(status=None), NOW) is False  # customer created, never subscribed
+    assert has_paid_access(None, NOW) is False
+    assert has_paid_access(user_with(), NOW) is False
+    assert has_paid_access(user_with(status=None), NOW) is False  # customer created, never subscribed
 
 
 @pytest.mark.parametrize('status', ['active', 'trialing'])
 def test_active_and_trialing(status):
-    assert has_plaid_access(user_with(status=status, current_period_end=NOW + 10 * DAY), NOW) is True
+    assert has_paid_access(user_with(status=status, current_period_end=NOW + 10 * DAY), NOW) is True
     # Stripe is the source of truth: a late renewal webhook doesn't cut access off.
-    assert has_plaid_access(user_with(status=status, current_period_end=NOW - DAY), NOW) is True
+    assert has_paid_access(user_with(status=status, current_period_end=NOW - DAY), NOW) is True
 
 
 @pytest.mark.parametrize('failed_ago, expected', [
@@ -42,45 +42,45 @@ def test_active_and_trialing(status):
 ])
 def test_past_due_grace_period(failed_ago, expected):
     user = user_with(status='past_due', current_period_start=NOW - failed_ago, current_period_end=NOW + 25 * DAY)
-    assert has_plaid_access(user, NOW) is expected
+    assert has_paid_access(user, NOW) is expected
 
 
 def test_past_due_without_period_start():
-    assert has_plaid_access(user_with(status='past_due', current_period_end=NOW + DAY), NOW) is False
+    assert has_paid_access(user_with(status='past_due', current_period_end=NOW + DAY), NOW) is False
 
 
 @pytest.mark.parametrize('end_offset, expected', [(DAY, True), (timedelta(seconds=1), True), (timedelta(0), False), (-DAY, False)])
 def test_canceled_by_customer_keeps_paid_time(end_offset, expected):
     user = user_with(status='canceled', cancellation_reason='cancellation_requested', current_period_end=NOW + end_offset)
-    assert has_plaid_access(user, NOW) is expected
+    assert has_paid_access(user, NOW) is expected
 
 
 @pytest.mark.parametrize('reason', ['payment_failed', 'payment_disputed', None])
 def test_canceled_for_other_reasons_ends_access(reason):
     user = user_with(status='canceled', cancellation_reason=reason, current_period_end=NOW + 20 * DAY)
-    assert has_plaid_access(user, NOW) is False
+    assert has_paid_access(user, NOW) is False
 
 
 def test_canceled_without_period_end():
-    assert has_plaid_access(user_with(status='canceled', cancellation_reason='cancellation_requested'), NOW) is False
+    assert has_paid_access(user_with(status='canceled', cancellation_reason='cancellation_requested'), NOW) is False
 
 
 @pytest.mark.parametrize('status', ['unpaid', 'incomplete', 'incomplete_expired', 'paused', 'something_new'])
 def test_other_statuses_have_no_access(status):
     user = user_with(status=status, current_period_start=NOW, current_period_end=NOW + 20 * DAY)
-    assert has_plaid_access(user, NOW) is False
+    assert has_paid_access(user, NOW) is False
 
 
 def test_naive_datetimes_from_sqlite_are_utc():
     user = user_with(status='canceled', cancellation_reason='cancellation_requested',
                      current_period_end=(NOW + DAY).replace(tzinfo=None))
-    assert has_plaid_access(user, NOW) is True
+    assert has_paid_access(user, NOW) is True
     user = user_with(status='past_due', current_period_start=(NOW - DAY).replace(tzinfo=None))
-    assert has_plaid_access(user, NOW) is True
+    assert has_paid_access(user, NOW) is True
 
 
 def test_uses_the_current_time_by_default():
-    assert has_plaid_access(user_with(status='canceled', cancellation_reason='cancellation_requested',
+    assert has_paid_access(user_with(status='canceled', cancellation_reason='cancellation_requested',
                                       current_period_end=datetime.now(timezone.utc) + DAY)) is True
 
 
@@ -99,28 +99,36 @@ def _fmt(value):
     return f'{value:%B} {value.day}, {value.year}'
 
 
+PITCH = 'Use the desktop app with your own budgets, including bank syncing through Plaid.'
+USED = dict(trial_used_at=lambda: _now() - 60 * DAY)
+
 ACCOUNT_STATES = {
-    'never subscribed': (None, 'Not subscribed', ['subscribe'], 'Sync your bank accounts in the desktop app through Plaid.'),
-    'checkout started': (dict(status=None), 'Not subscribed', ['subscribe'], 'Sync your bank accounts'),
-    'active': (dict(status='active', current_period_end=lambda: _now() + 20 * DAY), 'Active', ['manage'], 'Renews on {end}.'),
-    'trialing': (dict(status='trialing', current_period_end=lambda: _now() + 5 * DAY), 'Trial', ['manage'], 'Renews on {end}.'),
+    'never subscribed': (None, 'Not subscribed', ['subscribe'], PITCH),
+    'checkout started': (dict(status=None), 'Not subscribed', ['subscribe'], PITCH),
+    'active': (dict(status='active', current_period_end=lambda: _now() + 20 * DAY, **USED), 'Active', ['manage'],
+               'Renews on {end}.'),
+    'trialing': (dict(status='trialing', current_period_end=lambda: _now() + 5 * DAY, **USED), 'Free trial', ['manage'],
+                 'Free trial: ends on {end}, then $8.99/month.'),
+    'trial canceled': (dict(status='trialing', cancel_at_period_end=True, current_period_end=lambda: _now() + 5 * DAY,
+                            **USED),
+                       'Free trial', ['manage'], "Free trial: ends on {end}. You won't be charged, and the app stays on until then."),
     'ending': (dict(status='active', cancel_at_period_end=True, current_period_end=lambda: _now() + 9 * DAY),
-               'Active', ['manage'], 'Ends on {end}. Bank syncing stays on until then.'),
+               'Active', ['manage'], 'Ends on {end}. The app stays on until then.'),
     'past due, in grace': (dict(status='past_due', current_period_start=lambda: _now() - 2 * DAY),
-                           'Payment failed', ['manage'], 'Update your payment method by {grace} to keep bank syncing.'),
+                           'Payment failed', ['manage'], 'Update your payment method by {grace} to keep using the app.'),
     'past due, grace over': (dict(status='past_due', current_period_start=lambda: _now() - 10 * DAY),
-                             'Payment failed', ['manage'], 'Bank syncing is paused until your payment method is updated.'),
+                             'Payment failed', ['manage'], 'The app is paused until your payment method is updated.'),
     'canceled, paid time left': (dict(status='canceled', cancellation_reason='cancellation_requested',
                                       current_period_end=lambda: _now() + 4 * DAY),
-                                 'Canceled', ['manage', 'subscribe'], 'Bank syncing stays on until {end}.'),
+                                 'Canceled', ['manage', 'subscribe'], 'The app stays on until {end}.'),
     'canceled, over': (dict(status='canceled', cancellation_reason='cancellation_requested',
                             current_period_end=lambda: _now() - DAY),
-                       'Not subscribed', ['manage', 'subscribe'], 'Sync your bank accounts'),
+                       'Not subscribed', ['manage', 'subscribe'], PITCH),
     'canceled for non-payment': (dict(status='canceled', cancellation_reason='payment_failed',
                                       current_period_end=lambda: _now() + 20 * DAY),
-                                 'Not subscribed', ['manage', 'subscribe'], 'Sync your bank accounts'),
-    'unpaid': (dict(status='unpaid'), 'Unpaid', ['manage'], 'Bank syncing is paused. Use Manage subscription to fix your payment.'),
-    'incomplete': (dict(status='incomplete'), 'Incomplete', ['manage'], 'Bank syncing is paused.'),
+                                 'Not subscribed', ['manage', 'subscribe'], PITCH),
+    'unpaid': (dict(status='unpaid'), 'Unpaid', ['manage'], 'The app is paused. Use Manage subscription to fix your payment.'),
+    'incomplete': (dict(status='incomplete'), 'Incomplete', ['manage'], 'The app is paused.'),
 }
 
 
@@ -141,13 +149,16 @@ def test_account_page_for_each_state(stripe_app, name):
     assert note in page
     assert ('action="/billing/portal"' in page) is ('manage' in buttons)
     assert ('action="/billing/checkout"' in page) is ('subscribe' in buttons)
+    if badge in ('Active', 'Free trial'):
+        assert 'Workbench Budgeting, $8.99/month (includes bank syncing)' in page
+    assert 'Bank syncing' not in page
 
 
 def test_account_page_without_stripe_has_no_billing_buttons(accounts_app, make_user):
     make_user(email='payer@example.com', password='correct horse battery')
     page = logged_in_client(accounts_app).get('/account').data
     assert b'/billing/' not in page
-    assert b'Bank syncing subscriptions are coming soon.' in page
+    assert b'Subscriptions are coming soon.' in page
 
 
 # --- Customer Portal ---

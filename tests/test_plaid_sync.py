@@ -304,5 +304,5 @@ def test_402_after_subscription_lapses(plaid_app, linked, fake_transactions):
     with plaid_app.app_context():
         db.session.scalar(db.select(Subscription)).status = 'unpaid'
         db.session.commit()
-    assert_api_error(sync(plaid_app, linked), 402, 'plaid_access_required')
+    assert_api_error(sync(plaid_app, linked), 402, 'subscription_required')
     assert fake_transactions.calls == []

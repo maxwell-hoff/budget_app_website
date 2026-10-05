@@ -8,7 +8,7 @@ from werkzeug.exceptions import HTTPException
 
 from app_auth import clean_device_name, create_app_session, find_app_session, redeem_auth_code
 from auth import external_url
-from billing import has_plaid_access
+from billing import access_until, has_paid_access, trial_available
 from extensions import db, limiter
 from models import as_utc, utcnow
 
@@ -118,7 +118,9 @@ def me():
         }
     return jsonify(
         user={'id': user.id, 'email': user.email, 'email_verified': user.email_verified_at is not None},
-        plaid_access=has_plaid_access(user),
+        paid_access=has_paid_access(user),
+        access_until=iso_utc(access_until(user)),
+        trial_available=trial_available(user),
         subscription=subscription,
         account_url=external_url('account.account'),
     )
