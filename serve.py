@@ -14,6 +14,7 @@ import billing
 import google_auth
 import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
 import plaid_api
+import plaid_webhook
 from config import BASE_DIR, load_config
 from extensions import db, limiter, login_manager, migrate
 
@@ -101,6 +102,7 @@ def create_app(test_config=None):
             app.register_blueprint(billing.bp)
         if app.config['PLAID_ENABLED']:
             app.register_blueprint(plaid_api.bp)
+            app.register_blueprint(plaid_webhook.bp)
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)

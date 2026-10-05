@@ -4,10 +4,12 @@ from datetime import timedelta
 from functools import wraps
 
 import certifi
+import click
 import plaid
 import urllib3
 from cryptography.fernet import Fernet, MultiFernet
 from flask import Blueprint, current_app, g, jsonify, request
+from flask.cli import with_appcontext
 from plaid.api import plaid_api
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
@@ -21,9 +23,9 @@ from plaid.model.transactions_get_request_options import TransactionsGetRequestO
 from werkzeug.exceptions import HTTPException
 
 from api import api_error, iso_utc, json_http_error, require_app_session
-from billing import has_plaid_access
+from billing import has_plaid_access, subscription_ended
 from extensions import db, limiter
-from models import PlaidItem, utcnow
+from models import PlaidItem, User, utcnow
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +37,12 @@ TRANSACTIONS_DAYS_REQUESTED = 730
 # /item/remove errors that mean the Item is already gone at Plaid.
 ITEM_GONE_ERRORS = frozenset({'ITEM_NOT_FOUND', 'INVALID_ACCESS_TOKEN'})
 PUBLIC_TOKEN_ERRORS = frozenset({'INVALID_PUBLIC_TOKEN'})
-# The user has to sign in to the bank again (update-mode Link, step 13).
+# The user has to sign in to the bank again (update-mode Link).
 RELINK_ERRORS = frozenset({'ITEM_LOGIN_REQUIRED'})
+# ok: syncing works. relink_recommended: it still works, but the bank's consent ends soon
+# (a successful sync doesn't clear this; relink-complete does). relink_required: sync
+# fails until the user goes through update mode. error: the Item is gone; remove and re-add.
+RELINK_STATUSES = frozenset({'relink_required', 'relink_recommended'})
 # Plaid is still pulling the first batch of history, typically for a few seconds after linking.
 NOT_READY_ERRORS = frozenset({'PRODUCT_NOT_READY'})
 NOT_READY_RETRY_AFTER = 10
@@ -61,6 +67,7 @@ def init_plaid(app):
             raise RuntimeError(f"PLAID_ENVIRONMENT must be one of {', '.join(PLAID_ENVIRONMENTS)}.")
         # Fails at startup, not on the first bank link, if the key is malformed.
         app.extensions['plaid_fernet'] = token_cipher(app.config['PLAID_TOKEN_KEY'])
+        app.cli.add_command(remove_lapsed_command)
 
 
 # --- Access token encryption ---
@@ -92,15 +99,40 @@ def _plaid():
     return plaid_api.PlaidApi(plaid.ApiClient(configuration))
 
 
-def create_link_token(user):
-    response = _plaid().link_token_create(LinkTokenCreateRequest(
+def webhook_url():
+    # Only from PUBLIC_BASE_URL: a URL built from the request's Host header could point
+    # Plaid's webhooks at someone else's server.
+    base = current_app.config.get('PUBLIC_BASE_URL')
+    return f'{base}/plaid/webhook' if base else None
+
+
+def _link_token_request(user, **fields):
+    webhook = webhook_url()
+    if webhook:
+        fields['webhook'] = webhook
+    return LinkTokenCreateRequest(
         user=LinkTokenCreateRequestUser(client_user_id=str(user.id)),
         client_name='Workbench Budgeting',
-        products=[Products('transactions')],
-        transactions=LinkTokenTransactions(days_requested=TRANSACTIONS_DAYS_REQUESTED),
         country_codes=[CountryCode('US')],
         language='en',
+        **fields,
+    )
+
+
+def create_link_token(user):
+    response = _plaid().link_token_create(_link_token_request(
+        user,
+        products=[Products('transactions')],
+        transactions=LinkTokenTransactions(days_requested=TRANSACTIONS_DAYS_REQUESTED),
     ), _request_timeout=PLAID_TIMEOUT)
+    return response.link_token, response.expiration
+
+
+def create_update_link_token(user, access_token):
+    """Update mode: Link signs the user back in to an existing Item (no products, no exchange)."""
+    response = _plaid().link_token_create(
+        _link_token_request(user, access_token=access_token), _request_timeout=PLAID_TIMEOUT,
+    )
     return response.link_token, response.expiration
 
 
@@ -157,11 +189,11 @@ def plaid_error_code(exc):
 PLAID_ERROR_MESSAGE = 'Our bank connection provider had a problem. Please try again in a few minutes.'
 
 
-def log_plaid_failure(exc, action):
+def log_plaid_failure(exc, action, user_id=None):
     body = _error_body(exc)
     logger.warning(
         'Plaid %s failed for user %s: %s (request %s)',
-        action, g.user.id, body.get('error_code') or type(exc).__name__, body.get('request_id'),
+        action, user_id or g.user.id, body.get('error_code') or type(exc).__name__, body.get('request_id'),
     )
 
 
@@ -207,6 +239,61 @@ def _optional_string(value, max_length):
     return value.strip()[:max_length] or None
 
 
+def _own_item(item_id):
+    return db.session.scalar(db.select(PlaidItem).filter_by(user_id=g.user.id, item_id=item_id))
+
+
+def _mark_if_gone(item, exc):
+    """A Plaid call said the Item no longer exists there; it can only be removed and re-added."""
+    if plaid_error_code(exc) in ITEM_GONE_ERRORS:
+        item.status = 'error'
+        db.session.commit()
+
+
+# --- Removing Items (also used by billing and account deletion) ---
+
+def remove_items_at_plaid(items):
+    """Remove each item at Plaid (so Plaid stops billing for it), then here. Returns the
+    items that couldn't be removed; they're kept so a later attempt can retry. The caller
+    commits."""
+    failed = []
+    for item in items:
+        try:
+            remove_item(decrypt_token(item.access_token_encrypted))
+        except PLAID_ERRORS as exc:
+            if plaid_error_code(exc) not in ITEM_GONE_ERRORS:
+                log_plaid_failure(exc, 'item_remove', item.user_id)
+                failed.append(item)
+                continue
+        db.session.delete(item)
+    return failed
+
+
+def remove_items_if_subscription_ended(user):
+    """Called when a subscription changes; Plaid bills per Item, so lapsed users' Items go."""
+    if not user.plaid_items or not subscription_ended(user):
+        return []
+    items = list(user.plaid_items)
+    logger.info('Subscription ended for user %s; removing %d Plaid item(s)', user.id, len(items))
+    return remove_items_at_plaid(items)
+
+
+@click.command('plaid-remove-lapsed')
+@with_appcontext
+def remove_lapsed_command():
+    """Remove Plaid items of users whose subscription has ended (retries failed removals)."""
+    removed = failed = 0
+    for user in db.session.scalars(db.select(User).where(User.plaid_items.any())).all():
+        if not subscription_ended(user):
+            continue
+        count = len(user.plaid_items)
+        left = len(remove_items_at_plaid(list(user.plaid_items)))
+        db.session.commit()
+        removed += count - left
+        failed += left
+    click.echo(f'Removed {removed} item(s); {failed} failed and will be retried next time.')
+
+
 def _sync_item(item, days_back):
     """(result, None) on success, or (None, (status, code, message, headers)) on failure."""
     try:
@@ -222,9 +309,12 @@ def _sync_item(item, days_back):
                 503, 'plaid_not_ready', 'This bank is still loading its history. Try again in a few seconds.',
                 {'Retry-After': str(NOT_READY_RETRY_AFTER)},
             )
+        _mark_if_gone(item, exc)
         log_plaid_failure(exc, 'transactions_get')
         return None, (502, 'plaid_error', PLAID_ERROR_MESSAGE, None)
-    item.status = 'ok'
+    # A pending-expiration warning stays until the user re-links (relink-complete).
+    if item.status != 'relink_recommended':
+        item.status = 'ok'
     item.last_synced_at = utcnow()
     # Commit per item so a long multi-bank sync doesn't hold a transaction open across Plaid calls.
     db.session.commit()
@@ -332,11 +422,42 @@ def sync():
     return jsonify(items=results)
 
 
+@bp.route('/items/<item_id>/relink-token', methods=['POST'])
+@require_plaid_access
+@limiter.limit('30 per hour')
+def relink_token(item_id):
+    item = _own_item(item_id)
+    if item is None:
+        return api_error(404, 'not_found', 'No bank connection with that ID.')
+    try:
+        token, expiration = create_update_link_token(g.user, decrypt_token(item.access_token_encrypted))
+    except PLAID_ERRORS as exc:
+        _mark_if_gone(item, exc)
+        return plaid_failure(exc, 'link_token_create (update mode)')
+    return jsonify(link_token=token, expiration=iso_utc(expiration))
+
+
+@bp.route('/items/<item_id>/relink-complete', methods=['POST'])
+@require_plaid_access
+@limiter.limit('30 per hour')
+def relink_complete(item_id):
+    item = _own_item(item_id)
+    if item is None:
+        return api_error(404, 'not_found', 'No bank connection with that ID.')
+    # Update mode keeps the same access token, and Plaid sends no webhook when it succeeds
+    # in our app, so the client says so. If the bank still needs a login, the next sync
+    # sets relink_required again.
+    if item.status in RELINK_STATUSES:
+        item.status = 'ok'
+        db.session.commit()
+    return jsonify(item=item_json(item))
+
+
 @bp.route('/items/<item_id>', methods=['DELETE'])
 # Only a session: removing a bank stops Plaid billing, so a lapsed subscriber can still do it.
 @require_app_session
 def delete_item(item_id):
-    item = db.session.scalar(db.select(PlaidItem).filter_by(user_id=g.user.id, item_id=item_id))
+    item = _own_item(item_id)
     if item is None:
         return api_error(404, 'not_found', 'No bank connection with that ID.')
     try:
