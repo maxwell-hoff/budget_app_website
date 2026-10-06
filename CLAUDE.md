@@ -9,7 +9,7 @@ all Plaid API calls) used by the desktop app in `../budget_app`.
 ## Architecture
 
 ```
-serve.py → Flask app factory (create_app) + module-level `app`: pages, /download/<platform>, /notify, /healthz
+serve.py → Flask app factory (create_app) + module-level `app`: pages, legal pages (/privacy, /terms, /refunds; LEGAL_CONTACT_EMAIL, LEGAL_UPDATED), /download/<platform>, /notify, /healthz
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
 models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, AuthCode, AppSession)
@@ -31,7 +31,7 @@ scripts/stripe_trial_check.py → live check of the free trial in Stripe test mo
 scripts/check_sync_fixture_with_desktop.py → runs the desktop's unchanged Plaid ingest on a /v1/plaid/sync response (run with the desktop's Python)
 scripts/plaid_webhook_check.py → live check of /plaid/webhook with real sandbox webhooks (needs a public tunnel, e.g. cloudflared, to port 5001)
 docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_response.json)
-frontend/templates/ → index.html (landing page), about.html
+frontend/templates/ → index.html (landing page), about.html, legal/ (privacy, terms, refunds), _legal_links.html (footer links, included in every page's footer)
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
 render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
 docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription)

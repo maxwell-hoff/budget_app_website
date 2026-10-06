@@ -1,0 +1,202 @@
+{% extends "legal/base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+{% block description %}How Workbench Budgeting handles your information: your budgets stay on your computer, and the server keeps only what it needs for your account, subscription, and bank connections.{% endblock %}
+{% block heading %}Privacy Policy{% endblock %}
+{% block content %}
+<p>
+  Workbench Budgeting ("the app") is a desktop budgeting app made by Garden Studio ("we",
+  "us"). This policy explains what information we collect through the app and this website
+  (workbenchbudgeting.com), why, who we share it with, and the choices you have.
+</p>
+<p>
+  <strong>The short version:</strong> your budgets, transactions, and other financial data
+  are stored on your own computer, not on our servers. Our server keeps only what it needs
+  to run your account, your subscription, and your bank connections. We don't sell your
+  information, show ads, or use tracking cookies.
+</p>
+
+<h2>Information stored on your computer</h2>
+<p>
+  Everything you enter or import into the app (budgets, accounts, balances, transactions,
+  categories, and plans) is saved in a database on your computer. We don't receive a copy.
+  If you sign in, the app keeps your sign-in token and the result of its last subscription
+  check in your operating system's secure credential store (Keychain on macOS, Credential
+  Manager on Windows). Uninstalling the app doesn't delete your data; you can delete the
+  app's data folder yourself.
+</p>
+
+<h2>Information we collect</h2>
+<h3>Your account</h3>
+<ul>
+  <li>Your email address, and whether you have verified it.</li>
+  <li>
+    A password, stored only as a one-way hash. We can't see your password.
+  </li>
+  <li>
+    If you use "Sign in with Google": your Google account ID and the email address on it.
+    We ask Google only for your basic profile (name, email, and account ID) and don't
+    access your Gmail, contacts, files, or anything else in your Google account.
+  </li>
+  <li>
+    For each computer you sign in on: the device name the app reports (for example
+    "Max's MacBook"), when it signed in, and when it last checked in.
+  </li>
+</ul>
+
+<h3>Your subscription</h3>
+<p>
+  Payments are handled by Stripe. Your card details go directly to Stripe and never reach
+  our servers. We keep your Stripe customer ID and your subscription's status, renewal
+  date, and whether you've used your free trial.
+</p>
+
+<h3>Your bank connections</h3>
+<p>
+  Bank syncing uses Plaid. When you connect a bank, you sign in to your bank through
+  Plaid's window; we never see your bank username or password. Plaid gives our server an
+  access token for that connection, which we store encrypted. We also keep the bank's name,
+  the connection's status, and when it last synced.
+</p>
+<p>
+  When the app syncs, our server asks Plaid for your accounts (names, types, last four
+  digits of account numbers, and balances) and transactions (dates, amounts, descriptions,
+  merchants, and categories), and passes them straight to the app on your computer. We
+  don't store your accounts or transactions on our servers.
+</p>
+<p>
+  Plaid collects and processes your information under its own
+  <a href="https://plaid.com/legal/#end-user-privacy-policy" target="_blank" rel="noopener noreferrer">End User Privacy Policy</a>.
+  By connecting a bank, you allow Plaid to do so.
+</p>
+
+<h3>Emails</h3>
+<p>
+  We send emails needed for your account: verifying your email address, resetting your
+  password, and reminding you before a free trial ends. We don't send marketing emails
+  unless you ask for them. If you leave your email on our "notify me" form, we use it only
+  to tell you about the app.
+</p>
+
+<h3>Technical information</h3>
+<p>
+  Like most websites, our hosting provider records basic request logs, including IP
+  addresses, browser type, and the pages requested. We use them to keep the service
+  running and to limit abuse (for example, too many sign-in attempts). The app itself
+  doesn't send usage analytics.
+</p>
+
+<h2>Cookies</h2>
+<p>
+  The website uses one cookie, a session cookie that keeps you signed in and protects forms
+  from forgery. We don't use advertising or analytics cookies. Our pages load fonts from
+  Google Fonts, so your browser connects to Google when you visit; see
+  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a>.
+</p>
+
+<h2>How we use your information</h2>
+<ul>
+  <li>To create and secure your account and sign you in on the website and in the app.</li>
+  <li>To bill your subscription and tell the app whether it's active.</li>
+  <li>To connect and sync your banks.</li>
+  <li>To send the account emails described above and answer your questions.</li>
+  <li>To prevent fraud and abuse and meet legal obligations.</li>
+</ul>
+<p>We don't sell your personal information or share it for advertising.</p>
+
+<h2>Who we share it with</h2>
+<p>We share information only with the service providers that run parts of the service:</p>
+<ul>
+  <li>
+    <strong>Stripe</strong> (payments):
+    <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>
+  </li>
+  <li>
+    <strong>Plaid</strong> (bank connections):
+    <a href="https://plaid.com/legal/#end-user-privacy-policy" target="_blank" rel="noopener noreferrer">End User Privacy Policy</a>
+  </li>
+  <li>
+    <strong>Google</strong> (only if you use Sign in with Google):
+    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>
+  </li>
+  <li>
+    <strong>Render</strong> (website and database hosting):
+    <a href="https://render.com/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>
+  </li>
+  <li>
+    <strong>Resend</strong> (sending account emails):
+    <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>
+  </li>
+</ul>
+<p>
+  We may also disclose information if the law requires it, or to protect the rights and
+  safety of our users or the service. If Garden Studio is ever sold or merged, this
+  information would move with the service and stay covered by this policy.
+</p>
+
+<h2>Information from Google</h2>
+<p>
+  Our use of information received from Google follows the
+  <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>,
+  including its Limited Use requirements. We use it only to sign you in.
+</p>
+
+<h2>How long we keep it</h2>
+<ul>
+  <li>Account and subscription information: until you delete your account.</li>
+  <li>
+    Bank connections: until you remove them, your subscription ends, or you delete your
+    account. In each case we also disconnect the bank at Plaid.
+  </li>
+  <li>
+    Request logs: for a limited time set by our hosting provider.
+  </li>
+  <li>
+    Payment records: Stripe keeps records of charges as required by tax and financial
+    laws, even after your account is deleted.
+  </li>
+</ul>
+
+<h2>Your choices and rights</h2>
+<ul>
+  <li>
+    <strong>See and correct:</strong> your account page shows your email, sign-in methods,
+    and subscription. Email us to change anything you can't change there.
+  </li>
+  <li>
+    <strong>Delete:</strong> "Delete account" on your account page removes your account,
+    disconnects your banks at Plaid, and deletes your Stripe customer record. Data stored
+    on your computer is yours to keep or delete.
+  </li>
+  <li>
+    <strong>Disconnect a bank:</strong> remove it in the app at any time.
+  </li>
+  <li>
+    <strong>Ask us:</strong> you can request a copy of your information or ask any privacy
+    question by email. Depending on where you live (for example California, or the EU or
+    UK), you may have additional rights, such as to access, correct, delete, or move your
+    information, or to object to how it's used. We honor these requests for everyone, and
+    won't treat you differently for making one.
+  </li>
+</ul>
+
+<h2>Security</h2>
+<p>
+  All connections to our server are encrypted with HTTPS. Passwords are hashed, bank access
+  tokens are encrypted, and the app's sign-in token is kept in your system's secure
+  credential store. No system is perfectly secure, but we work to protect your information
+  and will tell you promptly if a breach affects it.
+</p>
+
+<h2>Children</h2>
+<p>
+  The service isn't meant for children under 13, and we don't knowingly collect their
+  information. If you believe a child has given us information, email us and we'll
+  delete it.
+</p>
+
+<h2>Changes to this policy</h2>
+<p>
+  If we change this policy, we'll update the date at the top. If a change is significant,
+  we'll also email account holders before it takes effect.
+</p>
+{% endblock %}
