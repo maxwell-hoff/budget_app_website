@@ -30,11 +30,12 @@ scripts/desktop_flow_check.py → live check of the desktop sign-in and /v1 API 
 scripts/stripe_trial_check.py → live check of the free trial in Stripe test mode with test clocks (needs a running local server and `stripe listen`)
 scripts/check_sync_fixture_with_desktop.py → runs the desktop's unchanged Plaid ingest on a /v1/plaid/sync response (run with the desktop's Python)
 scripts/plaid_webhook_check.py → live check of /plaid/webhook with real sandbox webhooks (needs a public tunnel, e.g. cloudflared, to port 5001)
+scripts/go_live_check.py → read-only preflight that the Stripe/Plaid/Google/Resend/database settings match the code (run in the Render Shell; --mode test for test mode and the sandbox)
 docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_response.json)
 frontend/templates/ → index.html (landing page), about.html, legal/ (privacy, terms, refunds), _legal_links.html (footer links, included in every page's footer)
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
 render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
-docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription)
+docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription); GO_LIVE.md is the step 18 dashboard checklist
 ```
 
 ## Running the App
