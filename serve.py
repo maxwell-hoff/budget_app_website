@@ -26,7 +26,7 @@ PLATFORM_FOLDERS = {
     'windows': 'windows',
 }
 
-LEGAL_CONTACT_EMAIL = 'support@workbenchbudgeting.com'
+LEGAL_CONTACT_EMAIL = 'max@gardenstudiosoftware.com'
 # Change whenever the wording of a legal page changes.
 LEGAL_UPDATED = 'October 6, 2026'
 

@@ -1,6 +1,8 @@
 import pytest
 from flask import Flask
 
+import serve
+
 
 def test_gunicorn_target_is_a_flask_app():
     import serve
@@ -31,14 +33,15 @@ def footer(html):
     ('/privacy', b'Privacy Policy', [b'plaid.com/legal/#end-user-privacy-policy', b'stored on your own computer',
                                      b'store your accounts or transactions on our servers', b'Limited Use']),
     ('/terms', b'Terms of Service', [b'$8.99 per month', b'Sample profile', b'one free week',
-                                     b'your card is charged $8.99', b'nothing on your computer is deleted']),
+                                     b'your card is charged $8.99', b'nothing on your computer is deleted',
+                                     b'laws of the State of Illinois']),
     ('/refunds', b'Refund Policy', [b'within 7 days of the charge', b"don't refund partial months"]),
 ])
 def test_legal_pages_render(client, path, heading, phrases):
     resp = client.get(path)
     assert resp.status_code == 200
     assert b'<h1 class="about-hero__title">' + heading + b'</h1>' in resp.data
-    assert b'support@workbenchbudgeting.com' in resp.data
+    assert f'mailto:{serve.LEGAL_CONTACT_EMAIL}'.encode() in resp.data
     assert b'Last updated' in resp.data
     for phrase in phrases:
         assert phrase in resp.data, phrase
