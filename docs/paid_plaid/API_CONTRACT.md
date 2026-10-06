@@ -345,7 +345,8 @@ Typical flow: sync → 409 → `relink-token` → Link (update mode) → `relink
 With `BUDGET_APP_CLOUD` on, the desktop's local Plaid routes call these endpoints
 instead of Plaid (`backend/cloud_plaid.py`); the desktop never sees an access token.
 - A linked bank is a local `plaid_connections` row with `token_label` `cloud:<item_id>`.
-  Rows linked before (direct-path tokens) keep the direct path until step 16 re-links them.
+  Rows linked before (direct-path tokens) keep the direct path until the user moves them
+  (step 16, below).
 - Link: `link-token` → Plaid Link → `exchange` (with `institution` built from Link's
   metadata) → `sync` for that item right away (retrying `plaid_not_ready` up to 4 times,
   waiting `Retry-After`, at most 10 s) → one more `sync` about 45 s later to pick up
@@ -362,6 +363,15 @@ instead of Plaid (`backend/cloud_plaid.py`); the desktop never sees an access to
   row is kept and the error shown.
 - 401 or 402 from any of these → the desktop refreshes its entitlement and answers its
   own UI with 402 `subscription_required`, which opens the lock screen (step 14a).
+
+#### How the desktop moves old connections (step 16; no server change)
+A bank linked before the cloud (a direct-path token on the user's computer) is moved by
+linking it again as a new Item: `link-token` → Plaid Link (normal mode, not update mode)
+→ `exchange` → `sync`, the same calls as a new bank. The server never receives the old
+access token. Afterwards the desktop removes the old Item at Plaid itself, with the
+user's own `.env` keys, and deletes the old local row; existing transactions stay, and
+the new Item's syncs don't duplicate them. If Link returns a different institution, the
+new Item is kept as an extra bank and the old one is left alone.
 
 ### Shared objects
 
