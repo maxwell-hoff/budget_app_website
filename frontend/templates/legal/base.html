@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
     <title>{% block title %}{% endblock %} · Workbench Budgeting</title>
+    <meta name="description" content="{% block description %}{% endblock %}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,7 +13,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}" />
   </head>
   <body>
     <nav class="nav">
@@ -37,27 +36,32 @@
           <a href="/#how-it-works">How it works</a>
           <a href="/#philosophy">Philosophy</a>
           <a href="/#pricing">Pricing</a>
-          <a href="/about">About</a>
-          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('account.account') }}"{% if request.endpoint == 'account.account' %} aria-current="page"{% endif %}>Account</a>
-          {% endif %}
+          <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}
+          <a href="/account">Account</a>{% endif %}
           <a href="/#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>
     </nav>
 
-    <main class="auth">
-      <div class="auth-card{% block card_class %}{% endblock %}">
-        <div class="auth-card__bar">
-          <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
-          <span class="auth-card__name">{% block card_name %}{% endblock %}</span>
-        </div>
-        <div class="auth-card__body">
-          {% for message in get_flashed_messages() %}
-            <p class="auth-form__notice" role="status">{{ message }}</p>
-          {% endfor %}
+    <header class="about-hero">
+      <div class="wrap">
+        <span class="kicker">Legal</span>
+        <h1 class="about-hero__title">{% block heading %}{% endblock %}</h1>
+        <p class="legal__updated">Last updated {{ legal_updated }}</p>
+      </div>
+    </header>
+
+    <main class="section legal">
+      <div class="wrap">
+        <article class="legal__body">
           {% block content %}{% endblock %}
-        </div>
+          <h2>Contact</h2>
+          <p>
+            Questions about this page? Email
+            <a href="mailto:{{ legal_contact_email }}">{{ legal_contact_email }}</a>.
+            Workbench Budgeting is made by Garden Studio, a one-person software shop.
+          </p>
+        </article>
       </div>
     </main>
 
@@ -92,6 +96,9 @@
         toggle.addEventListener("click", (e) => {
           e.stopPropagation();
           setOpen(!nav.classList.contains("is-open"));
+        });
+        links.addEventListener("click", (e) => {
+          if (e.target.closest("a")) setOpen(false);
         });
         document.addEventListener("click", (e) => {
           if (nav.classList.contains("is-open") && !nav.contains(e.target)) setOpen(false);

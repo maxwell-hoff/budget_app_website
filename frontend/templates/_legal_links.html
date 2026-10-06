@@ -1,0 +1,5 @@
+<nav class="footer__legal" aria-label="Legal">
+  <a href="{{ url_for('privacy') }}"{% if request.endpoint == 'privacy' %} aria-current="page"{% endif %}>Privacy</a>
+  <a href="{{ url_for('terms') }}"{% if request.endpoint == 'terms' %} aria-current="page"{% endif %}>Terms</a>
+  <a href="{{ url_for('refunds') }}"{% if request.endpoint == 'refunds' %} aria-current="page"{% endif %}>Refunds</a>
+</nav>

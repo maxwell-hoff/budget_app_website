@@ -1,0 +1,63 @@
+{% extends "legal/base.html" %}
+{% block title %}Refund Policy{% endblock %}
+{% block description %}Workbench Budgeting's refund policy: cancel any time, try it free for a week, and ask within 7 days if a charge was a mistake.{% endblock %}
+{% block heading %}Refund Policy{% endblock %}
+{% block content %}
+<p>
+  Workbench Budgeting is a $8.99/month subscription with a free first week. This page
+  explains how canceling and refunds work. It's part of our
+  <a href="{{ url_for('terms') }}">Terms of Service</a>.
+</p>
+
+<h2>Try it first</h2>
+<p>
+  The Sample profile in the app is free, with no account needed. New subscribers also get
+  one free week with full access. If you cancel before the week ends, you're never
+  charged. We email you a reminder a few days before the trial ends.
+</p>
+
+<h2>Canceling</h2>
+<p>
+  Cancel any time from your account page ("Manage subscription"). You keep access until the
+  end of the period you've already paid for, and you won't be charged again. Your data stays
+  on your computer.
+</p>
+
+<h2>Refunds</h2>
+<ul>
+  <li>
+    <strong>Charged by mistake?</strong> If you forgot to cancel a trial or a renewal, email
+    us within 7 days of the charge and we'll refund it in full and cancel the subscription.
+  </li>
+  <li>
+    <strong>Billing errors</strong>, such as a duplicate charge or a charge after you
+    canceled, are always refunded in full.
+  </li>
+  <li>
+    Otherwise, we don't refund partial months. When you cancel, you keep access until the end
+    of the period instead.
+  </li>
+  <li>
+    If we stop offering the service, we'll refund any period you've paid for but won't get
+    to use.
+  </li>
+</ul>
+
+<h2>Deleting your account</h2>
+<p>
+  Deleting your account cancels your subscription immediately, and the rest of the current
+  period isn't refunded automatically. If you were charged within the last 7 days and want
+  a refund, email us before deleting your account so we can find the charge.
+</p>
+
+<h2>How to ask for a refund</h2>
+<p>
+  Email <a href="mailto:{{ legal_contact_email }}">{{ legal_contact_email }}</a> from the
+  address on your account, with the date of the charge. Refunds go back to the card you
+  paid with, through Stripe, and usually show up within 5 to 10 business days. Please
+  contact us before disputing a charge with your bank; we can usually fix it faster.
+</p>
+<p>
+  This policy doesn't limit any rights you have under the consumer laws where you live.
+</p>
+{% endblock %}

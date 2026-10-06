@@ -2267,6 +2267,68 @@ body::before {
   height: 0.85rem;
   flex-shrink: 0;
 }
+.footer__legal {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.footer__legal a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+.footer__legal a:hover,
+.footer__legal a[aria-current="page"] {
+  color: #fff;
+}
+
+/* ============================================================
+   Legal pages (/privacy, /terms, /refunds)
+   ============================================================ */
+.legal__updated {
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.legal__body {
+  max-width: 70ch;
+  color: var(--ink-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.legal__body h2 {
+  margin: 2.4rem 0 0.8rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 2.4vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.legal__body h3 {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.legal__body p,
+.legal__body ul {
+  margin: 0 0 1rem;
+}
+.legal__body ul {
+  padding-left: 1.25rem;
+}
+.legal__body li {
+  margin-bottom: 0.45rem;
+}
+.legal__body strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.legal__body a {
+  color: var(--accent);
+  text-underline-offset: 2px;
+}
 
 /* ============================================================
    About page (/about)

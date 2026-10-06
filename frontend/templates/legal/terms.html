@@ -1,0 +1,181 @@
+{% extends "legal/base.html" %}
+{% block title %}Terms of Service{% endblock %}
+{% block description %}The terms for using Workbench Budgeting: one $8.99/month subscription for the whole app, a free week to try it, and what happens to your data if you stop.{% endblock %}
+{% block heading %}Terms of Service{% endblock %}
+{% block content %}
+<p>
+  These terms are an agreement between you and Garden Studio ("we", "us") for the
+  Workbench Budgeting desktop app ("the app"), this website, and the online account and
+  bank syncing services behind them (together, "the service"). By downloading the app,
+  creating an account, or subscribing, you agree to these terms and to our
+  <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+</p>
+
+<h2>What you get</h2>
+<p>
+  One subscription, <strong>$8.99 per month</strong> (US dollars, plus any applicable
+  sales tax), unlocks the whole app, including bank syncing. There are no separate tiers
+  or add-ons.
+</p>
+<p>
+  The app comes with a <strong>Sample profile</strong> filled with example data. It's free
+  to use without an account or subscription, so you can try the app before paying. Your
+  own profiles (your own budgets and data) need an active subscription. The Sample profile
+  can't connect banks.
+</p>
+<p>
+  Versions of the app released before subscriptions were introduced keep working as they
+  did, free of charge; the subscription terms below apply to versions that offer
+  sign-in.
+</p>
+
+<h2>Your account</h2>
+<ul>
+  <li>You must be at least 18 (or the age of majority where you live) to subscribe.</li>
+  <li>
+    Give us an email address you can receive mail at, keep your password private, and
+    tell us if you think someone else has used your account.
+  </li>
+  <li>
+    You're responsible for what happens under your account. One account is for one
+    person; don't share it.
+  </li>
+</ul>
+
+<h2>Free trial</h2>
+<ul>
+  <li>
+    New subscribers get <strong>one free week</strong>, with full access to the app,
+    including bank syncing.
+  </li>
+  <li>
+    You need to enter a card to start the trial. You won't be charged during the trial.
+  </li>
+  <li>
+    <strong>When the trial ends, your card is charged $8.99 and the subscription renews
+    monthly</strong>, unless you cancel before the trial ends. We email you a reminder a
+    few days before it ends.
+  </li>
+  <li>
+    If you cancel during the trial, you keep access until the trial's end and are never
+    charged.
+  </li>
+  <li>
+    One free trial per person. Canceling a trial doesn't give you another one, and making
+    extra accounts to get more trials isn't allowed.
+  </li>
+</ul>
+
+<h2>Billing and renewal</h2>
+<ul>
+  <li>
+    Your subscription renews automatically every month, and your card is charged $8.99 at
+    the start of each period, until you cancel. Payments are processed by Stripe.
+  </li>
+  <li>
+    <strong>Cancel any time</strong> from your account page ("Manage subscription"). You
+    keep access until the end of the period you've paid for, and you won't be charged
+    again.
+  </li>
+  <li>
+    If a renewal payment fails, you keep access for 7 days while you update your card.
+    After that, the app locks until payment goes through.
+  </li>
+  <li>
+    If we ever change the price, we'll email you at least 30 days before it applies to
+    you, and you can cancel before then.
+  </li>
+  <li>
+    Refunds are covered by our <a href="{{ url_for('refunds') }}">Refund Policy</a>.
+  </li>
+</ul>
+
+<h2>Your data</h2>
+<p>
+  Your budgets, transactions, and other data are stored on your own computer and belong to
+  you. We don't have a copy, so back up your computer; we can't restore data you lose.
+</p>
+<p>
+  <strong>If your subscription ends</strong>, nothing on your computer is deleted. Your own
+  profiles stay on your computer, locked, and open again with all their data when you
+  resubscribe. The Sample profile stays available. Your bank connections are disconnected
+  at Plaid when the subscription ends, so after resubscribing you'll need to connect your
+  banks again; transactions you already have aren't affected.
+</p>
+<p>
+  The app checks your subscription with our server from time to time. If it can't reach
+  the server, it keeps working for up to 3 days past the end of the period you've paid for.
+</p>
+
+<h2>Bank syncing</h2>
+<ul>
+  <li>
+    Bank syncing uses Plaid. By connecting a bank you authorize us and Plaid to access your
+    account information at that bank, as described in our
+    <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+  </li>
+  <li>You can connect up to 10 banks.</li>
+  <li>
+    Banks sometimes need you to sign in again, change what they share, or stop working with
+    Plaid. We can't guarantee that every bank will connect or that synced data will be
+    complete, accurate, or up to date. Check important numbers against your bank.
+  </li>
+</ul>
+
+<h2>Not financial advice</h2>
+<p>
+  The app is a tool for organizing and planning your own money. Nothing in it is
+  financial, investment, tax, or legal advice. Decisions you make with it are your own.
+</p>
+
+<h2>Acceptable use</h2>
+<p>You agree not to:</p>
+<ul>
+  <li>Get around the subscription, the free-trial limit, or other access controls.</li>
+  <li>Connect bank accounts you aren't authorized to access.</li>
+  <li>
+    Interfere with, overload, or try to break into the service, or use it to break the law.
+  </li>
+  <li>Resell, rent, or redistribute the service.</li>
+</ul>
+<p>
+  The app is licensed to you, not sold. You may install it on your own computers for your
+  personal use while you follow these terms. Garden Studio keeps all rights to the app,
+  the website, and the Workbench Budgeting name.
+</p>
+
+<h2>Ending your account</h2>
+<p>
+  You can delete your account at any time from your account page. Deleting it cancels any
+  subscription immediately, disconnects your banks, and removes your account from our
+  server; data on your computer stays there.
+</p>
+<p>
+  We may suspend or close an account that breaks these terms, after telling you why when we
+  reasonably can. If we ever stop offering the service, we'll give you at least 30 days'
+  notice and refund any period you've paid for but won't get to use.
+</p>
+
+<h2>Disclaimers</h2>
+<p>
+  The service is provided "as is" and "as available". To the fullest extent the law allows,
+  we make no warranties, express or implied, including that the service will be
+  uninterrupted, error-free, or fit for a particular purpose.
+</p>
+
+<h2>Limitation of liability</h2>
+<p>
+  To the fullest extent the law allows, Garden Studio won't be liable for any indirect,
+  incidental, special, or consequential damages, or for lost data, profits, or savings,
+  arising from your use of the service. Our total liability for any claim is limited to the
+  amount you paid us in the 12 months before the claim. Some places don't allow these
+  limits, so they may not all apply to you.
+</p>
+
+<h2>Changes to these terms</h2>
+<p>
+  We may update these terms. We'll change the date at the top, and for significant changes
+  we'll email account holders at least 14 days before they take effect. If you keep using
+  the service after that, the new terms apply; if you don't agree, cancel before then.
+</p>
+{% endblock %}

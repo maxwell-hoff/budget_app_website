@@ -26,6 +26,10 @@ PLATFORM_FOLDERS = {
     'windows': 'windows',
 }
 
+LEGAL_CONTACT_EMAIL = 'support@workbenchbudgeting.com'
+# Change whenever the wording of a legal page changes.
+LEGAL_UPDATED = 'October 6, 2026'
+
 
 def index():
     return render_template('index.html')
@@ -33,6 +37,24 @@ def index():
 
 def about():
     return render_template('about.html')
+
+
+def render_legal(page):
+    return render_template(
+        f'legal/{page}.html', legal_contact_email=LEGAL_CONTACT_EMAIL, legal_updated=LEGAL_UPDATED,
+    )
+
+
+def privacy():
+    return render_legal('privacy')
+
+
+def terms():
+    return render_legal('terms')
+
+
+def refunds():
+    return render_legal('refunds')
 
 
 def download(platform):
@@ -106,6 +128,9 @@ def create_app(test_config=None):
 
     app.add_url_rule('/', view_func=index)
     app.add_url_rule('/about', view_func=about)
+    app.add_url_rule('/privacy', view_func=privacy)
+    app.add_url_rule('/terms', view_func=terms)
+    app.add_url_rule('/refunds', view_func=refunds)
     app.add_url_rule('/download/<platform>', view_func=download)
     app.add_url_rule('/notify', view_func=notify, methods=['POST'])
     app.add_url_rule('/healthz', view_func=healthz)
