@@ -438,8 +438,8 @@ flowchart LR
   $8.99/month when it ends unless canceled first), what happens to local data when a subscription ends (kept on the
   user's computer, locked until they resubscribe), and the refund policy.
 - **Done when:** Pages render and are linked from every page footer.
-- **Status:** done (wording awaiting your review; see the step 17 handoff note)
-- **PR:** — (branch `feature/mhoff/legal_pages_20261006`, pushed; open the PR against `main` and paste its link here)
+- **Status:** done
+- **PR:** [#56](https://github.com/maxwell-hoff/budget_app_website/pull/56) (merged)
 
 ### 18. Go live with Stripe, Plaid, and Google (manual — you)
 - **Repo:** — (dashboards)
@@ -457,8 +457,10 @@ flowchart LR
 - **Done when:** With `ACCOUNTS_ENABLED` turned on briefly for yourself (or on a
   staging service), a real $8.99 subscription unlocks the app and a real bank link
   works in production.
-- **Status:** todo
-- **PR:** —
+- **Checklist:** [GO_LIVE.md](GO_LIVE.md), with `scripts/go_live_check.py` (read-only
+  preflight, run in the Render Shell) to confirm the dashboards match the code.
+- **Status:** in-progress (checklist and preflight merged with the PR below; the dashboard work and the live test are yours)
+- **PR:** — (branch `feature/mhoff/go_live_20261006`, pushed; open the PR against `main` and paste its link here)
 
 ### 19. Launch
 - **Repo:** both (one PR in each, plus a production env change)
@@ -599,6 +601,9 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-06 — The terms describe the subscription as it will be after step 19 but stay true before it: versions of the app released before subscriptions "keep working as they did, free of charge". So the pages don't need editing at launch, even though the landing page still says "Free to use" until step 19 changes it.
 - 2026-10-06 — Draft refund policy (for review): cancel any time and keep access to the end of the period; no refunds for partial months; a mistaken charge (forgot to cancel a trial or renewal) is refunded in full if the user emails within 7 days; billing errors are always refunded; deleting the account cancels immediately with no automatic refund (matching `POST /account/delete`), so users should ask before deleting; if the service shuts down, unused paid time is refunded. Refunds are issued by hand in the Stripe dashboard; there's no refund code.
 - 2026-10-06 — Draft commitments in the terms and privacy policy (for review): 18+ to subscribe; the service isn't for children under 13; 30 days' email notice before a price change; 14 days' email notice before significant changes to the terms (privacy: email before significant changes); 30 days' notice and a refund of unused time if the service shuts down; liability capped at what the user paid in the last 12 months. Garden Studio is based in Illinois, so the terms are governed by Illinois law, ask users to email first, and send unresolved disputes to the state or federal courts in Illinois (no arbitration clause or class-action waiver); consumer laws that can't be waived abroad still apply.
+- 2026-10-06 — Stripe live mode's failed-payment setting is "cancel the subscription" after Smart Retries, not "mark as unpaid" — the server keeps banks connected while `unpaid` (a payment can still restore access), so `unpaid` would leave Plaid billing for non-payers indefinitely; `canceled` removes their banks (step 13).
+- 2026-10-06 — Step 18's end-to-end test runs in production with `ACCOUNTS_ENABLED` on for a short window, not on a staging service — the account pages aren't linked for logged-out visitors, and staging would need its own domain, Google redirect URI, Stripe webhook, and database. The desktop side uses a throwaway `--db-path` with the `~/.zshrc` Plaid variables unset, so the real budget and its direct-path bank aren't touched.
+- 2026-10-06 — Go-live settings are verified by `scripts/go_live_check.py`, a read-only preflight run in the Render Shell (so live secrets never leave Render). Its expectations come from the code where possible (the webhook events are `billing._HANDLERS`), and `--mode test` runs the same checks against test mode and the sandbox.
 
 ## Handoff notes
 
@@ -611,6 +616,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-06 — step 18 (prep) — budget_app_website — feature/mhoff/go_live_20261006
+- Done: Step 17's PR line set to [#56](https://github.com/maxwell-hoff/budget_app_website/pull/56) (merged); step 16 was already #121 (merged). New `docs/paid_plaid/GO_LIVE.md`: the step 18 checklist in order (Plaid production first because its review is slowest, with a security-questionnaire cheat sheet drawn from the code; Google Auth Platform branding, scopes, publishing, and the production client; Stripe live account, public details, product copy with tax code, portal, failed-payment setting, receipts, the seven-event webhook, keys; Resend; the Render env var table; the preflight; the end-to-end test; turning accounts back off; an optional daily Render Cron Job for `flask plaid-remove-lapsed`). New `scripts/go_live_check.py`: read-only preflight of config, database and migrations, Stripe (key mode, account, price, product name and tax code, webhook endpoint and events, portal), Plaid (environment, keys via the unbilled `/institutions/get`, `PLAID_TOKEN_KEY`, stored tokens decrypt), Google (credential format), Resend (sender domain verified), and the public pages; exits 1 on any failure. No app code or endpoint changed, so `API_CONTRACT.md` is unchanged; `CLAUDE.md` lists the script and checklist. Tests: `tests/test_go_live_check.py` (29, fake Stripe/Plaid/Resend/HTTP). Full suite: 646 passed. Live run of `python scripts/go_live_check.py --mode test` against your test-mode Stripe and the Plaid sandbox: 0 failed, 7 warnings (expected locally: no `SECRET_KEY`, console email, no test-mode webhook endpoint since `stripe listen` is used, the test account can't take payments or receive payouts, and the test-mode portal has no privacy/terms links). It also confirmed production serves `/healthz`, `/privacy`, `/terms`, `/refunds` with 200 and `/login` 404s (accounts off).
+- Not done / follow-ups: All of step 18's dashboard work and its live test (yours; `GO_LIVE.md`). Step 16's manual check is still open. Before step 19, consider the cron job (part 9 of `GO_LIVE.md`).
+- Manual actions needed: Follow `GO_LIVE.md` parts 1–8. Start with the Plaid team choice and production application. Run `python scripts/go_live_check.py` in the Render Shell after setting the env vars; when the end-to-end test passes and accounts are off again, set step 18 to `done`. Open the PR (`feature/mhoff/go_live_20261006` → `main`) and paste its URL into step 18's PR line; merging it is safe any time (docs, a script, and tests only).
+- Next step: finish 18 (manual), then 19 (launch).
 
 ### 2026-10-06 — step 17 — budget_app_website — feature/mhoff/legal_pages_20261006
 - Done: Step 16's PR line set to [budget_app #121](https://github.com/maxwell-hoff/budget_app/pull/121) (merged); step 15's already pointed to #120. New public routes `/privacy`, `/terms`, `/refunds` in `serve.py` (not behind `ACCOUNTS_ENABLED`), rendered from `frontend/templates/legal/` on a shared layout (`legal/base.html`, the About page's look, a "Last updated" line, and a Contact section). `_legal_links.html` adds Privacy · Terms · Refunds to the footer of every page (landing, About, every account page, the legal pages; the current page is marked). New `.footer__legal` and `.legal__*` styles in `styles.css`. Content, drafted from what the code actually does: the privacy policy (data stays on the user's computer; what the server keeps for the account, Google sign-in, Stripe, and Plaid; transactions pass through and aren't stored; the one session cookie; Google Fonts; the service providers with links, including Plaid's End User Privacy Policy and Google's Limited Use statement; retention; rights; deletion), the terms ($8.99/month for the whole app, bank syncing included, the free Sample profile, the free week with a card and the $8.99 charge unless canceled, one trial per person, renewal and cancellation, the 7-day grace for a failed payment, local data kept and locked when a subscription ends and banks disconnected, the 3-day offline grace, up to 10 banks, not financial advice, acceptable use, disclaimers, liability), and the refund policy (see the Decisions log). `API_CONTRACT.md` lists the three pages in the server-only table; `CLAUDE.md` mentions them. Tests: 8 new in `tests/test_pages.py` (each page renders with its key terms, the contact email, no `noindex`, and its own footer link marked current; public with accounts on; every HTML GET page found in `app.url_map`, with accounts off, on and signed out, and signed in, plus a 400 page, has all three footer links). Full suite: 617 passed (the live Plaid sandbox tests need network access). Checked in a browser at desktop and phone widths: the three pages and the footers on the landing and login pages.
