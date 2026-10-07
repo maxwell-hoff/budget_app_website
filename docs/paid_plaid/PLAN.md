@@ -44,6 +44,9 @@ step is always the lowest-numbered one that is not `done`.
 | 16 | Re-link prompt for existing connections | desktop |
 | 17 | Legal pages | website |
 | 18 | Go live with Stripe, Plaid, and Google (manual) | dashboards |
+| 18a | Security hardening: headers, verified email for desktop sign-in, security logs, pinned dependencies, CI | website |
+| 18b | Email code at sign-in (MFA) | website |
+| 18c | Written security policies and Plaid questionnaire answers | website (docs) |
 | 19 | Launch | desktop + website |
 | 20 | Remove the direct Plaid path | desktop |
 
@@ -53,6 +56,11 @@ There is no step 2: it (serving downloads from GitHub Releases) was dropped, and
 other steps keep their numbers so existing references stay valid. For the same reason,
 the steps added for the whole-app subscription are 13a and 14a: run them in table order
 (13 → 13a → 14 → 14a → 15).
+
+Steps 18a–18c (security work for Plaid's security questionnaire) are the one exception to
+"lowest-numbered first": they run while step 18's dashboard work is still in progress,
+because the questionnaire (part of step 18) is submitted only after 18c. Run them in
+order: 18a → 18b → 18c.
 
 ---
 
@@ -459,12 +467,138 @@ flowchart LR
   works in production.
 - **Checklist:** [GO_LIVE.md](GO_LIVE.md), with `scripts/go_live_check.py` (read-only
   preflight, run in the Render Shell) to confirm the dashboards match the code.
+- **Security questionnaire:** submit Plaid's security questionnaire only after steps
+  18a–18c are done, using the answers drafted in 18c. The rest of the Plaid application
+  (company and application profiles, use case, pricing) and the Google and Stripe parts
+  can go ahead meanwhile.
 - **Status:** in-progress (checklist and preflight merged with the PR below; the dashboard work and the live test are yours)
-- **PR:** — (branch `feature/mhoff/go_live_20261006`, pushed; open the PR against `main` and paste its link here)
+- **PR:** [#57](https://github.com/maxwell-hoff/budget_app_website/pull/57) (merged: checklist and preflight)
+
+### 18a. Security hardening
+- **Repo:** budget_app_website
+- **Depends on:** 17 (runs while 18 is in progress; see the note under the checklist)
+- **Scope:**
+  - **Security headers** on every response (an `after_request` hook in `serve.py`):
+    `Strict-Transport-Security: max-age=31536000` (only when cookies are secure, i.e. on
+    Render; no `includeSubDomains` or preload yet), `X-Content-Type-Options: nosniff`,
+    `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY` plus
+    `Content-Security-Policy: frame-ancestors 'none'` (so `/app-login`'s Continue button
+    can't be clickjacked). Add a fuller CSP (scripts, styles, Google Fonts) only if every
+    page still works under it; otherwise ship it as `Content-Security-Policy-Report-Only`
+    or leave it as a logged follow-up. These apply to the public pages too: they don't
+    change how any page looks or behaves, so they aren't behind `ACCOUNTS_ENABLED`.
+  - **Verified email before desktop sign-in:** `/app-login` (GET and POST) requires a
+    verified email. An unverified user sees a page explaining why, with the existing
+    "resend verification email" button, and no code is issued. Since Plaid Link is only
+    reachable from a desktop session, this also means nobody links a bank with an
+    unverified address. No `/v1` change. Existing desktop sessions are unaffected (none
+    exist in production).
+  - **Security event logs** (`logger.info`/`warning` through a small helper so the format
+    is consistent): sign-up, login success and failure, logout, password change and
+    reset, email verified, Google sign-in / link / unlink, desktop code issued, app
+    session created and revoked, Plaid item linked / removed, account deleted, and
+    rate-limit hits on auth routes. Log the user ID and client IP, never passwords,
+    tokens, codes, or full email addresses (for failed logins of unknown emails, log a
+    short keyed hash). Tests check the events are logged and contain no secrets.
+  - **Pinned dependencies:** `requirements.in` / `requirements-dev.in` with today's
+    ranges, compiled with `pip-compile` into pinned `requirements.txt` /
+    `requirements-dev.txt` (Render keeps running `pip install -r requirements.txt`).
+    Document the upgrade command in `CLAUDE.md`.
+  - **CI:** `.github/workflows/ci.yml` runs `pytest` and `pip-audit -r requirements.txt`
+    on pull requests and pushes to `main` (the live Plaid tests skip without secrets).
+    `.github/dependabot.yml` for `pip` and `github-actions`, weekly.
+- **Done when:** Tests cover the headers (HSTS only when secure), the `/app-login` gate
+  (unverified → no code; verified → unchanged flow), and the security log events; the
+  full suite passes with the pinned requirements; the CI workflow passes on the PR;
+  `pip-audit` reports nothing unfixed (or the exceptions are listed in the handoff note);
+  every page renders the same with the headers on (checked in a browser).
+- **Manual (you):** turn on Dependabot alerts and security updates in both repos' GitHub
+  settings; two-factor on Plaid, Render, Stripe, GitHub, Google Cloud, Resend, your DNS
+  registrar, and the `max@gardenstudiosoftware.com` mailbox; FileVault, automatic
+  updates, and screen lock on your laptop. Step 18c's answers assume these are done.
+- **Status:** todo
+- **PR:** —
+
+### 18b. Email code at sign-in (MFA)
+- **Repo:** budget_app_website
+- **Depends on:** 18a
+- **Scope:** Every password sign-in needs a one-time code sent to the account's email,
+  behind `ACCOUNTS_ENABLED` like the rest of the account pages. Sign in with Google
+  doesn't (it relies on Google's own sign-in security, including the user's Google
+  two-step verification).
+  - `/login`: a correct password no longer logs in. It stores a pending login in the
+    session (user ID, password fingerprint, time) and emails a 6-digit code, then
+    redirects to a new `GET, POST /login/code` page ("We sent a code to m•••@example.com").
+    The right code logs in and continues to `next` (so `/app-login`, and therefore the
+    desktop sign-in, goes through it too). A wrong email or password still shows the
+    same error as today, and no code is sent.
+  - **Sign-up:** creating an account sends a code instead of logging in straight away;
+    entering it logs in and marks the email verified (it proves the inbox, like the
+    verification link). The verification link (`/verify-email/<token>`) keeps working.
+  - **Codes:** 6 digits from `secrets`, valid 10 minutes, single-use, one active code
+    per pending login (a resend replaces it). Stored as an HMAC keyed by `SECRET_KEY`
+    (a plain hash of 6 digits could be reversed by trying them all). Compared in
+    constant time. 5 wrong tries void the code and the pending login (back to
+    `/login`). "Send a new code" at most once a minute and 5 times an hour; `/login/code`
+    POST rate limited. A password change or reset voids pending codes (the fingerprint
+    no longer matches). New table `login_codes` (migration).
+  - **Email:** "Your Workbench Budgeting sign-in code", with the code, the 10-minute
+    expiry, and "If you didn't try to sign in, change your password." Sent with
+    `send_email`; if sending fails, the page says so and nothing is logged in.
+  - **Password reset** keeps logging in after the new password is set: the reset link
+    already proves inbox access, so it isn't asked again.
+  - No "remember this browser" option: people sign in on the website rarely (to
+    subscribe, manage billing, or sign in the desktop app every 180 days), so the code
+    is asked every time, and the answer to Plaid is simply "required".
+  - `/account` says "Sign-in codes are sent to <email>" under sign-in methods.
+  - 18a's security logs gain code sent, code failed, code locked out, and code accepted.
+  - Update `API_CONTRACT.md` (server-only table: `/login`, `/signup`, new `/login/code`)
+    and `scripts/desktop_flow_check.py` if it logs in with a password.
+- **Done when:** Tests: password login needs the code (right code → logged in and
+  redirected to `next`; wrong code → error; 5 wrong → locked out; expired; reused;
+  resend replaces the old code and is rate limited; a password change voids it); sign-up
+  needs the code and verifies the email; Google sign-in needs no code; the desktop flow
+  (`/app-login` → login → code → Continue) works; codes are stored only as HMACs and
+  never logged. Live: with the console email backend locally and then with Resend,
+  sign up, log out, log in with the emailed code, and sign in the desktop app through it.
+- **Status:** todo
+- **PR:** —
+
+### 18c. Written security policies and Plaid questionnaire answers
+- **Repo:** budget_app_website (docs only)
+- **Depends on:** 18a, 18b
+- **Scope:** Short, honest documents for a one-person company, in `docs/security/`,
+  describing what the code and your accounts actually do after 18a and 18b:
+  - `information_security_policy.md`: scope, owner (you), the principles (least data:
+    transactions aren't stored on the server; encryption; MFA everywhere), and a yearly
+    review date.
+  - `access_control.md`: who can reach production (you only), which systems, MFA on
+    each, how access would be granted and removed if anyone else joins, and a
+    quarterly review of who has access.
+  - `vulnerability_management.md`: Dependabot, `pip-audit` in CI, patch targets (e.g.
+    critical within 7 days, high within 30), how the laptop is kept updated.
+  - `incident_response.md`: how a problem is noticed (security logs, provider alerts),
+    first steps (rotate keys: `PLAID_SECRET`, `PLAID_TOKEN_KEY` with `NEW,OLD`,
+    `SECRET_KEY`, Stripe, Google; revoke app sessions), who to notify and when (affected
+    users, Plaid and other providers per their agreements, and any legal deadlines;
+    check the agreements for the exact notice periods), and a short post-incident review.
+  - `data_retention_and_deletion.md`: what the server stores and for how long, matching
+    the privacy policy (banks removed when a subscription ends or on request; account
+    deletion; Stripe's own records), and that data on the user's computer is theirs.
+  - `vendors.md`: Render, Stripe, Plaid, Google, Resend, GitHub: what each holds and why.
+  - `plaid_questionnaire.md`: a draft answer for each questionnaire question (as you
+    see them in the dashboard; paste them in at the start of the session), pointing at
+    the code or policy behind each answer, with any honest "no"s and the plan for them.
+  - Update `GO_LIVE.md`'s questionnaire cheat sheet to point here.
+- **Done when:** You've read and agreed with every document (they describe what you do,
+  not aspirations), and the questionnaire answers are ready to paste. Then submit the
+  questionnaire (step 18).
+- **Status:** todo
+- **PR:** —
 
 ### 19. Launch
 - **Repo:** both (one PR in each, plus a production env change)
-- **Depends on:** 16, 18
+- **Depends on:** 16, 18, 18a, 18b, 18c
 - **Scope:** Desktop PR: default `BUDGET_APP_CLOUD` to on, point
   `BUDGET_APP_CLOUD_URL` at production, bump the app version, and publish the
   release. The release notes tell existing users plainly that the app now needs a
@@ -604,6 +738,9 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-06 — Stripe live mode's failed-payment setting is "cancel the subscription" after Smart Retries, not "mark as unpaid" — the server keeps banks connected while `unpaid` (a payment can still restore access), so `unpaid` would leave Plaid billing for non-payers indefinitely; `canceled` removes their banks (step 13).
 - 2026-10-06 — Step 18's end-to-end test runs in production with `ACCOUNTS_ENABLED` on for a short window, not on a staging service — the account pages aren't linked for logged-out visitors, and staging would need its own domain, Google redirect URI, Stripe webhook, and database. The desktop side uses a throwaway `--db-path` with the `~/.zshrc` Plaid variables unset, so the real budget and its direct-path bank aren't touched.
 - 2026-10-06 — Go-live settings are verified by `scripts/go_live_check.py`, a read-only preflight run in the Render Shell (so live secrets never leave Render). Its expectations come from the code where possible (the webhook events are `billing._HANDLERS`), and `--mode test` runs the same checks against test mode and the sandbox.
+- 2026-10-07 — Security work before Plaid's security questionnaire: new steps 18a (headers, verified email for desktop sign-in, security logs, pinned dependencies, CI), 18b (MFA), and 18c (written policies and drafted answers). They run while step 18's dashboard work is in progress; the questionnaire is submitted after 18c, and step 19 depends on all three. Gaps from the review: no MFA for password users, no written policies, no dependency scanning or pinning, no security headers, thin security logging. Accepted without a fix: transactions are stored unencrypted on the user's own computer (protected by their disk encryption; the server stores none), and there's no outside audit or SOC 2.
+- 2026-10-07 — MFA is a **required email code at every password sign-in** (and at sign-up, where it also verifies the email), chosen over optional authenticator-app codes so the answer to Plaid is "MFA is required". Google sign-ins don't get a code; they rely on Google's own security. No "remember this browser", since website sign-ins are rare. Password reset still logs in without a code because the reset link already proves inbox access.
+- 2026-10-07 — "Verified email before linking a bank" is enforced at `/app-login` (no desktop session without a verified email), not with a new `/v1/plaid` error, so the API contract and the desktop don't change. Plaid Link is only reachable from a desktop session.
 
 ## Handoff notes
 
@@ -616,6 +753,12 @@ Newest first. Template:
 - Manual actions needed (env vars, dashboards, deploys):
 - Next step:
 ```
+
+### 2026-10-07 — plan update (security steps 18a–18c) — budget_app_website — feature/mhoff/security_steps_plan_20261007
+- Done: Step 18's PR line set to [#57](https://github.com/maxwell-hoff/budget_app_website/pull/57) (merged). Added steps 18a (security hardening), 18b (email code at sign-in), and 18c (written security policies and Plaid questionnaire answers) to the checklist and as sections, with a note that they run while step 18 is in progress and before the questionnaire is submitted; step 18 now says to submit the questionnaire after 18c; step 19 depends on 18a–18c. Three decisions logged (why these steps, the MFA choice, where the verified-email rule lives). `GO_LIVE.md`: the questionnaire cheat sheet no longer claims dependencies are pinned (they aren't until 18a), and part 1 says to submit the questionnaire after 18c.
+- Not done / follow-ups: None for this update.
+- Manual actions needed: Open the PR (`feature/mhoff/security_steps_plan_20261007` → `main`, docs only) and merge it. Do 18a's manual items (two-factor on every provider account and your mailbox, laptop settings, Dependabot alerts in both repos) any time; 18c's answers assume them. Carry on with the non-questionnaire parts of step 18 meanwhile.
+- Next step: 18a (website): security hardening.
 
 ### 2026-10-06 — step 18 (prep) — budget_app_website — feature/mhoff/go_live_20261006
 - Done: Step 17's PR line set to [#56](https://github.com/maxwell-hoff/budget_app_website/pull/56) (merged); step 16 was already #121 (merged). New `docs/paid_plaid/GO_LIVE.md`: the step 18 checklist in order (Plaid production first because its review is slowest, with a security-questionnaire cheat sheet drawn from the code; Google Auth Platform branding, scopes, publishing, and the production client; Stripe live account, public details, product copy with tax code, portal, failed-payment setting, receipts, the seven-event webhook, keys; Resend; the Render env var table; the preflight; the end-to-end test; turning accounts back off; an optional daily Render Cron Job for `flask plaid-remove-lapsed`). New `scripts/go_live_check.py`: read-only preflight of config, database and migrations, Stripe (key mode, account, price, product name and tax code, webhook endpoint and events, portal), Plaid (environment, keys via the unbilled `/institutions/get`, `PLAID_TOKEN_KEY`, stored tokens decrypt), Google (credential format), Resend (sender domain verified), and the public pages; exits 1 on any failure. No app code or endpoint changed, so `API_CONTRACT.md` is unchanged; `CLAUDE.md` lists the script and checklist. Tests: `tests/test_go_live_check.py` (29, fake Stripe/Plaid/Resend/HTTP). Full suite: 646 passed. Live run of `python scripts/go_live_check.py --mode test` against your test-mode Stripe and the Plaid sandbox: 0 failed, 7 warnings (expected locally: no `SECRET_KEY`, console email, no test-mode webhook endpoint since `stripe listen` is used, the test account can't take payments or receive payouts, and the test-mode portal has no privacy/terms links). It also confirmed production serves `/healthz`, `/privacy`, `/terms`, `/refunds` with 200 and `/login` 404s (accounts off).

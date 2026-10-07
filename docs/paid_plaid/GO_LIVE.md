@@ -53,7 +53,9 @@ production there. Everything below happens in the chosen team.
    - **Pricing plan:** Pay as you go is enough to start (no minimum). Transactions are
      billed per connected bank (Item) per month, which is why the server caps each user
      at 10 banks and removes them when a subscription ends.
-   - **Security questionnaire:** see the cheat sheet below.
+   - **Security questionnaire:** wait until steps 18a–18c in PLAN.md are done (they
+     close the gaps the questionnaire asks about, and 18c drafts the answers). The
+     cheat sheet below is a starting point.
 3. **OAuth banks.** Large banks (Chase, Wells Fargo, Capital One, Schwab, and others)
    only connect after you register with each of them through Plaid: Dashboard → the
    OAuth institutions / institution access page. It needs the company and application
@@ -97,8 +99,9 @@ your own accounts, so do them before you answer.
   Plaid's End User Privacy Policy).
 - **Access control (you):** one person (you) has access to production. Turn on 2-step
   verification for Plaid, Render, Stripe, GitHub, Google Cloud, and Resend, and say so.
-- **Vulnerability management (you):** dependencies are pinned in `requirements.txt`;
-  if you turn on GitHub's Dependabot alerts for the repo, you can say you monitor them.
+- **Vulnerability management (you):** dependencies in `requirements.txt` are not pinned
+  (bare names and a few minimum versions). If you turn on GitHub's Dependabot alerts
+  for the repo, you can say you monitor them.
 
 ---
 
