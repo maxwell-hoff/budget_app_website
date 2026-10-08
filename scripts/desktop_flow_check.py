@@ -11,7 +11,9 @@ scripts/check_sync_fixture_with_desktop.py.
 
 The server must run with ACCOUNTS_ENABLED=true and, for --plaid, sandbox Plaid keys.
 The account's email must be verified (step 18a); otherwise /app-login shows "Verify your
-email first" and this script times out waiting for the callback.
+email first" and this script times out waiting for the callback. Logging in with a
+password asks for the code emailed to the account (step 18b; with the console email
+backend it's printed in the server's output), which also verifies the email.
 --plaid needs the signed-in account to have an active (test-mode) subscription, and
 PLAID_SANDBOX_CLIENT_ID / PLAID_SANDBOX_SECRET in .env to fake the Link step.
 

@@ -13,8 +13,9 @@ serve.py → Flask app factory (create_app) + module-level `app`: pages, legal p
 security_log.py → log_event(event, user_id, **fields): one `security event=… user=… ip=…` line per security event (never passwords, tokens, codes, or emails; email_hash for unknown emails); rate_limit_hit is Flask-Limiter's on_breach
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
-models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, AuthCode, AppSession)
-auth.py → account blueprint: sign up/in/out, password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
+models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, LoginCode, AuthCode, AppSession, PlaidItem)
+auth.py → account blueprint: sign up/in/out, /login/code (emailed sign-in code after every password login and sign-up), password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
+login_codes.py → the pending login (in the session) and its emailed 6-digit code: start, pending, check, send_code; codes stored only as HMACs (login_codes table)
 account.py → /account page blueprint (details, change password, POST /account/delete which removes banks at Plaid and the Stripe customer first; registered only when ACCOUNTS_ENABLED is on)
 google_auth.py → Sign in with Google (Authlib OIDC): /auth/google, callback, disconnect
 billing.py → Stripe: POST /billing/checkout, /billing/portal, /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set); has_paid_access(user) is the only place that decides paid access (the whole desktop app, bank syncing included) and access_until(user) says until when; Checkout adds a TRIAL_DAYS free trial (default 7) for users who never had one (subscriptions.trial_used_at); the webhook emails a reminder on customer.subscription.trial_will_end and removes a user's banks at Plaid once subscription_ended(user)
@@ -26,7 +27,7 @@ mailer.py → send_email (Resend in production, console in dev, memory in tests)
 tokens.py → signed, expiring tokens for password reset and email verification
 frontend/templates/auth/, account/ → account page templates (auth.css styles them)
 migrations/ → Alembic migrations (flask db ...)
-tests/ → pytest suite (conftest.py has app/client fixtures); test_plaid_sandbox.py makes live Plaid sandbox calls, skipped unless PLAID_SANDBOX_CLIENT_ID/PLAID_SANDBOX_SECRET are set
+tests/ → pytest suite (conftest.py has app/client fixtures, password_login / signup_with_code that enter the emailed code, and log_in_as to put a session in directly); test_plaid_sandbox.py makes live Plaid sandbox calls, skipped unless PLAID_SANDBOX_CLIENT_ID/PLAID_SANDBOX_SECRET are set
 scripts/desktop_flow_check.py → live check of the desktop sign-in and /v1 API against a running local server (plays the desktop app on port 5002)
 scripts/stripe_trial_check.py → live check of the free trial in Stripe test mode with test clocks (needs a running local server and `stripe listen`)
 scripts/check_sync_fixture_with_desktop.py → runs the desktop's unchanged Plaid ingest on a /v1/plaid/sync response (run with the desktop's Python)

@@ -9,7 +9,7 @@ import billing
 import plaid_api
 from extensions import db
 from models import AppSession, OAuthIdentity, PlaidItem, Subscription, User, utcnow
-from tests.conftest import make_app
+from tests.conftest import log_in_as, make_app
 from tests.test_app_sessions import PASSWORD, add_user, password_login, sign_in
 from tests.test_billing import STRIPE_CONFIG, FakeStripe, send, subscription_event
 from tests.test_plaid_api import (  # noqa: F401  (fake_plaid, plaid_app, subscriber are fixtures)
@@ -406,13 +406,11 @@ def test_delete_requires_login(accounts_client):
 
 def test_delete_requires_csrf_token():
     app = make_app(ACCOUNTS_ENABLED=True, WTF_CSRF_ENABLED=True)
-    add_user(app)
+    user_id = add_user(app)
     client = app.test_client()
-    with client:
-        page_html = client.get('/login').get_data(as_text=True)
-        token = page_html.split('name="csrf_token" type="hidden" value="')[1].split('"')[0]
-        client.post('/login', data={'email': 'user@example.com', 'password': PASSWORD, 'csrf_token': token})
-        assert delete_account(client).status_code == 400
+    log_in_as(app, client, user_id)
+    assert client.get('/account').status_code == 200
+    assert delete_account(client).status_code == 400
     assert user_exists(app)
 
 

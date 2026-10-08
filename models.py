@@ -124,6 +124,25 @@ class AuthCode(db.Model):
     user = db.relationship('User', backref=db.backref('auth_codes', cascade='all, delete-orphan'))
 
 
+class LoginCode(db.Model):
+    """The emailed code for one pending password sign-in or sign-up. Only an HMAC of the
+    code is stored; a resend replaces it in the same row."""
+
+    __tablename__ = 'login_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    code_hmac = db.Column(db.String(64), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    # Null when the last email failed, so "Send a new code" works straight away.
+    sent_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=False)
+    # Wrong tries for this pending sign-in; a resend doesn't reset it.
+    attempts = db.Column(db.Integer, nullable=False, default=0)
+
+    user = db.relationship('User', backref=db.backref('login_codes', cascade='all, delete-orphan'))
+
+
 class AppSession(db.Model):
     """A desktop app sign-in. The app holds the bearer token; only its hash is stored."""
 

@@ -2,6 +2,7 @@ import pytest
 from flask import Flask
 
 import serve
+from tests.conftest import password_login
 
 
 def test_gunicorn_target_is_a_flask_app():
@@ -85,7 +86,7 @@ def test_every_account_page_footer_links_legal_pages(accounts_client, make_user)
     assert_legal_links(signed_out)
 
     make_user()
-    accounts_client.post('/login', data={'email': 'user@example.com', 'password': 'correct horse battery'})
+    password_login(accounts_client)
     signed_in = html_pages(accounts_client)
     assert {'/account', '/app-login'} <= set(signed_in)
     assert_legal_links(signed_in)

@@ -9,7 +9,7 @@ from cryptography.fernet import Fernet
 import plaid_api
 from extensions import db
 from models import PlaidItem, Subscription, User, utcnow
-from tests.conftest import make_app
+from tests.conftest import make_app, password_login
 from tests.test_app_sessions import DesktopApp, add_user, approve, exchange, sign_in
 
 ACCESS_TOKEN = 'access-sandbox-11111111-2222-3333-4444-555555555555'
@@ -296,7 +296,7 @@ def test_exchange_item_of_another_user_refused(plaid_app, fake_plaid, subscriber
     other_id = add_user(plaid_app, email='other@example.com')
     subscribe(plaid_app, other_id)
     client = plaid_app.test_client()
-    client.post('/login', data={'email': 'other@example.com', 'password': 'correct horse battery'})
+    password_login(client, email='other@example.com')
     desktop = DesktopApp()
     token = exchange(plaid_app.test_client(), approve(client, desktop), desktop.verifier).get_json()['session_token']
     assert_api_error(link(plaid_app, {'Authorization': f'Bearer {token}'}), 400, 'bad_request')

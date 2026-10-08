@@ -1,0 +1,26 @@
+{% extends "auth/base.html" %}
+{% from "auth/_field.html" import field %}
+{% block title %}Enter your code{% endblock %}
+{% block card_name %}sign_in_code{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">{{ 'Confirm your email' if purpose == 'signup' else 'Check your email' }}</h1>
+  {% if error %}
+    <p class="auth-form__alert" role="alert">{{ error }}</p>
+  {% endif %}
+  <p class="auth-card__text">
+    We sent a 6-digit code to <strong>{{ masked_email }}</strong>.
+    Enter it below to {{ 'finish creating your account' if purpose == 'signup' else 'log in' }}.
+    It expires in {{ code_minutes }} minutes.
+  </p>
+  <form method="post" class="auth-form" novalidate>
+    {{ form.csrf_token }}
+    {{ field(form.code, "one-time-code") }}
+    <button type="submit" class="btn btn--primary auth-form__submit">Continue</button>
+  </form>
+  <form method="post" action="{{ url_for('auth.resend_login_code') }}" class="auth-card__alt">
+    {{ resend_form.csrf_token }}
+    Didn't get it? Check your spam folder, or
+    <button type="submit" class="auth-link-button">send a new code</button>
+    · <a href="{{ start_over_url }}">Start over</a>
+  </form>
+{% endblock %}

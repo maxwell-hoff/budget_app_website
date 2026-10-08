@@ -12,7 +12,9 @@ from flask import current_app, has_request_context, request
 
 logger = logging.getLogger('security')
 
-_WARNING_EVENTS = frozenset({'login_failed', 'app_token_rejected', 'rate_limited'})
+_WARNING_EVENTS = frozenset({
+    'login_failed', 'login_code_failed', 'login_code_locked_out', 'app_token_rejected', 'rate_limited',
+})
 
 
 def init_logging():

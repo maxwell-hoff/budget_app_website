@@ -5,6 +5,7 @@ import pytest
 import google_auth
 from extensions import db
 from models import OAuthIdentity, User, utcnow
+from tests import conftest
 from tests.conftest import make_app, signed_in_email
 
 PASSWORD = 'correct horse battery'
@@ -78,7 +79,7 @@ def load(app, user_id):
 
 
 def password_login(client, email='user@example.com', password=PASSWORD):
-    return client.post('/login', data={'email': email, 'password': password})
+    return conftest.password_login(client, email=email, password=password)
 
 
 # --- Availability -------------------------------------------------------------
@@ -184,7 +185,8 @@ def test_unverified_google_email_does_not_create_account(google):
 def test_linking_unverified_local_account_drops_its_password(google):
     user_id = add_user(google.app, verified=False)
     squatter = google.app.test_client()
-    password_login(squatter)
+    # The squatter can't get past the emailed code, but may hold a session from before codes.
+    conftest.log_in_as(google.app, squatter, user_id)
     assert signed_in_email(squatter) == 'user@example.com'
 
     owner = google.app.test_client()
