@@ -53,9 +53,10 @@ production there. Everything below happens in the chosen team.
    - **Pricing plan:** Pay as you go is enough to start (no minimum). Transactions are
      billed per connected bank (Item) per month, which is why the server caps each user
      at 10 banks and removes them when a subscription ends.
-   - **Security questionnaire:** wait until steps 18a–18c in PLAN.md are done (they
-     close the gaps the questionnaire asks about, and 18c drafts the answers). The
-     cheat sheet below is a starting point.
+   - **Security questionnaire:** paste the answers from
+     [`docs/security/plaid_questionnaire.md`](../security/plaid_questionnaire.md)
+     (step 18c), after doing its "Before submitting" list. The cheat sheet below
+     summarizes the facts behind them.
 3. **OAuth banks.** Large banks (Chase, Wells Fargo, Capital One, Schwab, and others)
    only connect after you register with each of them through Plaid: Dashboard → the
    OAuth institutions / institution access page. It needs the company and application
@@ -72,8 +73,11 @@ Nothing else needs configuring at Plaid:
 
 ### Security questionnaire cheat sheet
 
-These answers match what the code does. The items marked **(you)** depend on how you run
-your own accounts, so do them before you answer.
+The ready-to-paste answers, one per question, are in
+[`docs/security/plaid_questionnaire.md`](../security/plaid_questionnaire.md), backed by
+the written policies in [`docs/security/`](../security/information_security_policy.md).
+The facts below match what the code does. The items marked **(you)** depend on how you
+run your own accounts; the questionnaire file's "Before submitting" list covers them.
 
 - **Where access tokens live:** only on the server, encrypted at rest with Fernet
   (AES-128 in CBC mode with an HMAC-SHA256 tag) using a key held in an environment
@@ -114,13 +118,16 @@ your own accounts, so do them before you answer.
 - **Retention:** bank connections are kept only while the subscription is active.
 - **Privacy policy:** `https://workbenchbudgeting.com/privacy` (it covers Plaid and links
   Plaid's End User Privacy Policy).
-- **Access control (you):** one person (you) has access to production. Turn on 2-step
-  verification for Plaid, Render, Stripe, GitHub, Google Cloud, and Resend, and say so.
+- **Access control (you):** one person (you) has access to production; MFA on every
+  account that reaches it, and the database's inbound IP allow list empty
+  ([`access_control.md`](../security/access_control.md)).
 - **Vulnerability management (you):** dependencies are pinned (`requirements.txt`,
   compiled from `requirements.in` with `pip-compile`); CI runs the tests and
   `pip-audit` on every pull request and push to `main`; Dependabot opens weekly update
-  PRs for Python packages and GitHub Actions (step 18a). Turn on Dependabot alerts and
-  security updates in both repos' GitHub settings, then you can say you monitor them.
+  PRs for Python packages and GitHub Actions (step 18a); production scanned with SSL Labs
+  and Mozilla Observatory; the laptop kept updated
+  ([`vulnerability_management.md`](../security/vulnerability_management.md)). Turn on
+  Dependabot alerts and security updates in both repos' GitHub settings.
 
 ---
 
