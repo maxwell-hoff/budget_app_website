@@ -1,3 +1,4 @@
+import re
 from functools import cache
 from urllib.parse import urlsplit
 
@@ -8,9 +9,10 @@ from flask_login import current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
-from wtforms import EmailField, PasswordField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms import EmailField, PasswordField, StringField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 
+import login_codes
 from extensions import db, limiter, login_manager
 from mailer import try_send_email
 from models import User, normalize_email, utcnow
@@ -68,6 +70,23 @@ class ForgotPasswordForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = EmailField('Email', filters=[_strip], validators=[DataRequired(), Email(), Length(max=320)])
     password = PasswordField('Password', validators=[DataRequired(), Length(max=MAX_PASSWORD_LENGTH)])
+
+
+def _without_spaces(value):
+    return re.sub(r'[\s-]', '', value) if isinstance(value, str) else value
+
+
+CODE_MESSAGE = 'Enter the 6-digit code from the email.'
+
+
+class LoginCodeForm(FlaskForm):
+    code = StringField('Code', filters=[_without_spaces], validators=[
+        DataRequired(message=CODE_MESSAGE), Regexp(r'^[0-9]{6}$', message=CODE_MESSAGE),
+    ], render_kw={'inputmode': 'numeric', 'maxlength': 12, 'autofocus': True})
+
+
+class ResendCodeForm(FlaskForm):
+    pass
 
 
 class LogoutForm(FlaskForm):
@@ -155,12 +174,22 @@ def signup():
                 form.email.errors.append('An account with that email already exists.')
             else:
                 log_event('signup', user.id, method='password')
-                login_user(user)
-                send_verification_email(user)
-                flash(f'We sent a link to {user.email} to verify your email address.')
-                return redirect(after_login_url())
+                # Entering the emailed code logs in and verifies the address.
+                return start_code_login(user, 'signup')
 
     return render_template('auth/signup.html', form=form)
+
+
+def start_code_login(user, purpose):
+    sent = login_codes.start(
+        user, purpose, safe_next_url(request.args.get('next')), external_url('auth.forgot_password'),
+    )
+    if not sent:
+        flash(CODE_NOT_SENT)
+    return redirect(url_for('auth.login_code'))
+
+
+CODE_NOT_SENT = "We couldn't send the email with your code. Wait a minute, then click “send a new code”."
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -174,9 +203,7 @@ def login():
     if form.validate_on_submit():
         user = db.session.scalar(db.select(User).filter_by(email=normalize_email(form.email.data)))
         if user and user.check_password(form.password.data):
-            login_user(user)
-            log_event('login', user.id, method='password')
-            return redirect(after_login_url())
+            return start_code_login(user, 'login')
         if not user or not user.password_hash:
             # Same hashing cost whether or not the account exists, so timing doesn't reveal it.
             check_password_hash(_dummy_password_hash(), form.password.data)
@@ -189,12 +216,81 @@ def login():
     return render_template('auth/login.html', form=form, error=error)
 
 
+def _start_over(message, next_url=None):
+    flash(message)
+    return redirect(url_for('auth.login', next=next_url))
+
+
+@bp.route('/login/code', methods=['GET', 'POST'])
+@limiter.limit('10 per minute;60 per hour', methods=['POST'])
+def login_code():
+    if current_user.is_authenticated:
+        return redirect(after_login_url())
+    pending = login_codes.pending()
+    if pending is None:
+        return _start_over('Your sign-in code has expired. Log in again to get a new one.')
+
+    form = LoginCodeForm()
+    error = None
+    if form.validate_on_submit():
+        user = pending.user
+        result = login_codes.check(pending, form.code.data)
+        if result == 'ok':
+            log_event('login_code_accepted', user.id, purpose=pending.purpose)
+            # The code arrived in their inbox, which proves they own the address.
+            if not user.email_verified_at:
+                user.email_verified_at = utcnow()
+                db.session.commit()
+                log_event('email_verified', user.id, method='login_code')
+            login_user(user)
+            log_event('login', user.id, method='password')
+            return redirect(pending.next_url or url_for('account.account'))
+        if result == 'locked':
+            log_event('login_code_locked_out', user.id)
+            return _start_over('Too many wrong codes. Log in again to get a new one.', pending.next_url)
+        if result == 'gone':
+            return _start_over('That code was already used. Log in again to get a new one.', pending.next_url)
+        if result == 'expired':
+            error = 'This code has expired. Send a new code below.'
+        else:
+            log_event('login_code_failed', user.id, attempts=pending.row.attempts)
+            error = "That code isn't right. Check the email and try again."
+        form.code.data = ''
+
+    return render_template(
+        'auth/login_code.html', form=form, error=error, purpose=pending.purpose,
+        masked_email=login_codes.mask_email(pending.user.email), resend_form=ResendCodeForm(),
+        start_over_url=url_for('auth.login', next=pending.next_url),
+        code_minutes=int(login_codes.CODE_TTL.total_seconds() // 60),
+    )
+
+
+@bp.route('/login/code/resend', methods=['POST'])
+@limiter.limit('5 per hour')
+def resend_login_code():
+    if not ResendCodeForm().validate_on_submit():
+        abort(400)
+    if current_user.is_authenticated:
+        return redirect(after_login_url())
+    pending = login_codes.pending()
+    if pending is None:
+        return _start_over('Your sign-in code has expired. Log in again to get a new one.')
+    if not login_codes.can_resend(pending):
+        flash('We just sent a code. Wait a minute before asking for another one.')
+    elif login_codes.send_code(pending.row, pending.purpose, external_url('auth.forgot_password')):
+        flash(f'We sent a new code to {login_codes.mask_email(pending.user.email)}. Earlier codes no longer work.')
+    else:
+        flash(CODE_NOT_SENT)
+    return redirect(url_for('auth.login_code'))
+
+
 @bp.route('/logout', methods=['POST'])
 def logout():
     if not LogoutForm().validate_on_submit():
         abort(400)
     if current_user.is_authenticated:
         log_event('logout', current_user.id)
+    login_codes.clear()
     logout_user()
     return redirect(safe_next_url(request.args.get('next')) or url_for('index'))
 

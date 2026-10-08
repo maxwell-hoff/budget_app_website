@@ -96,6 +96,7 @@
         <dd>
           {% if has_password %}
             <span class="account-badge account-badge--good">Set</span>
+            <span class="account-details__note">Sign-in codes are sent to {{ current_user.email }}.</span>
           {% elif google_identity %}
             <span class="account-details__note">Not needed — you sign in with Google.</span>
           {% else %}

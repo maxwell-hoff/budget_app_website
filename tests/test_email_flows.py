@@ -10,7 +10,7 @@ import tokens
 from extensions import db
 from models import User, utcnow
 from serve import create_app
-from tests.conftest import make_app, signed_in_email
+from tests.conftest import enter_code, log_in_as, make_app, password_login, signed_in_email
 
 PASSWORD = 'correct horse battery'
 NEW_PASSWORD = 'a brand new passphrase'
@@ -23,7 +23,7 @@ def link_path(message):
 
 
 def login(client, email='user@example.com', password=PASSWORD):
-    return client.post('/login', data={'email': email, 'password': password})
+    return password_login(client, email=email, password=password)
 
 
 def get_user(app, email='user@example.com'):
@@ -120,36 +120,42 @@ def test_email_backend_defaults(monkeypatch):
 
 # --- Email verification -------------------------------------------------------
 
-def test_signup_sends_verification_email(accounts_app, accounts_client, outbox):
+def test_signup_sends_a_code_instead_of_a_link(accounts_app, accounts_client, outbox):
     resp = accounts_client.post('/signup', data={
         'email': 'new@example.com', 'password': PASSWORD, 'confirm': PASSWORD,
     }, follow_redirects=True)
-    assert b'We sent a link to new@example.com' in resp.data
-    assert b'Resend verification link' in resp.data
+    assert b'Confirm your email' in resp.data
+    assert b'n\xe2\x80\xa2\xe2\x80\xa2\xe2\x80\xa2@example.com' in resp.data  # n•••@example.com
     assert len(outbox) == 1
     assert outbox[0]['to'] == 'new@example.com'
-    assert '/verify-email/' in outbox[0]['text']
+    assert '/verify-email/' not in outbox[0]['text']
+
+    enter_code(accounts_client)
+    assert get_user(accounts_app, 'new@example.com').email_verified_at is not None
 
 
-def test_verify_link_marks_email_verified(accounts_app, accounts_client, outbox):
-    accounts_client.post('/signup', data={'email': 'new@example.com', 'password': PASSWORD, 'confirm': PASSWORD})
-    path = link_path(outbox[0])
+def verify_path(app, user_id):
+    with app.app_context():
+        return f'/verify-email/{tokens.make_verify_token(db.session.get(User, user_id))}'
+
+
+def test_verify_link_marks_email_verified(accounts_app, accounts_client, make_user):
+    path = verify_path(accounts_app, make_user())
 
     resp = accounts_client.get(path)
     assert resp.status_code == 200
     assert b'Email verified' in resp.data
-    assert get_user(accounts_app, 'new@example.com').email_verified_at is not None
+    assert get_user(accounts_app).email_verified_at is not None
 
 
-def test_verify_link_reuse_is_harmless(accounts_app, accounts_client, outbox):
-    accounts_client.post('/signup', data={'email': 'new@example.com', 'password': PASSWORD, 'confirm': PASSWORD})
-    path = link_path(outbox[0])
+def test_verify_link_reuse_is_harmless(accounts_app, accounts_client, make_user):
+    path = verify_path(accounts_app, make_user())
     accounts_client.get(path)
-    first = get_user(accounts_app, 'new@example.com').email_verified_at
+    first = get_user(accounts_app).email_verified_at
 
     resp = accounts_client.get(path)
     assert resp.status_code == 200
-    assert get_user(accounts_app, 'new@example.com').email_verified_at == first
+    assert get_user(accounts_app).email_verified_at == first
 
 
 def test_verify_link_works_when_logged_out(accounts_app, make_user):
@@ -199,9 +205,9 @@ def test_reset_token_is_not_a_verify_token(accounts_app, accounts_client, make_u
     assert accounts_client.get(f'/verify-email/{token}').status_code == 400
 
 
-def test_resend_verification(accounts_client, make_user, outbox):
-    make_user()
-    login(accounts_client)
+def test_resend_verification(accounts_app, accounts_client, make_user, outbox):
+    # Only sessions from before sign-in codes can still be unverified.
+    log_in_as(accounts_app, accounts_client, make_user())
     resp = accounts_client.post('/verify-email/resend', follow_redirects=True)
     assert b'We sent a new verification link' in resp.data
     assert len(outbox) == 1
@@ -219,7 +225,7 @@ def test_resend_skipped_when_already_verified(accounts_app, accounts_client, mak
     with accounts_app.app_context():
         db.session.get(User, user_id).email_verified_at = utcnow()
         db.session.commit()
-    login(accounts_client)
+    log_in_as(accounts_app, accounts_client, user_id)
     resp = accounts_client.post('/verify-email/resend', follow_redirects=True)
     assert b'already verified' in resp.data
     assert outbox == []
@@ -316,7 +322,7 @@ def test_reset_logs_out_other_sessions(accounts_app, make_user, outbox):
 
     resetter = accounts_app.test_client()
     resetter.post('/forgot-password', data={'email': 'user@example.com'})
-    resetter.post(link_path(outbox[0]), data={'password': NEW_PASSWORD, 'confirm': NEW_PASSWORD})
+    resetter.post(link_path(outbox[-1]), data={'password': NEW_PASSWORD, 'confirm': NEW_PASSWORD})
 
     assert signed_in_email(resetter) == 'user@example.com'
     assert signed_in_email(other_device) is None

@@ -2,14 +2,14 @@ import pytest
 
 from extensions import db
 from models import User, utcnow
-from tests.conftest import make_app, signed_in_email
+from tests.conftest import log_in_as, make_app, password_login, signed_in_email, signup_with_code
 
 PASSWORD = 'correct horse battery'
 NEW_PASSWORD = 'a brand new passphrase'
 
 
 def login(client, email='user@example.com', password=PASSWORD):
-    return client.post('/login', data={'email': email, 'password': password})
+    return password_login(client, email=email, password=password)
 
 
 def change_password(client, current=PASSWORD, new=NEW_PASSWORD, confirm=None, **kwargs):
@@ -47,18 +47,19 @@ def test_login_page_redirects_when_already_logged_in(accounts_client, make_user)
 
 
 def test_signup_lands_on_account(accounts_client):
-    resp = accounts_client.post('/signup', data={
-        'email': 'new@example.com', 'password': PASSWORD, 'confirm': PASSWORD,
-    }, follow_redirects=True)
-    assert b'My account' in resp.data
-    assert b'We sent a link to new@example.com' in resp.data
+    resp = signup_with_code(accounts_client)
+    assert resp.headers['Location'] == '/account'
+    page = accounts_client.get('/account')
+    assert b'My account' in page.data
+    assert b'Verified' in page.data
 
 
 # --- Page contents ----------------------------------------------------------
 
-def test_account_page_shows_details(accounts_client, make_user):
-    make_user()
-    login(accounts_client)
+def test_account_page_shows_details(accounts_app, accounts_client, make_user):
+    # Logging in with a code verifies the email, so put an unverified session in directly.
+    user_id = make_user()
+    log_in_as(accounts_app, accounts_client, user_id)
     resp = accounts_client.get('/account')
     assert resp.status_code == 200
     assert signed_in_email(accounts_client) == 'user@example.com'
@@ -67,6 +68,7 @@ def test_account_page_shows_details(accounts_client, make_user):
     assert b'Not subscribed' in resp.data
     assert b'Change password' in resp.data
     assert b'Current password' in resp.data
+    assert b'Sign-in codes are sent to user@example.com.' in resp.data
     assert b'Log out' in resp.data
 
 
@@ -134,15 +136,6 @@ def test_change_password_validation(accounts_client, make_user, kwargs, message)
     resp = change_password(accounts_client, **kwargs)
     assert resp.status_code == 200
     assert message in resp.data
-
-
-def log_in_as(app, client, user_id):
-    """Put a user's session straight into the client, for users who can't log in with a form."""
-    with app.app_context():
-        session_id = db.session.get(User, user_id).get_id()
-    with client.session_transaction() as sess:
-        sess['_user_id'] = session_id
-        sess['_fresh'] = True
 
 
 def test_passwordless_user_can_set_password(accounts_app, accounts_client, make_user):

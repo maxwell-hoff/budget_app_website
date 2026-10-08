@@ -6,7 +6,7 @@ import pytest
 from extensions import db
 from models import AuthCode, User
 from security_log import email_hash, log_event
-from tests.conftest import make_app
+from tests.conftest import last_code, log_in_as, make_app, signup_with_code
 from tests.test_app_sessions import (
     PASSWORD, DesktopApp, add_user, approve, exchange, password_login, sign_in,
 )
@@ -141,6 +141,8 @@ def test_every_account_page_script_works_under_csp(accounts_client, accounts_app
 
 # --- /app-login needs a verified email --------------------------------------------
 
+# Entering a sign-in code verifies the email, so an unverified user can only be logged in
+# by a session from before sign-in codes; the tests put one in directly.
 def add_unverified_user(app, email='user@example.com'):
     with app.app_context():
         user = User(email=email)
@@ -158,7 +160,7 @@ def auth_code_count(app):
 def test_unverified_user_sees_verify_page_and_no_code(accounts_app, events):
     user_id = add_unverified_user(accounts_app)
     client = accounts_app.test_client()
-    password_login(client)
+    log_in_as(accounts_app, client, user_id)
     desktop = DesktopApp()
 
     page = client.get(desktop.login_path())
@@ -176,9 +178,8 @@ def test_unverified_user_sees_verify_page_and_no_code(accounts_app, events):
 
 
 def test_unverified_page_keeps_cancel_and_switch_account(accounts_app):
-    add_unverified_user(accounts_app)
     client = accounts_app.test_client()
-    password_login(client)
+    log_in_as(accounts_app, client, add_unverified_user(accounts_app))
     desktop = DesktopApp()
     html = client.get(desktop.login_path()).data.decode()
     assert 'error=access_denied' in html
@@ -186,9 +187,8 @@ def test_unverified_page_keeps_cancel_and_switch_account(accounts_app):
 
 
 def test_resend_from_app_login_returns_there(accounts_app, outbox):
-    add_unverified_user(accounts_app)
     client = accounts_app.test_client()
-    password_login(client)
+    log_in_as(accounts_app, client, add_unverified_user(accounts_app))
     desktop = DesktopApp()
     page = client.get(desktop.login_path()).data.decode()
     action = re.search(r'<form method="post" action="([^"]*verify-email/resend[^"]*)"', page).group(1)
@@ -203,17 +203,15 @@ def test_resend_from_app_login_returns_there(accounts_app, outbox):
 
 
 def test_resend_ignores_offsite_next(accounts_app, outbox):
-    add_unverified_user(accounts_app)
     client = accounts_app.test_client()
-    password_login(client)
+    log_in_as(accounts_app, client, add_unverified_user(accounts_app))
     resp = client.post('/verify-email/resend', query_string={'next': 'https://evil.example/'})
     assert resp.headers['Location'] == '/account'
 
 
 def test_verifying_then_refreshing_app_login_issues_a_code(accounts_app, outbox):
-    add_unverified_user(accounts_app)
     client = accounts_app.test_client()
-    password_login(client)
+    log_in_as(accounts_app, client, add_unverified_user(accounts_app))
     desktop = DesktopApp()
     assert client.get(desktop.login_path()).status_code == 403
 
@@ -241,22 +239,31 @@ def test_email_hash_is_keyed_and_short(accounts_app):
 
 def test_signup_login_logout_events(accounts_app, events):
     client = accounts_app.test_client()
-    client.post('/signup', data={'email': 'new@example.com', 'password': PASSWORD, 'confirm': PASSWORD})
+    signup_with_code(client)
+    signup_code = last_code(accounts_app)
     client.post('/logout')
     client.post('/login', data={'email': 'new@example.com', 'password': 'wrong password!'})
     client.post('/login', data={'email': 'nobody@example.com', 'password': PASSWORD})
     password_login(client, email='new@example.com')
 
     logged = events()
-    assert names(events) == ['signup', 'logout', 'login_failed', 'login_failed', 'login']
+    assert names(events) == [
+        'signup', 'login_code_sent', 'login_code_accepted', 'email_verified', 'login', 'logout',
+        'login_failed', 'login_failed', 'login_code_sent', 'login_code_accepted', 'login',
+    ]
     assert logged[0] == {'event': 'signup', 'user': '1', 'ip': '127.0.0.1', 'method': 'password'}
-    assert logged[2] == {'event': 'login_failed', 'user': '1', 'ip': '127.0.0.1', 'reason': 'bad_password'}
+    assert logged[1] == {'event': 'login_code_sent', 'user': '1', 'ip': '127.0.0.1', 'purpose': 'signup'}
+    assert logged[2] == {'event': 'login_code_accepted', 'user': '1', 'ip': '127.0.0.1', 'purpose': 'signup'}
+    assert logged[3] == {'event': 'email_verified', 'user': '1', 'ip': '127.0.0.1', 'method': 'login_code'}
+    assert logged[6] == {'event': 'login_failed', 'user': '1', 'ip': '127.0.0.1', 'reason': 'bad_password'}
     with accounts_app.app_context():
         unknown_hash = email_hash('nobody@example.com')
-    assert logged[3] == {'event': 'login_failed', 'ip': '127.0.0.1', 'reason': 'unknown_email',
+    assert logged[7] == {'event': 'login_failed', 'ip': '127.0.0.1', 'reason': 'unknown_email',
                          'email_hash': unknown_hash}
-    assert logged[4] == {'event': 'login', 'user': '1', 'ip': '127.0.0.1', 'method': 'password'}
-    assert_no_secrets(events, PASSWORD, 'wrong password!', 'new@example.com', 'nobody@example.com')
+    assert logged[8] == {'event': 'login_code_sent', 'user': '1', 'ip': '127.0.0.1', 'purpose': 'login'}
+    assert logged[10] == {'event': 'login', 'user': '1', 'ip': '127.0.0.1', 'method': 'password'}
+    assert_no_secrets(events, PASSWORD, 'wrong password!', 'new@example.com', 'nobody@example.com',
+                      signup_code, last_code(accounts_app))
 
 
 def test_failed_login_is_logged_at_warning(accounts_app, caplog):
@@ -278,7 +285,7 @@ def test_reset_verify_and_password_change_events(accounts_app, outbox, events):
 
     other_id = add_unverified_user(accounts_app, 'other@example.com')
     other = accounts_app.test_client()
-    password_login(other, email='other@example.com')
+    log_in_as(accounts_app, other, other_id)
     other.post('/verify-email/resend')
     verify_link = link_path(outbox[-1])
     other.get(verify_link)
@@ -290,7 +297,6 @@ def test_reset_verify_and_password_change_events(accounts_app, outbox, events):
         ('password_reset', str(user_id), None),
         ('email_verified', str(user_id), 'password_reset'),
         ('password_changed', str(user_id), None),
-        ('login', str(other_id), 'password'),
         ('email_verified', str(other_id), 'link'),
     ]
     assert_no_secrets(
@@ -310,7 +316,7 @@ def test_desktop_sign_in_events(accounts_app, events):
     exchange(accounts_app.test_client(), code, desktop.verifier)  # reused code
     accounts_app.test_client().post('/v1/auth/logout', headers={'Authorization': f'Bearer {token}'})
 
-    logged = [e for e in events() if e['event'] != 'login']
+    logged = [e for e in events() if e['event'].startswith('app_')]
     assert [(e['event'], e.get('user')) for e in logged] == [
         ('app_code_issued', str(user_id)),
         ('app_session_created', str(user_id)),
@@ -383,6 +389,8 @@ def test_google_events(google, events):  # noqa: F811
         ('password_removed', str(squatted_id), 'unverified_email_claimed_by_google'),
         ('google_linked', str(squatted_id), None),
         ('login', str(squatted_id), 'google'),
+        ('login_code_sent', str(linker_id), None),
+        ('login_code_accepted', str(linker_id), None),
         ('login', str(linker_id), 'password'),
         ('google_linked', str(linker_id), None),
         ('login', str(linker_id), 'google'),

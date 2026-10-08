@@ -4,7 +4,7 @@ import pytest
 
 from extensions import db
 from models import User
-from tests.conftest import make_app, signed_in_email
+from tests.conftest import enter_code, make_app, password_login, signed_in_email
 
 PASSWORD = 'correct horse battery'
 
@@ -17,8 +17,8 @@ def signup(client, email='New@Example.com ', password=PASSWORD, confirm=None, **
     }, **kwargs)
 
 
-def login(client, email='user@example.com', password=PASSWORD, **kwargs):
-    return client.post('/login', data={'email': email, 'password': password}, **kwargs)
+def login(client, email='user@example.com', password=PASSWORD, next_url=None):
+    return password_login(client, email=email, password=password, next_url=next_url)
 
 
 # --- Flag off ---------------------------------------------------------------
@@ -60,10 +60,11 @@ def test_signup_page_renders(accounts_client):
     assert b'Create your account' in resp.data
 
 
-def test_signup_creates_user_and_logs_in(accounts_app, accounts_client):
+def test_signup_creates_user_and_asks_for_a_code(accounts_app, accounts_client):
     resp = signup(accounts_client)
     assert resp.status_code == 302
-    assert signed_in_email(accounts_client) == 'new@example.com'
+    assert resp.headers['Location'] == '/login/code'
+    assert signed_in_email(accounts_client) is None
 
     with accounts_app.app_context():
         user = db.session.scalar(db.select(User))
@@ -72,6 +73,10 @@ def test_signup_creates_user_and_logs_in(accounts_app, accounts_client):
         assert user.password_hash.startswith('scrypt:')
         assert user.created_at is not None
         assert user.email_verified_at is None
+
+    resp = enter_code(accounts_client)
+    assert resp.headers['Location'] == '/account'
+    assert signed_in_email(accounts_client) == 'new@example.com'
 
 
 def test_signup_rejects_duplicate_email_case_insensitively(accounts_app, accounts_client, make_user):
@@ -152,7 +157,7 @@ def test_logout_get_not_allowed(accounts_client):
 ])
 def test_login_next_redirect_is_local_only(accounts_client, make_user, next_url, expected):
     make_user()
-    resp = login(accounts_client, query_string={'next': next_url})
+    resp = login(accounts_client, next_url=next_url)
     assert resp.headers['Location'] == expected
 
 

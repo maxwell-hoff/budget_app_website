@@ -11,7 +11,7 @@ import pytest
 import billing
 from extensions import db
 from models import StripeEvent, Subscription, User
-from tests.conftest import make_app
+from tests.conftest import make_app, password_login
 
 WEBHOOK_SECRET = 'whsec_test_secret'
 STRIPE_CONFIG = {
@@ -94,7 +94,7 @@ def add_user(app, email='payer@example.com'):
 
 def logged_in_client(app, email='payer@example.com'):
     client = app.test_client()
-    client.post('/login', data={'email': email, 'password': PASSWORD})
+    password_login(client, email=email)
     return client
 
 

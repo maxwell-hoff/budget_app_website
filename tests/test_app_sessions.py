@@ -10,6 +10,7 @@ import pytest
 from app_auth import create_app_session, is_loopback_redirect_uri, pkce_challenge
 from extensions import db
 from models import AppSession, AuthCode, Subscription, User, utcnow
+from tests import conftest
 from tests.conftest import make_app
 from tests.test_google import claims, google, google_login  # noqa: F401  (google is a fixture)
 
@@ -61,8 +62,7 @@ def add_user(app, email='user@example.com', password=PASSWORD):
 
 
 def password_login(client, next_url=None, email='user@example.com', password=PASSWORD):
-    return client.post('/login', query_string={'next': next_url} if next_url else None,
-                       data={'email': email, 'password': password})
+    return conftest.password_login(client, email=email, password=password, next_url=next_url)
 
 
 def approve(client, desktop):

@@ -91,12 +91,20 @@ your own accounts, so do them before you answer.
   OAuth-style PKCE sign-in and a revocable 180-day session token stored in the OS
   keychain. The desktop app (and so Plaid Link) can only be signed in with a verified
   email address (step 18a).
+- **MFA (step 18b):** required for every password sign-in and at sign-up: after the
+  password, a one-time 6-digit code is emailed to the account's address (valid 10
+  minutes, single use, 5 wrong tries end the attempt, resends rate limited, stored only
+  as a keyed HMAC). There's no way to skip it and no "remember this browser". Google
+  sign-ins rely on Google's own sign-in security, including the user's Google 2-Step
+  Verification. Since the desktop app signs in through the website, desktop sign-ins
+  (and so bank linking) get the same MFA.
 - **Web security (step 18a):** HSTS, a Content Security Policy (scripts only from the
   site itself with a per-response nonce; no framing), `X-Frame-Options: DENY`,
   `nosniff`, and a strict referrer policy on every response.
 - **Logging and monitoring (step 18a):** security events (sign-ups, logins and failed
-  logins, password changes and resets, email verification, Google sign-in, desktop
-  sign-ins and sign-outs, banks linked and removed, account deletion, rate-limit hits)
+  logins, sign-in codes sent, failed, locked out, and accepted, password changes and
+  resets, email verification, Google sign-in, desktop sign-ins and sign-outs, banks
+  linked and removed, account deletion, rate-limit hits)
   are logged with the user ID and IP, never passwords, tokens, codes, or email
   addresses. They're in Render's logs (search for `security event=`).
 - **Consent and deletion:** users connect banks through Plaid Link; they can remove a
