@@ -1,0 +1,20 @@
+{% extends "auth/base.html" %}
+{% block title %}Verify your email first{% endblock %}
+{% block card_name %}desktop_sign_in{% endblock %}
+{% block content %}
+  <h1 class="auth-card__title">Verify your email first</h1>
+  <p class="auth-card__text">
+    Before the desktop app can sign in as <strong>{{ current_user.email }}</strong>,
+    please confirm that this email address is yours. Open the link we emailed you,
+    then come back here and refresh this page.
+  </p>
+  <form method="post" action="{{ resend_url }}" class="auth-form">
+    {{ resend_form.csrf_token }}
+    <button type="submit" class="btn btn--primary auth-form__submit">Resend verification email</button>
+  </form>
+  <form method="post" action="{{ switch_account_url }}" class="auth-card__alt">
+    {{ logout_form.csrf_token }}
+    Not you? <button type="submit" class="auth-link-button">Use a different account</button>
+    · <a href="{{ cancel_url }}">Cancel</a>
+  </form>
+{% endblock %}

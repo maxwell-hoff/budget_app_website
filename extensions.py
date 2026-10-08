@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 
+from security_log import rate_limit_hit
+
 # Named constraints let later migrations drop or alter them by name.
 NAMING_CONVENTION = {
     'ix': 'ix_%(column_0_label)s',
@@ -17,4 +19,4 @@ NAMING_CONVENTION = {
 db = SQLAlchemy(metadata=MetaData(naming_convention=NAMING_CONVENTION))
 migrate = Migrate(render_as_batch=True)
 login_manager = LoginManager()
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_remote_address, on_breach=rate_limit_hit)

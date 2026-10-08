@@ -1,8 +1,9 @@
 import os
+import secrets
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, render_template, request, jsonify, send_from_directory, abort
+from flask import Flask, current_app, g, render_template, request, jsonify, send_from_directory, abort
 from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -15,6 +16,7 @@ import google_auth
 import models  # noqa: F401  (registers tables with SQLAlchemy for migrations)
 import plaid_api
 import plaid_webhook
+import security_log
 from config import BASE_DIR, load_config
 from extensions import db, limiter, login_manager, migrate
 
@@ -95,6 +97,45 @@ def healthz():
     return jsonify({'status': 'ok'})
 
 
+def csp_nonce():
+    """Per-response nonce for the templates' inline <script> blocks."""
+    if 'csp_nonce' not in g:
+        g.csp_nonce = secrets.token_urlsafe(16)
+    return g.csp_nonce
+
+
+def content_security_policy(nonce):
+    script_src = f"'self' 'nonce-{nonce}'" if nonce else "'self'"
+    # Styles allow 'unsafe-inline' because the landing page uses many style="" attributes,
+    # which nonces can't cover. form-action is left out: Chrome applies it to redirects,
+    # and forms here redirect to Stripe and to the desktop app's loopback address.
+    return '; '.join([
+        "default-src 'self'",
+        f'script-src {script_src}',
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data:",
+        "media-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+    ])
+
+
+def security_headers(response):
+    headers = response.headers
+    headers.setdefault('X-Content-Type-Options', 'nosniff')
+    headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+    # Nobody may frame these pages, so /app-login's Continue button can't be clickjacked.
+    headers.setdefault('X-Frame-Options', 'DENY')
+    headers.setdefault('Content-Security-Policy', content_security_policy(g.get('csp_nonce')))
+    # Only over HTTPS (Render): browsers would otherwise refuse plain-HTTP local dev.
+    if current_app.config.get('SESSION_COOKIE_SECURE'):
+        headers.setdefault('Strict-Transport-Security', 'max-age=31536000')
+    return response
+
+
 def create_app(test_config=None):
     app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
     # Render terminates TLS in one proxy hop; this gives rate limiting the real client IP.
@@ -104,6 +145,10 @@ def create_app(test_config=None):
     app.config.update(load_config(app.instance_path))
     if test_config:
         app.config.update(test_config)
+
+    security_log.init_logging()
+    app.after_request(security_headers)
+    app.jinja_env.globals['csp_nonce'] = csp_nonce
 
     db.init_app(app)
     migrate.init_app(app, db, directory=str(BASE_DIR / 'migrations'))

@@ -10,9 +10,10 @@ from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 
-from auth import LogoutForm, message_page
+from auth import LogoutForm, ResendVerificationForm, message_page
 from extensions import db, limiter
 from models import AppSession, AuthCode, as_utc, utcnow
+from security_log import log_event
 
 AUTH_CODE_TTL = timedelta(minutes=5)
 APP_SESSION_TTL = timedelta(days=180)
@@ -173,11 +174,29 @@ def app_login():
         # Never redirect to an unchecked URI, so errors are shown here instead.
         return _invalid_request()
 
+    switch_account_url = url_for('auth.logout', next=request.full_path)
+    cancel_url = _app_callback_url(params, error='access_denied')
+    user = current_user._get_current_object()
+    # Plaid Link is only reachable from a desktop session, so this also keeps unverified
+    # addresses from linking banks.
+    if not user.email_verified_at:
+        if request.method == 'POST':
+            log_event('app_code_refused', user.id, reason='email_unverified')
+        return render_template(
+            'auth/app_login_unverified.html',
+            resend_form=ResendVerificationForm(),
+            resend_url=url_for('auth.resend_verification', next=request.full_path),
+            logout_form=LogoutForm(),
+            switch_account_url=switch_account_url,
+            cancel_url=cancel_url,
+        ), 403
+
     form = AppLoginForm()
     if request.method == 'POST':
         if not form.validate_on_submit():
             abort(400)
-        code = issue_auth_code(current_user._get_current_object(), params)
+        code = issue_auth_code(user, params)
+        log_event('app_code_issued', user.id)
         return redirect(_app_callback_url(params, code=code))
 
     # A confirmation step (RFC 8252 section 8.6): another program on the computer could
@@ -187,6 +206,6 @@ def app_login():
         form=form,
         device_name=params['device_name'],
         logout_form=LogoutForm(),
-        switch_account_url=url_for('auth.logout', next=request.full_path),
-        cancel_url=_app_callback_url(params, error='access_denied'),
+        switch_account_url=switch_account_url,
+        cancel_url=cancel_url,
     )

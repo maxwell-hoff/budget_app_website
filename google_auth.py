@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from auth import external_url, message_page, safe_next_url
 from extensions import db, limiter
 from models import OAuthIdentity, User, normalize_email, utcnow
+from security_log import email_hash, log_event
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ def callback():
         token = client.authorize_access_token()
     except OAuthError as exc:
         logger.info('Google sign-in rejected: %s', exc)
+        log_event('google_login_failed', reason='oauth_error')
         return _failure('The sign-in request expired or was invalid. Please try again.')
 
     claims = token.get('userinfo') or {}
@@ -78,20 +80,25 @@ def callback():
 
     identity = db.session.scalar(db.select(OAuthIdentity).filter_by(provider=PROVIDER, provider_subject=subject))
 
+    events = []
     if identity:
         if current_user.is_authenticated and identity.user_id != current_user.id:
+            log_event('google_login_failed', current_user.id, reason='linked_to_other_user')
             return _failure('That Google account is already connected to a different Workbench account.')
         user = identity.user
         identity.email = email
     elif current_user.is_authenticated:
         user = current_user._get_current_object()
         if user.identity(PROVIDER):
+            log_event('google_login_failed', user.id, reason='other_google_account_linked')
             return _failure('A different Google account is already connected to your account.')
         _link(user, subject, email)
+        events.append(('google_linked', {}))
         flash('Google is now connected to your account.')
     elif not email_verified:
         # Linking or creating on an unverified address would let someone claim an
         # account for an email they don't control.
+        log_event('google_login_failed', reason='email_unverified', email_hash=email_hash(email))
         return _failure("Your Google account's email address isn't verified, so we can't use it to sign in.")
     else:
         user = db.session.scalar(db.select(User).filter_by(email=email))
@@ -99,15 +106,24 @@ def callback():
             if not user.email_verified_at:
                 # Someone may have signed up with this address without owning it. Google has
                 # proven who owns it, so drop the unverified password (ending its sessions).
+                had_password = bool(user.password_hash)
                 user.password_hash = None
                 user.email_verified_at = utcnow()
+                events.append(('email_verified', {'method': 'google'}))
+                if had_password:
+                    events.append(('password_removed', {'reason': 'unverified_email_claimed_by_google'}))
         else:
             user = User(email=email, email_verified_at=utcnow())
             db.session.add(user)
+            events.append(('signup', {'method': 'google'}))
         _link(user, subject, email)
+        events.append(('google_linked', {}))
 
     db.session.commit()
+    for event, fields in events:
+        log_event(event, user.id, **fields)
     login_user(user)
+    log_event('login', user.id, method='google')
     return redirect(session.pop(_NEXT_KEY, None) or url_for('account.account'))
 
 
@@ -128,5 +144,6 @@ def unlink():
         else:
             db.session.delete(identity)
             db.session.commit()
+            log_event('google_unlinked', user.id)
             flash('Google has been disconnected from your account.')
     return redirect(url_for('account.account'))

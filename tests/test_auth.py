@@ -38,12 +38,17 @@ def test_flag_off_404_even_after_many_login_posts():
     assert statuses == {404}
 
 
+def without_nonces(html):
+    """The CSP nonce on inline scripts is new on every response."""
+    return re.sub(rb'nonce="[^"]+"', b'nonce=""', html)
+
+
 def test_site_pages_unchanged_by_flag(client, accounts_client):
     for path in ['/', '/about']:
         off = client.get(path)
         on = accounts_client.get(path)
         assert off.status_code == on.status_code == 200
-        assert off.data == on.data
+        assert without_nonces(off.data) == without_nonces(on.data)
         assert b'/login' not in off.data and b'/signup' not in off.data
 
 

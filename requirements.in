@@ -1,0 +1,16 @@
+flask
+gunicorn
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg[binary]
+python-dotenv
+Flask-Login
+Flask-WTF
+email-validator
+Flask-Limiter
+Authlib
+requests
+stripe>=16
+plaid-python>=45
+cryptography
+certifi

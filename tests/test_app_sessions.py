@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 import pytest
 
-from app_auth import is_loopback_redirect_uri, pkce_challenge
+from app_auth import create_app_session, is_loopback_redirect_uri, pkce_challenge
 from extensions import db
 from models import AppSession, AuthCode, Subscription, User, utcnow
 from tests.conftest import make_app
@@ -480,12 +480,13 @@ def test_password_change_ends_app_sessions(accounts_app, user_id):
 
 
 def test_password_removed_by_google_link_ends_app_sessions(google):  # noqa: F811
-    with google.app.app_context():
+    # /app-login refuses unverified users (step 18a), but sessions from before that rule exist.
+    with google.app.test_request_context():
         user = User(email='user@example.com')  # never verified
         user.set_password(PASSWORD)
         db.session.add(user)
         db.session.commit()
-    token = sign_in(google.app)
+        token, _session = create_app_session(user, 'Laptop')
     assert me(google.app.test_client(), token).status_code == 200
 
     google_login(google, google.app.test_client(), claims())  # the real owner signs in with Google
