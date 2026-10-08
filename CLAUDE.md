@@ -40,6 +40,7 @@ render.yaml → Render service definition (gunicorn serve:app, 120 s worker time
 requirements.in, requirements-dev.in → direct dependencies; requirements.txt / requirements-dev.txt are pinned by pip-compile (see below)
 .github/workflows/ci.yml → pytest and pip-audit on pull requests and pushes to main; .github/dependabot.yml → weekly pip and GitHub Actions updates
 docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription); GO_LIVE.md is the step 18 dashboard checklist
+docs/security/ → written security policies (information security, access control, vulnerability management, incident response, data retention, vendors) and the Plaid questionnaire answers; keep them true when the code changes (e.g. what the server stores, MFA, logging)
 ```
 
 ## Running the App
