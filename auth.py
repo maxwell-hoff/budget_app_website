@@ -14,6 +14,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 from extensions import db, limiter, login_manager
 from mailer import try_send_email
 from models import User, normalize_email, utcnow
+from security_log import email_hash, log_event
 from tokens import (
     RESET_MAX_AGE, VERIFY_MAX_AGE,
     load_reset_token, load_verify_token, make_reset_token, make_verify_token,
@@ -153,6 +154,7 @@ def signup():
                 db.session.rollback()
                 form.email.errors.append('An account with that email already exists.')
             else:
+                log_event('signup', user.id, method='password')
                 login_user(user)
                 send_verification_email(user)
                 flash(f'We sent a link to {user.email} to verify your email address.')
@@ -173,10 +175,15 @@ def login():
         user = db.session.scalar(db.select(User).filter_by(email=normalize_email(form.email.data)))
         if user and user.check_password(form.password.data):
             login_user(user)
+            log_event('login', user.id, method='password')
             return redirect(after_login_url())
         if not user or not user.password_hash:
             # Same hashing cost whether or not the account exists, so timing doesn't reveal it.
             check_password_hash(_dummy_password_hash(), form.password.data)
+        if user:
+            log_event('login_failed', user.id, reason='bad_password' if user.password_hash else 'no_password')
+        else:
+            log_event('login_failed', reason='unknown_email', email_hash=email_hash(form.email.data))
         error = 'Invalid email or password.'
 
     return render_template('auth/login.html', form=form, error=error)
@@ -186,6 +193,8 @@ def login():
 def logout():
     if not LogoutForm().validate_on_submit():
         abort(400)
+    if current_user.is_authenticated:
+        log_event('logout', current_user.id)
     logout_user()
     return redirect(safe_next_url(request.args.get('next')) or url_for('index'))
 
@@ -198,7 +207,10 @@ def forgot_password():
         email = normalize_email(form.email.data)
         user = db.session.scalar(db.select(User).filter_by(email=email))
         if user:
+            log_event('password_reset_requested', user.id)
             send_reset_email(user)
+        else:
+            log_event('password_reset_requested', reason='unknown_email', email_hash=email_hash(email))
         # Same response either way, so this form doesn't reveal which emails have accounts.
         return message_page(
             'Check your email', 'Check your email',
@@ -223,9 +235,13 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         # The link arrived in their inbox, which proves they own the address.
-        if not user.email_verified_at:
+        newly_verified = not user.email_verified_at
+        if newly_verified:
             user.email_verified_at = utcnow()
         db.session.commit()
+        log_event('password_reset', user.id)
+        if newly_verified:
+            log_event('email_verified', user.id, method='password_reset')
         login_user(user)
         flash('Your password has been updated.')
         return redirect(url_for('account.account'))
@@ -246,6 +262,7 @@ def verify_email(token):
     if not user.email_verified_at:
         user.email_verified_at = utcnow()
         db.session.commit()
+        log_event('email_verified', user.id, method='link')
     return message_page(
         'Email verified', 'Email verified',
         f'Thanks — {user.email} is confirmed.',
@@ -264,4 +281,5 @@ def resend_verification():
     else:
         send_verification_email(current_user)
         flash(f'We sent a new verification link to {current_user.email}.')
-    return redirect(url_for('account.account'))
+    # /app-login sends people back to itself.
+    return redirect(safe_next_url(request.args.get('next')) or url_for('account.account'))

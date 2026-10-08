@@ -9,7 +9,8 @@ all Plaid API calls) used by the desktop app in `../budget_app`.
 ## Architecture
 
 ```
-serve.py → Flask app factory (create_app) + module-level `app`: pages, legal pages (/privacy, /terms, /refunds; LEGAL_CONTACT_EMAIL, LEGAL_UPDATED), /download/<platform>, /notify, /healthz
+serve.py → Flask app factory (create_app) + module-level `app`: pages, legal pages (/privacy, /terms, /refunds; LEGAL_CONTACT_EMAIL, LEGAL_UPDATED), /download/<platform>, /notify, /healthz; security headers on every response (CSP with a per-response nonce: every inline <script> needs nonce="{{ csp_nonce() }}"; HSTS only when cookies are secure)
+security_log.py → log_event(event, user_id, **fields): one `security event=… user=… ip=…` line per security event (never passwords, tokens, codes, or emails; email_hash for unknown emails); rate_limit_hit is Flask-Limiter's on_breach
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
 models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, AuthCode, AppSession)
@@ -17,7 +18,7 @@ auth.py → account blueprint: sign up/in/out, password reset, email verificatio
 account.py → /account page blueprint (details, change password, POST /account/delete which removes banks at Plaid and the Stripe customer first; registered only when ACCOUNTS_ENABLED is on)
 google_auth.py → Sign in with Google (Authlib OIDC): /auth/google, callback, disconnect
 billing.py → Stripe: POST /billing/checkout, /billing/portal, /stripe/webhook (registered only when ACCOUNTS_ENABLED and all STRIPE_* vars are set); has_paid_access(user) is the only place that decides paid access (the whole desktop app, bank syncing included) and access_until(user) says until when; Checkout adds a TRIAL_DAYS free trial (default 7) for users who never had one (subscriptions.trial_used_at); the webhook emails a reminder on customer.subscription.trial_will_end and removes a user's banks at Plaid once subscription_ended(user)
-app_auth.py → desktop sign-in: GET/POST /app-login (confirm page, one-time PKCE codes), app session create/lookup (registered only when ACCOUNTS_ENABLED is on)
+app_auth.py → desktop sign-in: GET/POST /app-login (confirm page, one-time PKCE codes; refused with a "verify your email" page until the email is verified), app session create/lookup (registered only when ACCOUNTS_ENABLED is on)
 api.py → /v1 JSON API for the desktop app: POST /v1/auth/token, GET /v1/me (paid_access, access_until, trial_available), POST /v1/auth/logout; require_app_session and api_error (registered only when ACCOUNTS_ENABLED is on)
 plaid_api.py → /v1/plaid: link-token, exchange, items, sync (pass-through of Plaid's /transactions/get JSON, not stored), relink-token / relink-complete (update mode), delete; require_paid_access (402 subscription_required); Fernet-encrypted access tokens (PLAID_TOKEN_KEY); CLI `flask plaid-remove-lapsed`; registered only when ACCOUNTS_ENABLED and PLAID_CLIENT_ID/PLAID_SECRET/PLAID_TOKEN_KEY are set
 plaid_webhook.py → POST /plaid/webhook: verifies Plaid's JWT, updates item status (registered with plaid_api)
@@ -35,6 +36,8 @@ docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_r
 frontend/templates/ → index.html (landing page), about.html, legal/ (privacy, terms, refunds), _legal_links.html (footer links, included in every page's footer)
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
 render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
+requirements.in, requirements-dev.in → direct dependencies; requirements.txt / requirements-dev.txt are pinned by pip-compile (see below)
+.github/workflows/ci.yml → pytest and pip-audit on pull requests and pushes to main; .github/dependabot.yml → weekly pip and GitHub Actions updates
 docs/paid_plaid/ → Cross-repo plan for the paid app (whole-app subscription); GO_LIVE.md is the step 18 dashboard checklist
 ```
 
@@ -51,6 +54,22 @@ pytest
 
 After adding or changing models, create a migration with `flask db migrate -m "<what>"`,
 review the generated file in `migrations/versions/`, and commit it.
+
+## Dependencies
+
+Add or change dependencies in `requirements.in` (app) or `requirements-dev.in` (tests and
+tools), never in the `.txt` files. Then recompile with Python 3.12 (Render's
+`PYTHON_VERSION`; another version can drop packages that only 3.12 needs), e.g. in a
+3.12 venv with `pip install pip-tools`:
+
+```bash
+pip-compile --strip-extras --no-emit-index-url -o requirements.txt requirements.in
+pip-compile --strip-extras --no-emit-index-url -o requirements-dev.txt requirements-dev.in
+pip install -r requirements-dev.txt && pytest && pip-audit -r requirements.txt
+```
+
+To upgrade, add `--upgrade` (everything) or `--upgrade-package <name>` to both
+`pip-compile` commands. Without Python 3.12 installed: `uv venv -p 3.12` gets one.
 
 ## Paid app project (cross-repo)
 

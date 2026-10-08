@@ -89,7 +89,16 @@ your own accounts, so do them before you answer.
 - **Authentication for end users:** passwords hashed with scrypt, or Sign in with
   Google; rate-limited login; CSRF protection on forms; the desktop app uses
   OAuth-style PKCE sign-in and a revocable 180-day session token stored in the OS
-  keychain.
+  keychain. The desktop app (and so Plaid Link) can only be signed in with a verified
+  email address (step 18a).
+- **Web security (step 18a):** HSTS, a Content Security Policy (scripts only from the
+  site itself with a per-response nonce; no framing), `X-Frame-Options: DENY`,
+  `nosniff`, and a strict referrer policy on every response.
+- **Logging and monitoring (step 18a):** security events (sign-ups, logins and failed
+  logins, password changes and resets, email verification, Google sign-in, desktop
+  sign-ins and sign-outs, banks linked and removed, account deletion, rate-limit hits)
+  are logged with the user ID and IP, never passwords, tokens, codes, or email
+  addresses. They're in Render's logs (search for `security event=`).
 - **Consent and deletion:** users connect banks through Plaid Link; they can remove a
   bank in the app (removed at Plaid immediately) or delete their account (all banks
   removed at Plaid, then the account deleted). Banks are removed automatically when a
@@ -99,9 +108,11 @@ your own accounts, so do them before you answer.
   Plaid's End User Privacy Policy).
 - **Access control (you):** one person (you) has access to production. Turn on 2-step
   verification for Plaid, Render, Stripe, GitHub, Google Cloud, and Resend, and say so.
-- **Vulnerability management (you):** dependencies in `requirements.txt` are not pinned
-  (bare names and a few minimum versions). If you turn on GitHub's Dependabot alerts
-  for the repo, you can say you monitor them.
+- **Vulnerability management (you):** dependencies are pinned (`requirements.txt`,
+  compiled from `requirements.in` with `pip-compile`); CI runs the tests and
+  `pip-audit` on every pull request and push to `main`; Dependabot opens weekly update
+  PRs for Python packages and GitHub Actions (step 18a). Turn on Dependabot alerts and
+  security updates in both repos' GitHub settings, then you can say you monitor them.
 
 ---
 

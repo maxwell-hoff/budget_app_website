@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          # Same as PYTHON_VERSION in render.yaml (the pins are compiled for it).
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip check
+
+      # The live Plaid sandbox tests skip without PLAID_SANDBOX_CLIENT_ID / PLAID_SANDBOX_SECRET.
+      - name: Run tests
+        run: pytest -q
+
+      - name: Audit production dependencies
+        run: pip-audit --no-deps --disable-pip -r requirements.txt

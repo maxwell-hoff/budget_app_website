@@ -78,7 +78,7 @@
       </div>
     </footer>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       document.getElementById("year").textContent = new Date().getFullYear();
 
       (function () {

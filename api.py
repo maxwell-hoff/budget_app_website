@@ -11,6 +11,7 @@ from auth import external_url
 from billing import access_until, has_paid_access, trial_available
 from extensions import db, limiter
 from models import as_utc, utcnow
+from security_log import log_event
 
 # Writing last_used_at on every request would add a database write per API call.
 LAST_USED_RESOLUTION = timedelta(minutes=5)
@@ -85,10 +86,12 @@ def token():
 
     auth_code = redeem_auth_code(code, verifier)
     if auth_code is None:
+        log_event('app_token_rejected')
         return api_error(400, 'bad_request', 'The sign-in code is invalid, expired, or already used. Sign in again.')
 
     user = auth_code.user
     session_token, session = create_app_session(user, clean_device_name(device_name) or auth_code.device_name)
+    log_event('app_session_created', user.id, session=session.id)
     return jsonify(
         session_token=session_token,
         expires_at=iso_utc(session.expires_at),
@@ -101,6 +104,7 @@ def token():
 def logout():
     g.app_session.revoked_at = utcnow()
     db.session.commit()
+    log_event('app_session_revoked', g.user.id, session=g.app_session.id)
     return '', 204
 
 

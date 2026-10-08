@@ -10,6 +10,8 @@ plaid_not_ready), lists items, and deletes the item again (add --keep to leave i
 scripts/check_sync_fixture_with_desktop.py.
 
 The server must run with ACCOUNTS_ENABLED=true and, for --plaid, sandbox Plaid keys.
+The account's email must be verified (step 18a); otherwise /app-login shows "Verify your
+email first" and this script times out waiting for the callback.
 --plaid needs the signed-in account to have an active (test-mode) subscription, and
 PLAID_SANDBOX_CLIENT_ID / PLAID_SANDBOX_SECRET in .env to fake the Link step.
 

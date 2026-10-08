@@ -26,6 +26,7 @@ from api import api_error, iso_utc, json_http_error, require_app_session
 from billing import has_paid_access, subscription_ended
 from extensions import db, limiter
 from models import PlaidItem, User, utcnow
+from security_log import log_event
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +253,7 @@ def _mark_if_gone(item, exc):
 
 # --- Removing Items (also used by billing and account deletion) ---
 
-def remove_items_at_plaid(items):
+def remove_items_at_plaid(items, reason):
     """Remove each item at Plaid (so Plaid stops billing for it), then here. Returns the
     items that couldn't be removed; they're kept so a later attempt can retry. The caller
     commits."""
@@ -265,6 +266,7 @@ def remove_items_at_plaid(items):
                 log_plaid_failure(exc, 'item_remove', item.user_id)
                 failed.append(item)
                 continue
+        log_event('plaid_item_removed', item.user_id, item=item.item_id, reason=reason)
         db.session.delete(item)
     return failed
 
@@ -275,7 +277,7 @@ def remove_items_if_subscription_ended(user):
         return []
     items = list(user.plaid_items)
     logger.info('Subscription ended for user %s; removing %d Plaid item(s)', user.id, len(items))
-    return remove_items_at_plaid(items)
+    return remove_items_at_plaid(items, 'subscription_ended')
 
 
 @click.command('plaid-remove-lapsed')
@@ -287,7 +289,7 @@ def remove_lapsed_command():
         if not subscription_ended(user):
             continue
         count = len(user.plaid_items)
-        left = len(remove_items_at_plaid(list(user.plaid_items)))
+        left = len(remove_items_at_plaid(list(user.plaid_items), 'subscription_ended'))
         db.session.commit()
         removed += count - left
         failed += left
@@ -372,6 +374,7 @@ def exchange():
     item.institution_name = _optional_string(institution.get('name'), 255)
     item.status = 'ok'
     db.session.commit()
+    log_event('plaid_item_linked', g.user.id, item=item.item_id)
     return jsonify(item=item_json(item))
 
 
@@ -467,4 +470,5 @@ def delete_item(item_id):
             return plaid_failure(exc, 'item_remove')
     db.session.delete(item)
     db.session.commit()
+    log_event('plaid_item_removed', g.user.id, item=item_id, reason='user_request')
     return '', 204

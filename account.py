@@ -14,6 +14,7 @@ from billing import BillingForm, subscription_summary
 from extensions import db, limiter
 from google_auth import UnlinkGoogleForm
 from models import normalize_email
+from security_log import log_event
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ def account():
         else:
             user.set_password(form.password.data)
             db.session.commit()
+            log_event('password_changed' if has_password else 'password_set', user.id)
             # The session ID includes a password fingerprint; log in again so this session
             # survives while every other session is ended.
             login_user(user)
@@ -91,7 +93,7 @@ def delete_user_everywhere(user):
     if user.plaid_items:
         if not current_app.config.get('PLAID_ENABLED'):
             return "Bank connections can't be removed right now. Please try again later."
-        failed = plaid_api.remove_items_at_plaid(list(user.plaid_items))
+        failed = plaid_api.remove_items_at_plaid(list(user.plaid_items), 'account_deleted')
         db.session.commit()
         if failed:
             return "We couldn't disconnect your banks from Plaid. Please try again in a few minutes."
@@ -110,7 +112,7 @@ def delete_user_everywhere(user):
     user_id = user.id
     db.session.delete(user)
     db.session.commit()
-    logger.info('Deleted user %s', user_id)
+    log_event('account_deleted', user_id)
     return None
 
 

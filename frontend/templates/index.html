@@ -202,7 +202,7 @@
       }
     </style>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       /* How-it-works steps start collapsed, but only when we can open them
          again. Flagged here so the collapsed state is in place on first
          paint — without JS, or with reduced motion, the steps stay open. */
@@ -1109,7 +1109,7 @@
       </div>
     </footer>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
       document.getElementById("year").textContent = new Date().getFullYear();
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
