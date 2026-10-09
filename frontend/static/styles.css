@@ -193,6 +193,36 @@ body::before {
   letter-spacing: -0.005em;
 }
 
+/* Logo mark (_logo_mark.html): the favicon's fork — what's spent vs. the future */
+.logo-mark {
+  --logo-spent: #7c8aa0;
+  --logo-future: #38bdf8;
+  display: block;
+  flex: 0 0 auto;
+  width: 28px;
+  height: auto;
+  overflow: visible;
+}
+.logo-mark path {
+  fill: none;
+  stroke-linecap: round;
+}
+.logo-mark__spent {
+  stroke: var(--logo-spent);
+  stroke-width: 2.5;
+}
+.logo-mark__spent-dot { fill: var(--logo-spent); }
+.logo-mark__future {
+  stroke: var(--logo-future);
+  stroke-width: 3;
+}
+.logo-mark__dot { fill: var(--logo-future); }
+.nav__brand .logo-mark,
+.footer__brand .logo-mark {
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.45));
+}
+.footer__brand .logo-mark { width: 25px; }
+
 .nav__dots {
   display: flex;
   gap: 5px;
@@ -2611,15 +2641,10 @@ body::before {
   align-items: center;
   gap: 0.5rem;
 }
-.compare__brand .nav__dots { gap: 3px; }
-.compare__brand .nav__dots span {
-  width: 6px;
-  height: 6px;
-  background: var(--border-strong);
-}
-.compare__brand .nav__dots span:first-child {
-  background: var(--accent-bright);
-  box-shadow: none;
+.compare__brand .logo-mark {
+  width: 20px;
+  --logo-spent: #64748b;
+  --logo-future: var(--accent-bright);
 }
 
 /* Yes / partly / no marks */
