@@ -7,6 +7,8 @@ from flask import current_app
 logger = logging.getLogger(__name__)
 
 RESEND_URL = 'https://api.resend.com/emails'
+# Cloudflare in front of Resend rejects urllib's default "Python-urllib/x.y" with a 403 (error 1010).
+USER_AGENT = 'workbench-budgeting/1.0'
 
 
 def send_email(to, subject, text):
@@ -41,6 +43,7 @@ def _send_resend(message):
         headers={
             'Authorization': f"Bearer {current_app.config['RESEND_API_KEY']}",
             'Content-Type': 'application/json',
+            'User-Agent': USER_AGENT,
         },
         method='POST',
     )
