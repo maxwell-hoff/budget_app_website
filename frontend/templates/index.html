@@ -23,7 +23,7 @@
     <nav class="nav">
       <div class="wrap nav__inner">
         <a class="nav__brand" href="#top" aria-label="Workbench Budgeting home">
-          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          {% include "_logo_mark.html" %}
           WORKBENCH&nbsp;BUDGETING
         </a>
         <span class="nav__spacer"></span>
@@ -38,6 +38,7 @@
           <span class="nav__toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
         <div class="nav__links" id="navLinks">
+          <a href="#why">Why</a>
           <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
           <a href="#pricing">Pricing</a>
@@ -302,6 +303,166 @@
         </span>
       </div>
     </header>
+
+    <!-- ── Why: spending today and retirement are one decision ──
+         With JS (and motion allowed) the stage pins and the story plays one
+         beat per stretch of scroll; otherwise everything shows at once. -->
+    <section class="section why" id="why" aria-label="Why Workbench">
+      <div class="why__track">
+        <div class="why__stage">
+          <div class="wrap why__inner">
+            <div class="why__head">
+              <span class="kicker">Why Workbench</span>
+              <h2 class="section__title">
+                Your budget and your retirement are one decision. Most apps treat them as two.
+              </h2>
+            </div>
+
+            <div class="why__board" aria-hidden="true">
+              <div class="why__frame-bar">
+                <span class="nav__dots"><span></span><span></span><span></span></span>
+                <span class="why__frame-title">Workbench Budgeting</span>
+              </div>
+
+              <div class="why-win why-win--now">
+                <div class="why-win__bar">
+                  <span class="reel__lights"><span></span><span></span><span></span></span>
+                  <span class="why-win__app">Your budgeting app</span>
+                </div>
+                <div class="why-win__body">
+                  <div class="why-win__head">
+                    <span class="viz-label">Budget, spending &amp; goals</span>
+                    <span class="why-key"><i class="why-key__bar"></i>Spent<i class="why-key__mark"></i>Budget</span>
+                  </div>
+                  <!-- Bars share one scale ($2,000 = 100%); --b marks the budget -->
+                  <ul class="why-cats">
+                    <li><span>Housing</span><i style="--w: 92.5%; --b: 92.5%"></i><b>$1,850</b></li>
+                    <li><span>Groceries</span><i style="--w: 30.5%; --b: 32.5%"></i><b>$610</b></li>
+                    <li class="why-cats__over" data-on="1-2">
+                      <span>Dining &amp; fun</span><i style="--w: 20%; --w-over: 31%; --b: 21%"></i>
+                      <b><span class="why-cats__was">$400</span><span class="why-cats__now">$620</span></b>
+                    </li>
+                  </ul>
+                  <div class="why-win__events">
+                    <div class="why-chip why-chip--cause" data-show="1-2">
+                      <span class="why-chip__label">From now on</span>
+                      <span class="why-chip__value">+$200/month on dining</span>
+                      <span class="why-chip__alt">over budget, every month</span>
+                    </div>
+                    <div class="why-chip why-chip--cause" data-show="3-5">
+                      <span class="why-chip__label">Goal &middot; 5 years out</span>
+                      <span class="why-chip__value">$6,000 trip</span>
+                      <span class="why-chip__alt">set aside $100/month</span>
+                    </div>
+                    <div class="why-chip why-chip--effect" data-show="5">
+                      <span class="why-chip__label">Or</span>
+                      <span class="why-chip__value">&minus;$100/month in spending</span>
+                      <span class="why-chip__alt">and keep your retirement date</span>
+                    </div>
+                    <div class="why-chip why-chip--effect why-chip--final" data-show="6">
+                      <span class="why-chip__label">Your call</span>
+                      <span class="why-chip__value">Trip: $100/month for 5 years</span>
+                      <span class="why-chip__alt">trimmed from today's spending</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="why-link">
+                <span class="why-link__track"><span class="why-link__pulse"></span></span>
+                <span class="why-link__q" data-show="0">?</span>
+              </div>
+
+              <div class="why-win why-win--later">
+                <div class="why-win__bar">
+                  <span class="reel__lights"><span></span><span></span><span></span></span>
+                  <span class="why-win__app">Your retirement planner</span>
+                </div>
+                <div class="why-win__body">
+                  <div class="why-win__head">
+                    <span class="viz-label">Retirement planning</span>
+                    <span class="why-key why-key--old"><i class="why-key__dash"></i>Old plan</span>
+                  </div>
+                  <!-- Ages 32 to 75 across the width: 62 at x=166, 64½ at x=180 -->
+                  <div class="why-plan">
+                    <svg viewBox="0 0 240 70" preserveAspectRatio="none">
+                      <path class="why-plan__base" d="M4,66 H236"/>
+                      <path class="why-plan__drop why-plan__drop--was" d="M166,26 V66"/>
+                      <path class="why-plan__drop why-plan__drop--now" d="M180,22 V66"/>
+                      <path class="why-plan__line why-plan__line--was" d="M4,62 C70,58 120,44 166,26 C190,28 214,33 236,38"/>
+                      <path class="why-plan__line why-plan__line--now" d="M4,62 C76,58 130,42 180,22 C200,24 220,28 236,32"/>
+                    </svg>
+                    <span class="why-plan__dot-was"></span>
+                    <span class="why-plan__mark">
+                      <span class="why-plan__at62">Retire at 62</span>
+                      <span class="why-plan__at64">Retire at 64&frac12;</span>
+                      <span class="why-plan__at62q">Retire at 62&frac14;</span>
+                    </span>
+                  </div>
+                  <div class="why-win__events">
+                    <div class="why-chip why-chip--effect" data-show="2">
+                      <span class="why-chip__label">Effect</span>
+                      <span class="why-chip__value">Retire at 64&frac12;, not 62</span>
+                      <span class="why-chip__alt">about 2&frac12; years later</span>
+                    </div>
+                    <div class="why-chip why-chip--effect" data-show="4-5">
+                      <span class="why-chip__label">If it comes out of savings</span>
+                      <span class="why-chip__value">Retire ~3 months later</span>
+                      <span class="why-chip__alt">or &minus;$67/month in retirement</span>
+                    </div>
+                    <div class="why-chip why-chip--effect why-chip--final" data-show="6">
+                      <span class="why-chip__label">Still on track</span>
+                      <span class="why-chip__value">Retire at 62</span>
+                      <span class="why-chip__alt">with the trip paid for</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="why__captions">
+              <p class="why__caption" data-show="0">
+                Budgeting apps track what you spent. Retirement planners project where you're headed.
+                Most apps are built around one, with the other bolted on or missing, so you copy
+                numbers between them and guess at the rest.
+              </p>
+              <p class="why__caption" data-show="1">
+                Say dining out creeps up to <strong>$200 a month over budget</strong>, and it sticks.
+              </p>
+              <p class="why__caption" data-show="2">
+                That's less saved every month and more to fund later, so you <strong>retire at 64&frac12;
+                instead of 62</strong>. Your budgeting app shows the overspending, but not what it costs you.
+              </p>
+              <p class="why__caption" data-show="3">
+                Now say you start saving for a <strong>$6,000 trip five years from now</strong>: $100 a month.
+              </p>
+              <p class="why__caption" data-show="4">
+                If that $100 comes out of your retirement saving, you <strong>retire about 3 months later</strong>.
+                You'd only find that out by re-entering the trip in your retirement planner.
+              </p>
+              <p class="why__caption" data-show="5">
+                Or you <strong>trim $100 a month from today's spending</strong> and keep your retirement date.
+                You can only weigh that choice with both sides in view.
+              </p>
+              <p class="why__caption why__caption--payoff" data-show="6">
+                <strong>Workbench Budgeting is built for both</strong>, because they're one decision.
+                Change one side and watch the other move, then pick the tradeoff instead of guessing at it.
+              </p>
+            </div>
+
+            <div class="why__foot">
+              <span class="why__steps" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </span>
+              <p class="why__fine">
+                Illustrative math: $100,000 saved at 32, $5,180/month spending now and in retirement,
+                5% yearly return after inflation, 4% withdrawal rate. Workbench runs it on your own numbers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
       <div class="wrap">
@@ -860,7 +1021,7 @@
                 <tr>
                   <td></td>
                   <th scope="col" class="compare__ours">
-                    <span class="compare__brand"><span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>Workbench</span>
+                    <span class="compare__brand">{% include "_logo_mark.html" %}Workbench</span>
                   </th>
                   <th scope="col">YNAB</th>
                   <th scope="col">Monarch</th>
@@ -1092,7 +1253,7 @@
     <footer class="footer">
       <div class="wrap footer__inner">
         <span class="footer__brand">
-          <span class="nav__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          {% include "_logo_mark.html" %}
           Workbench Budgeting
         </span>
         <div class="footer__end">
@@ -1500,12 +1661,30 @@
          Keep the headline centered while the promise + download reveal in the
          space beneath it. The hero pins for one extra screen of scroll; a
          little scrolling flips the reveal on. Falls back to a plain stacked
-         hero when JS is off or motion is reduced. */
+         hero when JS is off, motion is reduced, or the revealed block won't
+         fit on the pinned screen (short phones). */
       (function () {
         const hero = document.querySelector(".hero");
         if (!hero || reduceMotion) return;
+        const stage = hero.querySelector(".hero__stage");
+        const inner = hero.querySelector(".hero__stage-inner");
+        const detail = hero.querySelector(".hero__detail");
+        const ROOM_BELOW = 24;
 
-        hero.classList.add("is-pinnable");
+        function pinIfItFits() {
+          hero.classList.add("is-pinnable");
+          const top = inner.getBoundingClientRect().top - stage.getBoundingClientRect().top;
+          const bottom = top + detail.offsetTop + detail.offsetHeight;
+          if (bottom > stage.clientHeight - ROOM_BELOW) hero.classList.remove("is-pinnable");
+        }
+        pinIfItFits();
+
+        let width = window.innerWidth;
+        window.addEventListener("resize", () => {
+          if (window.innerWidth === width) return; // mobile toolbars showing/hiding
+          width = window.innerWidth;
+          pinIfItFits();
+        }, { passive: true });
 
         let ticking = false;
         const sync = () => {
@@ -1527,6 +1706,69 @@
         );
         window.addEventListener("resize", sync, { passive: true });
         sync();
+      })();
+
+      /* ── Why: one beat of the story per stretch of scroll ──
+         [data-show="a-b"] elements appear during beats a..b; [data-on]
+         elements stay visible and only switch state. Phones, short windows,
+         and reduced motion get the static version (everything at once). */
+      (function () {
+        const why = document.getElementById("why");
+        if (!why || reduceMotion) return;
+        const track = why.querySelector(".why__track");
+        const stage = why.querySelector(".why__stage");
+        const dots = Array.from(why.querySelectorAll(".why__steps > span"));
+        const beats = dots.length;
+        const parts = Array.from(why.querySelectorAll("[data-show], [data-on]")).map((el) => {
+          const [from, to] = (el.dataset.show || el.dataset.on).split("-").map(Number);
+          return { el, from, to: to ?? from };
+        });
+        const roomy = window.matchMedia("(min-width: 721px) and (min-height: 700px)");
+        let beat = -1;
+        let ticking = false;
+
+        function show(n) {
+          if (n === beat) return;
+          beat = n;
+          why.dataset.beat = String(n);
+          parts.forEach((p) => p.el.classList.toggle("is-on", n >= p.from && n <= p.to));
+          dots.forEach((d, i) => d.classList.toggle("is-on", i <= n));
+        }
+
+        function sync() {
+          ticking = false;
+          if (!why.classList.contains("is-scrolly")) return;
+          const pinTop = parseFloat(getComputedStyle(stage).top) || 0;
+          const scrollable = track.offsetHeight - stage.offsetHeight;
+          const progress = scrollable > 0
+            ? (pinTop - track.getBoundingClientRect().top) / scrollable
+            : 0;
+          const clamped = Math.min(Math.max(progress, 0), 0.999);
+          show(Math.floor(clamped * beats));
+        }
+
+        function setMode() {
+          const on = roomy.matches;
+          why.classList.toggle("is-scrolly", on);
+          beat = -1;
+          if (on) {
+            sync();
+          } else {
+            delete why.dataset.beat;
+            parts.forEach((p) => p.el.classList.remove("is-on"));
+          }
+        }
+
+        window.addEventListener("scroll", () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(sync);
+          }
+        }, { passive: true });
+        window.addEventListener("resize", sync, { passive: true });
+        if (roomy.addEventListener) roomy.addEventListener("change", setMode);
+        else if (roomy.addListener) roomy.addListener(setMode);
+        setMode();
       })();
 
       /* ── Hero download: lead with the visitor's platform ──

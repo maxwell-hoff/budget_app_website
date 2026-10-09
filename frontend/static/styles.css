@@ -193,6 +193,36 @@ body::before {
   letter-spacing: -0.005em;
 }
 
+/* Logo mark (_logo_mark.html): the favicon's fork — what's spent vs. the future */
+.logo-mark {
+  --logo-spent: #7c8aa0;
+  --logo-future: #38bdf8;
+  display: block;
+  flex: 0 0 auto;
+  width: 28px;
+  height: auto;
+  overflow: visible;
+}
+.logo-mark path {
+  fill: none;
+  stroke-linecap: round;
+}
+.logo-mark__spent {
+  stroke: var(--logo-spent);
+  stroke-width: 2.5;
+}
+.logo-mark__spent-dot { fill: var(--logo-spent); }
+.logo-mark__future {
+  stroke: var(--logo-future);
+  stroke-width: 3;
+}
+.logo-mark__dot { fill: var(--logo-future); }
+.nav__brand .logo-mark,
+.footer__brand .logo-mark {
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.45));
+}
+.footer__brand .logo-mark { width: 25px; }
+
 .nav__dots {
   display: flex;
   gap: 5px;
@@ -608,6 +638,18 @@ body::before {
 }
 .hero.is-pinnable.is-revealed .hero__cue {
   opacity: 0;
+}
+/* Phones: the revealed block is taller than half the screen, so anchor it
+   near the top rather than centering it, leaving room under the checkmarks
+   and a clear gap before the next section. */
+@media (max-width: 720px) {
+  .hero.is-pinnable {
+    margin-bottom: clamp(1rem, 4vh, 2rem);
+  }
+  .hero__stage-inner {
+    margin-top: clamp(1rem, 6vh, 3rem);
+    transform: none;
+  }
 }
 
 /* Reveal animation for hero text */
@@ -1703,6 +1745,625 @@ body::before {
   }
 }
 
+/* ── Why: today's budget and retirement are one decision ──
+   Static by default: one Workbench window with every example showing.
+   .is-scrolly (set by JS on roomy screens) pins the stage and plays the
+   story one beat at a time from [data-beat]; [data-show] parts appear
+   only during their beats. */
+.why {
+  --why-beats: 7;
+  --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.why.is-scrolly {
+  padding: 0;
+}
+.why.is-scrolly .why__track {
+  height: calc(100vh + var(--why-beats) * 45vh);
+  height: calc(100svh + var(--why-beats) * 45svh);
+}
+.why.is-scrolly .why__stage {
+  position: sticky;
+  top: 52px;
+  display: flex;
+  align-items: center;
+  height: calc(100vh - 52px);
+  height: calc(100svh - 52px);
+}
+.why__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.1rem, 2.8vh, 1.9rem);
+}
+.why__head {
+  max-width: 780px;
+}
+.why.is-scrolly .why__head .section__title {
+  font-size: clamp(1.5rem, 2.8vw, 2.15rem);
+  text-wrap: balance;
+}
+
+/* Board: two app windows and the link between them. Merged, it becomes
+   one Workbench window with a single titlebar. */
+.why__board {
+  --why-gap: clamp(3rem, 7vw, 5.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--why-gap) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: grid-template-columns 0.6s var(--why-ease),
+    padding 0.6s var(--why-ease),
+    background-color 0.6s var(--why-ease),
+    border-color 0.6s var(--why-ease),
+    box-shadow 0.6s var(--why-ease);
+}
+.why__frame-bar {
+  grid-column: 1 / -1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  max-height: 0;
+  margin: 0 -1rem;
+  padding: 0 0.9rem;
+  opacity: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--titlebar-2), var(--titlebar));
+  transition: max-height 0.6s var(--why-ease), margin 0.6s var(--why-ease),
+    opacity 0.4s ease;
+}
+.why__frame-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #f6f8ff;
+  white-space: nowrap;
+}
+.why:not(.is-scrolly) .why__board,
+.why[data-beat="6"] .why__board {
+  --why-gap: clamp(2.25rem, 4vw, 3.25rem);
+  padding: 0 1rem 1rem;
+  background-color: #eef2f7;
+  border-color: rgba(20, 20, 43, 0.85);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, var(--shadow-lift);
+}
+.why:not(.is-scrolly) .why__frame-bar,
+.why[data-beat="6"] .why__frame-bar {
+  max-height: 34px;
+  margin-bottom: 1rem;
+  opacity: 1;
+}
+
+.why-win {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface-1);
+  border: 1px solid rgba(20, 20, 43, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(20, 20, 43, 0.04),
+    0 12px 28px -14px rgba(0, 40, 80, 0.22);
+}
+.why-win--now { grid-column: 1; }
+.why-win--later { grid-column: 3; }
+.why-win__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 30px;
+  max-height: 30px;
+  padding: 0 0.75rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--titlebar-2), var(--titlebar));
+  transition: max-height 0.6s var(--why-ease), opacity 0.4s ease;
+}
+.why-win__app {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.7);
+}
+.why:not(.is-scrolly) .why-win__bar,
+.why[data-beat="6"] .why-win__bar {
+  max-height: 0;
+  opacity: 0;
+}
+.why-win__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+/* Background detail: a few budget categories, a small retirement curve */
+.why-cats {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+}
+.why-cats li {
+  display: grid;
+  grid-template-columns: 6.2rem minmax(0, 1fr) 3.4rem;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.why-cats i {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+.why-cats i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w);
+  border-radius: inherit;
+  background: var(--accent);
+  opacity: 0.75;
+  transition: width 0.6s var(--why-ease), background-color 0.4s ease;
+}
+/* Budget mark */
+.why-cats i::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -4px;
+  bottom: -4px;
+  left: var(--b);
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ink);
+}
+.why-cats b {
+  display: grid;
+  justify-items: end;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.why-cats b > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.4s ease;
+}
+.why-cats__now { opacity: 0; }
+.why-cats__over.is-on i::after {
+  width: var(--w-over);
+  background-color: #d08a1e;
+}
+
+.why-win__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+}
+.why-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.66rem;
+  color: var(--muted);
+}
+.why-key i {
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.why-key__bar {
+  width: 14px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.75;
+}
+.why-key__mark {
+  width: 2px;
+  height: 12px;
+  margin-left: 0.4rem;
+  border-radius: 1px;
+  background: var(--ink);
+}
+.why-key__dash {
+  width: 18px;
+  height: 0;
+  border-top: 2px dashed var(--accent);
+  opacity: 0.4;
+}
+.why-key--old {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.why-cats__over.is-on .why-cats__was { opacity: 0; }
+.why-cats__over.is-on .why-cats__now {
+  opacity: 1;
+  color: #8a5300;
+}
+
+.why-plan {
+  position: relative;
+  height: 84px;
+}
+.why-plan svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.why-plan path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.why-plan__base {
+  stroke: #d5dce5;
+  stroke-width: 1;
+}
+.why-plan__line {
+  stroke: var(--accent);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  transition: opacity 0.6s ease;
+}
+.why-plan__line--now { opacity: 0; }
+.why-plan__drop {
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.45;
+  transition: opacity 0.6s ease;
+}
+.why-plan__drop--now { opacity: 0; }
+.why:not(.is-scrolly) .why-plan__drop--was,
+.why[data-beat="2"] .why-plan__drop--was {
+  opacity: 0.25;
+}
+.why:not(.is-scrolly) .why-plan__drop--now,
+.why[data-beat="2"] .why-plan__drop--now {
+  opacity: 0.6;
+}
+/* Retirement pushed out: the new plan draws over the old one, which
+   stays behind as a faint dashed line */
+.why:not(.is-scrolly) .why-plan__line--was,
+.why[data-beat="2"] .why-plan__line--was {
+  stroke-dasharray: 4 4;
+  opacity: 0.35;
+}
+.why:not(.is-scrolly) .why-plan__line--now,
+.why[data-beat="2"] .why-plan__line--now,
+.why:not(.is-scrolly) .why-key--old,
+.why[data-beat="2"] .why-key--old {
+  opacity: 1;
+}
+.why-plan__dot-was {
+  position: absolute;
+  left: 69.2%;
+  top: 37.1%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface-1);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.why-plan__dot-was::after {
+  content: "62";
+  position: absolute;
+  right: calc(100% + 1px);
+  bottom: calc(100% + 1px);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1;
+  color: var(--accent);
+}
+.why:not(.is-scrolly) .why-plan__dot-was,
+.why[data-beat="2"] .why-plan__dot-was {
+  opacity: 0.55;
+}
+.why-plan__mark > span { display: none; }
+.why-plan__mark > .why-plan__at62 { display: inline; }
+.why:not(.is-scrolly) .why-plan__mark > .why-plan__at62,
+.why[data-beat="2"] .why-plan__mark > .why-plan__at62,
+.why[data-beat="4"] .why-plan__mark > .why-plan__at62 {
+  display: none;
+}
+.why:not(.is-scrolly) .why-plan__mark > .why-plan__at64,
+.why[data-beat="2"] .why-plan__mark > .why-plan__at64,
+.why[data-beat="4"] .why-plan__mark > .why-plan__at62q {
+  display: inline;
+}
+.why:not(.is-scrolly) .why-plan__mark,
+.why[data-beat="2"] .why-plan__mark {
+  left: 75%;
+  top: 31.4%;
+  color: var(--ink);
+}
+.why-plan__mark {
+  position: absolute;
+  left: 69.2%;
+  top: 37.1%;
+  transition: left 0.6s var(--why-ease), top 0.6s var(--why-ease);
+  transform: translate(-50%, calc(-100% - 8px));
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.why-plan__mark::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 58, 112, 0.12);
+}
+
+/* Events: what changed (amber) and what it does (navy) */
+.why-win__events {
+  display: flex;
+  flex-direction: column;
+}
+.why-chip {
+  display: grid;
+  gap: 0.1rem;
+  margin-bottom: 0.55rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid;
+  border-radius: 9px;
+}
+.why-chip:last-child { margin-bottom: 0; }
+.why-chip__label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.why-chip__value {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.why-chip__alt {
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+}
+.why-chip--cause {
+  background: #fdf3e1;
+  border-color: #f3dcb0;
+}
+.why-chip--cause .why-chip__label { color: #8a5300; }
+.why-chip--effect {
+  background: var(--accent-subtle);
+  border-color: var(--accent-line);
+}
+.why-chip--effect .why-chip__label { color: var(--accent); }
+.why:not(.is-scrolly) .why-chip--final { display: none; }
+
+.why.is-scrolly .why-win__events { min-height: 9.9rem; }
+.why.is-scrolly .why-chip {
+  max-height: 6rem;
+  overflow: hidden;
+  transition: opacity 0.45s ease, transform 0.45s var(--why-ease),
+    max-height 0.45s var(--why-ease), padding 0.45s var(--why-ease),
+    margin 0.45s var(--why-ease), border-width 0.45s var(--why-ease);
+}
+.why.is-scrolly .why-chip:not(.is-on) {
+  max-height: 0;
+  margin-bottom: 0;
+  padding-block: 0;
+  border-width: 0;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Link: dashed and in question while the apps are separate; a pulse
+   carries each change across; solid once they're one model. */
+.why-link {
+  position: relative;
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.why-link__track {
+  position: relative;
+  width: calc(100% - 14px);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--border-strong) 0 4px, transparent 4px 8px);
+}
+.why-link__track::before,
+.why-link__track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid var(--border-strong);
+  border-right: 2px solid var(--border-strong);
+  transition: opacity 0.4s ease, border-color 0.4s ease;
+}
+.why-link__track::before {
+  left: 0;
+  transform: translateY(-50%) rotate(-135deg);
+}
+.why-link__track::after {
+  right: 0;
+  transform: translateY(-50%) rotate(45deg);
+}
+.why[data-beat="0"] .why-link__track::before,
+.why[data-beat="0"] .why-link__track::after {
+  opacity: 0;
+}
+.why[data-beat="2"] .why-link__track::after,
+.why[data-beat="4"] .why-link__track::after,
+.why[data-beat="5"] .why-link__track::before {
+  border-color: var(--accent-bright);
+}
+.why:not(.is-scrolly) .why-link__track,
+.why[data-beat="6"] .why-link__track {
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright), var(--accent));
+}
+.why:not(.is-scrolly) .why-link__track::before,
+.why:not(.is-scrolly) .why-link__track::after,
+.why[data-beat="6"] .why-link__track::before,
+.why[data-beat="6"] .why-link__track::after {
+  border-color: var(--accent);
+}
+.why-link__pulse {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+  box-shadow: 0 0 10px rgba(10, 95, 174, 0.8);
+  opacity: 0;
+}
+.why[data-beat="2"] .why-link__pulse,
+.why[data-beat="4"] .why-link__pulse {
+  animation: whyPulse 1.6s ease-in-out infinite;
+}
+.why[data-beat="5"] .why-link__pulse {
+  animation: whyPulse 1.6s ease-in-out infinite reverse;
+}
+@keyframes whyPulse {
+  0% { left: 0; opacity: 0; }
+  18%, 82% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+.why-link__q {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--surface-1);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: opacity 0.4s ease;
+}
+.why:not(.is-scrolly) .why-link__q { display: none; }
+.why.is-scrolly .why-link__q:not(.is-on) { opacity: 0; }
+
+/* Captions: the readable story. Stacked and crossfaded when scrolly. */
+.why__captions {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 720px;
+}
+.why__caption {
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+.why__caption strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.why__caption--payoff {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink);
+}
+.why__caption--payoff strong {
+  font-weight: 700;
+  color: var(--accent);
+}
+.why:not(.is-scrolly) .why__caption--payoff { margin-top: 0.4rem; }
+.why.is-scrolly .why__captions > * {
+  grid-area: 1 / 1;
+  transition: opacity 0.45s ease, transform 0.45s var(--why-ease);
+}
+.why.is-scrolly .why__caption:not(.is-on) {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.why__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+}
+.why__steps {
+  display: none;
+  gap: 6px;
+}
+.why.is-scrolly .why__steps { display: flex; }
+.why__steps span {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background-color 0.3s ease;
+}
+.why__steps span.is-on { background: var(--accent); }
+.why__fine {
+  max-width: 72ch;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+@media (max-height: 800px) {
+  .why.is-scrolly .why-cats,
+  .why.is-scrolly .why-plan {
+    display: none;
+  }
+}
+@media (max-width: 720px) {
+  .why__board {
+    --why-gap: 44px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto var(--why-gap) auto;
+  }
+  .why:not(.is-scrolly) .why__board { --why-gap: 40px; }
+  .why-win--now { grid-column: 1; grid-row: 2; }
+  .why-link { grid-column: 1; grid-row: 3; }
+  .why-win--later { grid-column: 1; grid-row: 4; }
+  .why-link__track {
+    width: 30px;
+    transform: rotate(90deg);
+  }
+}
+
 /* ── Philosophy / pull-quote ── */
 .philosophy {
   position: relative;
@@ -1980,15 +2641,10 @@ body::before {
   align-items: center;
   gap: 0.5rem;
 }
-.compare__brand .nav__dots { gap: 3px; }
-.compare__brand .nav__dots span {
-  width: 6px;
-  height: 6px;
-  background: var(--border-strong);
-}
-.compare__brand .nav__dots span:first-child {
-  background: var(--accent-bright);
-  box-shadow: none;
+.compare__brand .logo-mark {
+  width: 20px;
+  --logo-spent: #64748b;
+  --logo-future: var(--accent-bright);
 }
 
 /* Yes / partly / no marks */
