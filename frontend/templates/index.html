@@ -337,7 +337,7 @@
                   <!-- Bars share one scale ($2,000 = 100%); --b marks the budget -->
                   <ul class="why-cats">
                     <li><span>Housing</span><i style="--w: 92.5%; --b: 92.5%"></i><b>$1,850</b></li>
-                    <li><span>Groceries</span><i style="--w: 30.5%; --b: 32.5%"></i><b>$610</b></li>
+                    <li class="why-cats__minor"><span>Groceries</span><i style="--w: 30.5%; --b: 32.5%"></i><b>$610</b></li>
                     <li class="why-cats__over" data-on="1-2">
                       <span>Dining &amp; fun</span><i style="--w: 20%; --w-over: 31%; --b: 21%"></i>
                       <b><span class="why-cats__was">$400</span><span class="why-cats__now">$620</span></b>
@@ -462,6 +462,10 @@
           </div>
         </div>
       </div>
+      <p class="wrap why__fine why__fine--after">
+        Illustrative math: $100,000 saved at 32, $5,180/month spending now and in retirement,
+        5% yearly return after inflation, 4% withdrawal rate. Workbench runs it on your own numbers.
+      </p>
     </section>
 
     <section class="section flow" id="how-it-works" aria-label="How it works and what's on the workbench">
@@ -1710,8 +1714,8 @@
 
       /* ── Why: one beat of the story per stretch of scroll ──
          [data-show="a-b"] elements appear during beats a..b; [data-on]
-         elements stay visible and only switch state. Phones, short windows,
-         and reduced motion get the static version (everything at once). */
+         elements stay visible and only switch state. Short screens and
+         reduced motion get the static version (everything at once). */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
@@ -1723,7 +1727,9 @@
           const [from, to] = (el.dataset.show || el.dataset.on).split("-").map(Number);
           return { el, from, to: to ?? from };
         });
-        const roomy = window.matchMedia("(min-width: 721px) and (min-height: 700px)");
+        const roomy = window.matchMedia(
+          "(min-width: 721px) and (min-height: 700px), (max-width: 720px) and (min-height: 650px)"
+        );
         let beat = -1;
         let ticking = false;
 
