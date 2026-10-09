@@ -609,6 +609,18 @@ body::before {
 .hero.is-pinnable.is-revealed .hero__cue {
   opacity: 0;
 }
+/* Phones: the revealed block is taller than half the screen, so anchor it
+   near the top rather than centering it, leaving room under the checkmarks
+   and a clear gap before the next section. */
+@media (max-width: 720px) {
+  .hero.is-pinnable {
+    margin-bottom: clamp(1rem, 4vh, 2rem);
+  }
+  .hero__stage-inner {
+    margin-top: clamp(1rem, 6vh, 3rem);
+    transform: none;
+  }
+}
 
 /* Reveal animation for hero text */
 .reveal-up {

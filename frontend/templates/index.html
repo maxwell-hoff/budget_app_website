@@ -1661,12 +1661,30 @@
          Keep the headline centered while the promise + download reveal in the
          space beneath it. The hero pins for one extra screen of scroll; a
          little scrolling flips the reveal on. Falls back to a plain stacked
-         hero when JS is off or motion is reduced. */
+         hero when JS is off, motion is reduced, or the revealed block won't
+         fit on the pinned screen (short phones). */
       (function () {
         const hero = document.querySelector(".hero");
         if (!hero || reduceMotion) return;
+        const stage = hero.querySelector(".hero__stage");
+        const inner = hero.querySelector(".hero__stage-inner");
+        const detail = hero.querySelector(".hero__detail");
+        const ROOM_BELOW = 24;
 
-        hero.classList.add("is-pinnable");
+        function pinIfItFits() {
+          hero.classList.add("is-pinnable");
+          const top = inner.getBoundingClientRect().top - stage.getBoundingClientRect().top;
+          const bottom = top + detail.offsetTop + detail.offsetHeight;
+          if (bottom > stage.clientHeight - ROOM_BELOW) hero.classList.remove("is-pinnable");
+        }
+        pinIfItFits();
+
+        let width = window.innerWidth;
+        window.addEventListener("resize", () => {
+          if (window.innerWidth === width) return; // mobile toolbars showing/hiding
+          width = window.innerWidth;
+          pinIfItFits();
+        }, { passive: true });
 
         let ticking = false;
         const sync = () => {
