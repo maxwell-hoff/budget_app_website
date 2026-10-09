@@ -91,6 +91,7 @@ def test_resend_backend_posts_to_api(monkeypatch):
 
     assert sent['url'] == 'https://api.resend.com/emails'
     assert sent['headers']['Authorization'] == 'Bearer re_test'
+    assert not sent['headers']['User-agent'].startswith('Python-urllib')
     assert sent['body'] == {
         'from': 'WB <noreply@example.com>', 'to': ['a@example.com'],
         'subject': 'Hello', 'text': 'Body text',
