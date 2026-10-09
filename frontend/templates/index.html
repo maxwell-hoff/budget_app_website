@@ -330,29 +330,39 @@
                   <span class="why-win__app">Your budgeting app</span>
                 </div>
                 <div class="why-win__body">
-                  <span class="viz-label">Budgeting &amp; expense tracking</span>
+                  <div class="why-win__head">
+                    <span class="viz-label">Budget, spending &amp; goals</span>
+                    <span class="why-key"><i class="why-key__bar"></i>Spent<i class="why-key__mark"></i>Budget</span>
+                  </div>
+                  <!-- Bars share one scale ($2,000 = 100%); --b marks the budget -->
                   <ul class="why-cats">
-                    <li><span>Housing</span><i style="--w: 78%"></i><b>$1,850</b></li>
-                    <li><span>Groceries</span><i style="--w: 46%"></i><b>$640</b></li>
+                    <li><span>Housing</span><i style="--w: 92.5%; --b: 92.5%"></i><b>$1,850</b></li>
+                    <li><span>Groceries</span><i style="--w: 30.5%; --b: 32.5%"></i><b>$610</b></li>
                     <li class="why-cats__over" data-on="1-2">
-                      <span>Dining &amp; fun</span><i style="--w: 32%"></i>
-                      <b><span class="why-cats__was">$420</span><span class="why-cats__now">$920</span></b>
+                      <span>Dining &amp; fun</span><i style="--w: 20%; --w-over: 31%; --b: 21%"></i>
+                      <b><span class="why-cats__was">$400</span><span class="why-cats__now">$620</span></b>
                     </li>
                   </ul>
                   <div class="why-win__events">
                     <div class="why-chip why-chip--cause" data-show="1-2">
-                      <span class="why-chip__label">This year</span>
-                      <span class="why-chip__value">+$500/month over budget</span>
+                      <span class="why-chip__label">From now on</span>
+                      <span class="why-chip__value">+$200/month on dining</span>
+                      <span class="why-chip__alt">over budget, every month</span>
+                    </div>
+                    <div class="why-chip why-chip--cause" data-show="3-5">
+                      <span class="why-chip__label">Goal &middot; 5 years out</span>
+                      <span class="why-chip__value">$6,000 trip</span>
+                      <span class="why-chip__alt">set aside $100/month</span>
                     </div>
                     <div class="why-chip why-chip--effect" data-show="5">
-                      <span class="why-chip__label">Or pay for it now</span>
-                      <span class="why-chip__value">&minus;$100/month for 5 years</span>
+                      <span class="why-chip__label">Or</span>
+                      <span class="why-chip__value">&minus;$100/month in spending</span>
                       <span class="why-chip__alt">and keep your retirement date</span>
                     </div>
                     <div class="why-chip why-chip--effect why-chip--final" data-show="6">
                       <span class="why-chip__label">Your call</span>
                       <span class="why-chip__value">Trip: $100/month for 5 years</span>
-                      <span class="why-chip__alt">set aside in today's budget</span>
+                      <span class="why-chip__alt">trimmed from today's spending</span>
                     </div>
                   </div>
                 </div>
@@ -369,33 +379,41 @@
                   <span class="why-win__app">Your retirement planner</span>
                 </div>
                 <div class="why-win__body">
-                  <span class="viz-label">Retirement &amp; goal tracking</span>
+                  <div class="why-win__head">
+                    <span class="viz-label">Retirement planning</span>
+                    <span class="why-key why-key--old"><i class="why-key__dash"></i>Old plan</span>
+                  </div>
+                  <!-- Ages 32 to 75 across the width: 62 at x=166, 64½ at x=180 -->
                   <div class="why-plan">
                     <svg viewBox="0 0 240 70" preserveAspectRatio="none">
                       <path class="why-plan__base" d="M4,66 H236"/>
-                      <path class="why-plan__line" d="M4,62 C50,58 100,46 150,26 C180,30 210,38 236,46"/>
+                      <path class="why-plan__drop why-plan__drop--was" d="M166,26 V66"/>
+                      <path class="why-plan__drop why-plan__drop--now" d="M180,22 V66"/>
+                      <path class="why-plan__line why-plan__line--was" d="M4,62 C70,58 120,44 166,26 C190,28 214,33 236,38"/>
+                      <path class="why-plan__line why-plan__line--now" d="M4,62 C76,58 130,42 180,22 C200,24 220,28 236,32"/>
                     </svg>
-                    <span class="why-plan__mark">Retire at 62</span>
+                    <span class="why-plan__dot-was"></span>
+                    <span class="why-plan__mark">
+                      <span class="why-plan__at62">Retire at 62</span>
+                      <span class="why-plan__at64">Retire at 64&frac12;</span>
+                      <span class="why-plan__at62q">Retire at 62&frac14;</span>
+                    </span>
                   </div>
                   <div class="why-win__events">
                     <div class="why-chip why-chip--effect" data-show="2">
                       <span class="why-chip__label">Effect</span>
-                      <span class="why-chip__value">Retire ~5 months later</span>
-                      <span class="why-chip__alt">or &minus;$86/month in retirement</span>
-                    </div>
-                    <div class="why-chip why-chip--cause" data-show="3-5">
-                      <span class="why-chip__label">Goal &middot; 5 years out</span>
-                      <span class="why-chip__value">$6,000 trip</span>
+                      <span class="why-chip__value">Retire at 64&frac12;, not 62</span>
+                      <span class="why-chip__alt">about 2&frac12; years later</span>
                     </div>
                     <div class="why-chip why-chip--effect" data-show="4-5">
-                      <span class="why-chip__label">Effect</span>
-                      <span class="why-chip__value">Retire ~4 months later</span>
-                      <span class="why-chip__alt">or &minus;$68/month in retirement</span>
+                      <span class="why-chip__label">If it comes out of savings</span>
+                      <span class="why-chip__value">Retire ~3 months later</span>
+                      <span class="why-chip__alt">or &minus;$67/month in retirement</span>
                     </div>
                     <div class="why-chip why-chip--effect why-chip--final" data-show="6">
                       <span class="why-chip__label">Still on track</span>
                       <span class="why-chip__value">Retire at 62</span>
-                      <span class="why-chip__alt">with the trip in the plan</span>
+                      <span class="why-chip__alt">with the trip paid for</span>
                     </div>
                   </div>
                 </div>
@@ -409,22 +427,22 @@
                 numbers between them and guess at the rest.
               </p>
               <p class="why__caption" data-show="1">
-                Say you run <strong>$500 over budget every month this year</strong>.
+                Say dining out creeps up to <strong>$200 a month over budget</strong>, and it sticks.
               </p>
               <p class="why__caption" data-show="2">
-                That $6,000 never gets invested, so you <strong>retire about 5 months later</strong>,
-                or live on about $86 less a month once you do. Your budgeting app won't tell you that.
+                That's less saved every month and more to fund later, so you <strong>retire at 64&frac12;
+                instead of 62</strong>. Your budgeting app shows the overspending, but not what it costs you.
               </p>
               <p class="why__caption" data-show="3">
-                Now say you plan a <strong>$6,000 trip five years from now</strong>.
+                Now say you start saving for a <strong>$6,000 trip five years from now</strong>: $100 a month.
               </p>
               <p class="why__caption" data-show="4">
-                Your retirement planner says it costs you <strong>about 4 months of work</strong>,
-                or about $68 a month in retirement.
+                If that $100 comes out of your retirement saving, you <strong>retire about 3 months later</strong>.
+                You'd only find that out by re-entering the trip in your retirement planner.
               </p>
               <p class="why__caption" data-show="5">
-                Or you pay for it from today's budget: <strong>$100 a month for five years</strong>,
-                and keep your retirement date. Your planner can't see your budget, so it never offers that choice.
+                Or you <strong>trim $100 a month from today's spending</strong> and keep your retirement date.
+                You can only weigh that choice with both sides in view.
               </p>
               <p class="why__caption why__caption--payoff" data-show="6">
                 <strong>Workbench Budgeting is built for both</strong>, because they're one decision.
@@ -437,8 +455,8 @@
                 <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
               </span>
               <p class="why__fine">
-                Illustrative math: 5% yearly return after inflation, 30 years to retirement,
-                $5,180/month spending, 4% withdrawal rate. Workbench runs it on your own numbers.
+                Illustrative math: $100,000 saved at 32, $5,180/month spending now and in retirement,
+                5% yearly return after inflation, 4% withdrawal rate. Workbench runs it on your own numbers.
               </p>
             </div>
           </div>
