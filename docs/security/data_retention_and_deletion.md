@@ -19,6 +19,7 @@ Database tables (`models.py`), on Render Postgres:
 | Emailed sign-in codes (HMACs) | `login_codes` | Deleted when used or locked out; otherwise a day after they expire |
 | Desktop sessions (token hash, device name, sign-in and last-used times) | `app_sessions` | The account is deleted (expired and revoked sessions are kept until then) |
 | Stripe event IDs and types (no personal data), to ignore repeats | `stripe_events` | Indefinitely |
+| Marketing page views and installer downloads: path, time, user agent, outside referrer host, bot flag, and a daily-rotating HMAC of IP + user agent (no IP, no cookie) | `site_visits` | About 365 days (`analytics.py` prunes older rows as visits come in) |
 
 Not stored on the server:
 

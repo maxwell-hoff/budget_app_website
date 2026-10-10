@@ -10,10 +10,11 @@ all Plaid API calls) used by the desktop app in `../budget_app`.
 
 ```
 serve.py → Flask app factory (create_app) + module-level `app`: pages, legal pages (/privacy, /terms, /refunds; LEGAL_CONTACT_EMAIL, LEGAL_UPDATED), /download/<platform>, /notify, /healthz; security headers on every response (CSP with a per-response nonce: every inline <script> needs nonce="{{ csp_nonce() }}"; HSTS only when cookies are secure)
+analytics.py → first-party visit counting: an after_request hook adds a site_visits row per marketing page view (index, about, legal pages) and /download/<platform>, flags bots by user agent / missing Accept-Language, stores no IP or cookie (daily-rotating HMAC visitor), prunes rows after RETENTION_DAYS; CLI `flask site-stats [--days N]`
 security_log.py → log_event(event, user_id, **fields): one `security event=… user=… ip=…` line per security event (never passwords, tokens, codes, or emails; email_hash for unknown emails); rate_limit_hit is Flask-Limiter's on_breach
 config.py → env-based config (DATABASE_URL, SECRET_KEY, ACCOUNTS_ENABLED, cookie security)
 extensions.py → SQLAlchemy `db`, Flask-Migrate `migrate`, Flask-Login `login_manager`, Flask-Limiter `limiter`
-models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, LoginCode, AuthCode, AppSession, PlaidItem)
+models.py → SQLAlchemy models (User, OAuthIdentity, Subscription, StripeEvent, LoginCode, AuthCode, AppSession, PlaidItem, SiteVisit)
 auth.py → account blueprint: sign up/in/out, /login/code (emailed sign-in code after every password login and sign-up), password reset, email verification (registered only when ACCOUNTS_ENABLED is on)
 login_codes.py → the pending login (in the session) and its emailed 6-digit code: start, pending, check, send_code; codes stored only as HMACs (login_codes table)
 account.py → /account page blueprint (details, change password, POST /account/delete which removes banks at Plaid and the Stripe customer first; registered only when ACCOUNTS_ENABLED is on)
