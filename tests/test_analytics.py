@@ -30,6 +30,22 @@ def test_same_site_referrer_is_not_stored(app, client):
     assert visits(app)[0].referrer is None
 
 
+@pytest.mark.parametrize('host, referrer', [
+    ('workbenchbudgeting.com', 'https://www.workbenchbudgeting.com/'),
+    ('www.workbenchbudgeting.com', 'https://workbenchbudgeting.com/about'),
+    ('workbenchbudgeting.com', 'https://WorkbenchBudgeting.com/'),
+])
+def test_www_and_bare_domain_count_as_the_same_site(app, client, host, referrer):
+    client.get('/', headers={**BROWSER, 'Referer': referrer}, base_url=f'https://{host}')
+    assert visits(app)[0].referrer is None
+
+
+def test_lookalike_domain_is_still_external(app, client):
+    client.get('/', headers={**BROWSER, 'Referer': 'https://www.workbenchbudgeting.com.example/'},
+               base_url='https://workbenchbudgeting.com')
+    assert visits(app)[0].referrer == 'www.workbenchbudgeting.com.example'
+
+
 @pytest.mark.parametrize('headers', [
     {},
     {'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)', 'Accept-Language': 'en'},
@@ -101,3 +117,20 @@ def test_site_stats_command(app, client):
     assert f'{today:<12}{2:>9}{3:>7}{1:>11}{1:>10}' in result.output
     assert '1  mac-arm' in result.output
     assert '1  AhrefsBot/7.0' in result.output
+    assert 'Downloads (UTC' not in result.output
+
+
+def test_site_stats_lists_downloads(app, client):
+    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+    client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'}).close()
+    client.get('/download/windows', headers={'User-Agent': 'python-requests/2.32'},
+               environ_base={'REMOTE_ADDR': '203.0.113.9'}).close()
+
+    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7', '--downloads'])
+    assert result.exit_code == 0, result.output
+    lines = result.output.split('Downloads (UTC')[1].splitlines()
+    [person] = [line for line in lines if 'mac-arm' in line]
+    [bot] = [line for line in lines if 'windows' in line]
+    assert '    1  person -' in person and person.endswith(BROWSER['User-Agent'])
+    assert '    0  bot    -' in bot and bot.endswith('python-requests/2.32')
+    assert '203.0.113' not in result.output
