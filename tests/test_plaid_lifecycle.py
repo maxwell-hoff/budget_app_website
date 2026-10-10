@@ -1,12 +1,17 @@
+import os
 import re
+import subprocess
+import sys
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import pytest
 import stripe
+from cryptography.fernet import Fernet
 
 import billing
 import plaid_api
+from config import BASE_DIR
 from extensions import db
 from models import AppSession, OAuthIdentity, PlaidItem, Subscription, User, utcnow
 from tests.conftest import log_in_as, make_app
@@ -361,6 +366,32 @@ def test_cli_retries_failed_removals(billing_app, fake_stripe, paying_user, remo
 def test_cli_leaves_paying_users_alone(billing_app, paying_user, removals):
     assert 'Removed 0 item(s)' in billing_app.test_cli_runner().invoke(args=['plaid-remove-lapsed']).output
     assert removals.removed == []
+
+
+def test_cli_runs_in_a_fresh_process(tmp_path):
+    # In-process tests have used the models before the command runs; the cron job hasn't.
+    script = (
+        'from extensions import db\n'
+        'from serve import create_app\n'
+        'app = create_app()\n'
+        'with app.app_context():\n'
+        '    db.create_all()\n'
+        "result = app.test_cli_runner().invoke(args=['plaid-remove-lapsed'])\n"
+        'print(result.output)\n'
+        'raise SystemExit(result.exit_code)\n'
+    )
+    env = {
+        'PATH': os.environ.get('PATH', ''),
+        'DATABASE_URL': f"sqlite:///{tmp_path / 'app.db'}",
+        'ACCOUNTS_ENABLED': 'true',
+        'PLAID_CLIENT_ID': 'client',
+        'PLAID_SECRET': 'secret',
+        'PLAID_TOKEN_KEY': Fernet.generate_key().decode(),
+    }
+    result = subprocess.run([sys.executable, '-c', script], cwd=BASE_DIR, env=env,
+                            capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stderr
+    assert 'Removed 0 item(s); 0 failed' in result.stdout
 
 
 def test_cli_not_registered_without_plaid():

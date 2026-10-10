@@ -285,7 +285,9 @@ def remove_items_if_subscription_ended(user):
 def remove_lapsed_command():
     """Remove Plaid items of users whose subscription has ended (retries failed removals)."""
     removed = failed = 0
-    for user in db.session.scalars(db.select(User).where(User.plaid_items.any())).all():
+    # Not User.plaid_items: a backref only exists on the class once the mappers are
+    # configured, which hasn't happened yet in a fresh `flask` process.
+    for user in db.session.scalars(db.select(User).where(User.id.in_(db.select(PlaidItem.user_id)))).all():
         if not subscription_ended(user):
             continue
         count = len(user.plaid_items)
