@@ -42,8 +42,9 @@
           <a href="#how-it-works">How it works</a>
           <a href="#philosophy">Philosophy</a>
           <a href="#pricing">Pricing</a>
-          <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED and current_user.is_authenticated %}
-          <a href="/account">Account</a>{% endif %}
+          <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED %}{% if current_user.is_authenticated %}
+          <a href="/account">Account</a>{% else %}
+          <a href="/login">Log in</a>{% endif %}{% endif %}
           <a href="#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
       </div>
@@ -289,7 +290,7 @@
               </a>
             </div>
             <ul class="hero__facts">
-              <li>Free to use</li>
+              {% if config.ACCOUNTS_ENABLED %}<li>Try it free for a week</li>{% else %}<li>Free to use</li>{% endif %}
               <li>Your data stays on your device</li>
               <li>macOS &amp; Windows</li>
             </ul>
@@ -1014,7 +1015,7 @@
         <div class="section__head on-scroll">
           <span class="kicker">How it compares</span>
           <h2 class="section__title">
-            Plan from your real spending, privately, and for free.
+            {% if config.ACCOUNTS_ENABLED %}Plan from your real spending, privately.{% else %}Plan from your real spending, privately, and for free.{% endif %}
           </h2>
         </div>
 
@@ -1136,7 +1137,7 @@
                   <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
                   <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
                   <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
-                </tr>
+                </tr>{% if not config.ACCOUNTS_ENABLED %}
                 <tr>
                   <th scope="row">Free tier</th>
                   <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
@@ -1144,7 +1145,7 @@
                   <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
                   <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
                   <td><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
-                </tr>
+                </tr>{% endif %}
               </tbody>
             </table>
           </div>
@@ -1169,15 +1170,42 @@
       <div class="wrap">
         <div class="section__head on-scroll">
           <span class="kicker">Pricing</span>
-          <h2 class="section__title">
-            Free to use. $8.99/month for easy bank account syncing.
+          <h2 class="section__title">{% if config.ACCOUNTS_ENABLED %}
+            One subscription for the whole app. Bank syncing included.{% else %}
+            Free to use. $8.99/month for easy bank account syncing.{% endif %}
           </h2>
           <p class="section__lead">
             Similarly capable tools I found cost $250 a month.
           </p>
         </div>
 
-        <div class="pricing__grid on-scroll" data-stagger>
+        <div class="pricing__grid on-scroll" data-stagger>{% if config.ACCOUNTS_ENABLED %}
+          <article class="pricing__tier">
+            <header class="pricing__tier-head">
+              <h3 class="pricing__tier-name">Sample profile</h3>
+              <span class="pricing__tier-tag">free</span>
+            </header>
+            <p class="pricing__tier-body">
+              Explore the app with example data. No account needed.
+            </p>
+          </article>
+
+          <article class="pricing__tier pricing__tier--paid">
+            <header class="pricing__tier-head">
+              <h3 class="pricing__tier-name">
+                <span class="pricing__price">$8.99</span> / month
+              </h3>
+              <span class="pricing__tier-tag">first week free</span>
+            </header>
+            <p class="pricing__tier-body">
+              The whole app with your own numbers, automatic bank account syncing included.
+            </p>
+          </article>
+        </div>
+
+        <p class="pricing__note on-scroll">
+          Cancel any time. If you stop, your data stays on your computer and opens again when you resubscribe.
+        </p>{% else %}
           <article class="pricing__tier">
             <header class="pricing__tier-head">
               <h3 class="pricing__tier-name">Free</h3>
@@ -1203,7 +1231,7 @@
 
         <p class="pricing__note on-scroll">
           Cancel any time. Downgrading to free keeps all your data.
-        </p>
+        </p>{% endif %}
       </div>
     </section>
 
@@ -1213,8 +1241,9 @@
         <div class="download__card on-scroll">
           <span class="kicker">Get started</span>
           <h2 class="download__title">See what your current path is actually costing you</h2>
-          <p class="download__sub">
-            Free to use. Load the demo data or import your own, and see where your current path actually leads.
+          <p class="download__sub">{% if config.ACCOUNTS_ENABLED %}
+            Explore the Sample profile free, no account needed. When you're ready for your own numbers, start your free week.{% else %}
+            Free to use. Load the demo data or import your own, and see where your current path actually leads.{% endif %}
           </p>
           <div class="download__actions">
             <a href="/download/mac-arm" class="btn btn--primary btn--lg download__btn">

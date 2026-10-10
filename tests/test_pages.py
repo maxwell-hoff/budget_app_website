@@ -22,6 +22,48 @@ def test_about_renders(client):
     assert b'Workbench' in resp.data
 
 
+PRE_LAUNCH_COPY = [
+    b'<li>Free to use</li>',
+    b'privately, and for free.',
+    b'Free tier',
+    b'Free to use. $8.99/month for easy bank account syncing.',
+    b'Downgrading to free keeps all your data.',
+    b'Free to use. Load the demo data',
+]
+LAUNCH_COPY = [
+    b'<li>Try it free for a week</li>',
+    b'Plan from your real spending, privately.',
+    b'One subscription for the whole app. Bank syncing included.',
+    b'Sample profile',
+    b'first week free',
+    b'automatic bank account syncing included',
+    b'opens again when you resubscribe',
+    b'Explore the Sample profile free, no account needed.',
+]
+
+
+def test_landing_page_keeps_pre_launch_copy_when_accounts_off(client):
+    html = client.get('/').data
+    for phrase in PRE_LAUNCH_COPY:
+        assert phrase in html, phrase
+    for phrase in LAUNCH_COPY:
+        assert phrase not in html, phrase
+
+
+@pytest.mark.parametrize('signed_in', [False, True])
+def test_landing_page_shows_launch_copy_when_accounts_on(accounts_client, make_user, signed_in):
+    if signed_in:
+        make_user()
+        password_login(accounts_client)
+    html = accounts_client.get('/').data
+    for phrase in LAUNCH_COPY:
+        assert phrase in html, phrase
+    for phrase in PRE_LAUNCH_COPY:
+        assert phrase not in html, phrase
+    assert html.count(b'<article class="pricing__tier') == 2
+    assert b'Downgrading' not in html and b'Free to use' not in html
+
+
 LEGAL_LINKS = (b'href="/privacy"', b'href="/terms"', b'href="/refunds"')
 
 

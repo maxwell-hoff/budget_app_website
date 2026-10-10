@@ -40,6 +40,8 @@
           <a href="/about">About</a>
           {% if current_user.is_authenticated %}
             <a href="{{ url_for('account.account') }}"{% if request.endpoint == 'account.account' %} aria-current="page"{% endif %}>Account</a>
+          {% else %}
+            <a href="{{ url_for('auth.login') }}"{% if request.endpoint == 'auth.login' %} aria-current="page"{% endif %}>Log in</a>
           {% endif %}
           <a href="/#download" class="btn btn--primary btn--sm nav__cta">Download</a>
         </div>
