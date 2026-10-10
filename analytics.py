@@ -115,11 +115,14 @@ def site_stats_command(days, list_downloads):
     """Print daily visitors, page views, and downloads, split into people and bots."""
     since = (utcnow() - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
     visits = db.session.scalars(
-        db.select(SiteVisit).where(SiteVisit.created_at >= since).order_by(SiteVisit.created_at)
+        db.select(SiteVisit).where(SiteVisit.created_at >= since).order_by(SiteVisit.created_at, SiteVisit.id)
     ).all()
 
-    daily = defaultdict(lambda: {'people': set(), 'views': 0, 'downloads': Counter(), 'bot_hits': 0})
-    referrers, bot_agents, downloads = Counter(), Counter(), Counter()
+    unconfirmed = unconfirmed_downloads(visits)
+    daily = defaultdict(lambda: {'people': set(), 'views': 0, 'downloads': Counter(),
+                                 'unconfirmed': 0, 'bot_hits': 0})
+    referrers, bot_agents = Counter(), Counter()
+    downloads, platform_unconfirmed = Counter(), Counter()
     for visit in visits:
         day = daily[visit.created_at.date()]
         if visit.is_bot:
@@ -135,22 +138,32 @@ def site_stats_command(days, list_downloads):
             platform = visit.path.rsplit('/', 1)[-1]
             day['downloads'][platform] += 1
             downloads[platform] += 1
+            if visit.id in unconfirmed:
+                day['unconfirmed'] += 1
+                platform_unconfirmed[platform] += 1
 
-    click.echo(f'Last {days} day(s), UTC. "Visitors" are unique per day; bots are counted separately.\n')
-    click.echo(f'{"Date":<12}{"Visitors":>9}{"Views":>7}{"Downloads":>11}{"Bot hits":>10}')
+    click.echo(f'Last {days} day(s), UTC. "Visitors" are unique per day; bots are counted separately.')
+    click.echo('"Unconfirmed" downloads (part of "Downloads") had no page view by the same visitor '
+               'earlier that day: often a crawler, sometimes a person with a direct link.\n')
+    click.echo(f'{"Date":<12}{"Visitors":>9}{"Views":>7}{"Downloads":>11}{"Unconfirmed":>13}{"Bot hits":>10}')
     totals = Counter()
     for date in sorted(daily):
         day = daily[date]
         row = {'visitors': len(day['people']), 'views': day['views'],
-               'downloads': sum(day['downloads'].values()), 'bot_hits': day['bot_hits']}
+               'downloads': sum(day['downloads'].values()), 'unconfirmed': day['unconfirmed'],
+               'bot_hits': day['bot_hits']}
         totals.update(row)
         click.echo(f'{date.isoformat():<12}{row["visitors"]:>9}{row["views"]:>7}'
-                   f'{row["downloads"]:>11}{row["bot_hits"]:>10}')
+                   f'{row["downloads"]:>11}{row["unconfirmed"]:>13}{row["bot_hits"]:>10}')
     click.echo(f'{"Total":<12}{totals["visitors"]:>9}{totals["views"]:>7}'
-               f'{totals["downloads"]:>11}{totals["bot_hits"]:>10}')
+               f'{totals["downloads"]:>11}{totals["unconfirmed"]:>13}{totals["bot_hits"]:>10}')
 
-    for title, counter in (('Downloads by platform (people)', downloads),
-                           ('Top referrers (people)', referrers),
+    if downloads:
+        click.echo('\nDownloads by platform (people):')
+        for name, count in downloads.most_common(10):
+            note = f'  ({platform_unconfirmed[name]} unconfirmed)' if platform_unconfirmed[name] else ''
+            click.echo(f'{count:>6}  {name}{note}')
+    for title, counter in (('Top referrers (people)', referrers),
                            ('Top bot user agents', bot_agents)):
         if counter:
             click.echo(f'\n{title}:')
@@ -158,21 +171,36 @@ def site_stats_command(days, list_downloads):
                 click.echo(f'{count:>6}  {name}')
 
     if list_downloads:
-        _echo_downloads(visits)
+        _echo_downloads(visits, unconfirmed)
 
 
-def _echo_downloads(visits):
-    """One line per download. `Pages` is how many pages the same visitor viewed that day:
-    a person usually opens the landing page first, so 0 often means a script."""
+def unconfirmed_downloads(visits):
+    """IDs of non-bot downloads whose visitor viewed no page earlier the same day.
+    `visits` must be in time order."""
+    viewed, unconfirmed = set(), set()
+    for visit in visits:
+        if visit.is_bot:
+            continue
+        key = (visit.created_at.date(), visit.visitor)
+        if visit.kind == 'page':
+            viewed.add(key)
+        elif key not in viewed:
+            unconfirmed.add(visit.id)
+    return unconfirmed
+
+
+def _echo_downloads(visits, unconfirmed):
+    """One line per download. `Pages` is how many pages the same visitor viewed that day."""
     pages = Counter((v.created_at.date(), v.visitor) for v in visits if v.kind == 'page')
     click.echo('\nDownloads (UTC; visitor IDs match only within a day):')
-    click.echo(f'{"Time":<21}{"Platform":<10}{"Visitor":<10}{"Pages":>5}  {"Who":<7}{"Referrer":<24}User agent')
+    click.echo(f'{"Time":<21}{"Platform":<10}{"Visitor":<10}{"Pages":>5}  {"Who":<13}{"Referrer":<24}User agent')
     for visit in visits:
         if visit.kind != 'download':
             continue
+        who = 'bot' if visit.is_bot else 'unconfirmed' if visit.id in unconfirmed else 'person'
         click.echo(
             f'{visit.created_at:%Y-%m-%d %H:%M:%S}  {visit.path.rsplit("/", 1)[-1]:<10}'
             f'{visit.visitor[:8]:<10}{pages[(visit.created_at.date(), visit.visitor)]:>5}  '
-            f'{"bot" if visit.is_bot else "person":<7}{visit.referrer or "-":<24}'
+            f'{who:<13}{visit.referrer or "-":<24}'
             f'{visit.user_agent or "(no user agent)"}'
         )
