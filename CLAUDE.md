@@ -35,7 +35,7 @@ scripts/check_sync_fixture_with_desktop.py → runs the desktop's unchanged Plai
 scripts/plaid_webhook_check.py → live check of /plaid/webhook with real sandbox webhooks (needs a public tunnel, e.g. cloudflared, to port 5001)
 scripts/go_live_check.py → read-only preflight that the Stripe/Plaid/Google/Resend/database settings match the code (run in the Render Shell; --mode test for test mode and the sandbox)
 docs/paid_plaid/fixtures/ → shared fixtures for the API contract (plaid_sync_response.json)
-frontend/templates/ → index.html (landing page), about.html, legal/ (privacy, terms, refunds), _legal_links.html (footer links, included in every page's footer)
+frontend/templates/ → index.html (landing page; the launch copy (pricing, free week, Sample profile) and the logged-out "Log in" nav link show only when ACCOUNTS_ENABLED is on, otherwise the pre-launch copy), about.html, legal/ (privacy, terms, refunds), _legal_links.html (footer links, included in every page's footer)
 frontend/static/ → CSS, videos, installer downloads (Git LFS)
 render.yaml → Render service definition (gunicorn serve:app, 120 s worker timeout)
 requirements.in, requirements-dev.in → direct dependencies; requirements.txt / requirements-dev.txt are pinned by pip-compile (see below)

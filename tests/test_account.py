@@ -174,7 +174,9 @@ def test_change_password_requires_csrf():
 def test_nav_shows_account_link_when_logged_in(accounts_client, make_user, path):
     make_user()
     login(accounts_client)
-    assert b'<a href="/account">Account</a>' in accounts_client.get(path).data
+    html = accounts_client.get(path).data
+    assert b'<a href="/account">Account</a>' in html
+    assert b'Log in' not in html
 
 
 @pytest.mark.parametrize('path', ['/', '/about'])
