@@ -113,9 +113,9 @@ def test_site_stats_command(app, client):
     result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7'])
     assert result.exit_code == 0, result.output
     today = utcnow().date().isoformat()
-    # 2 people, 3 page views, 1 download, 1 bot hit.
-    assert f'{today:<12}{2:>9}{3:>7}{1:>11}{1:>10}' in result.output
-    assert '1  mac-arm' in result.output
+    # 2 people, 3 page views, 1 download (after a page view), 1 bot hit.
+    assert f'{today:<12}{2:>9}{3:>7}{1:>11}{0:>13}{1:>10}' in result.output
+    assert '     1  mac-arm\n' in result.output
     assert '1  AhrefsBot/7.0' in result.output
     assert 'Downloads (UTC' not in result.output
 
@@ -131,6 +131,25 @@ def test_site_stats_lists_downloads(app, client):
     lines = result.output.split('Downloads (UTC')[1].splitlines()
     [person] = [line for line in lines if 'mac-arm' in line]
     [bot] = [line for line in lines if 'windows' in line]
-    assert '    1  person -' in person and person.endswith(BROWSER['User-Agent'])
-    assert '    0  bot    -' in bot and bot.endswith('python-requests/2.32')
+    assert '    1  person       -' in person and person.endswith(BROWSER['User-Agent'])
+    assert '    0  bot          -' in bot and bot.endswith('python-requests/2.32')
     assert '203.0.113' not in result.output
+
+
+def test_downloads_without_an_earlier_page_view_are_unconfirmed(app, client):
+    crawler = {**BROWSER, 'User-Agent': 'Mozilla/5.0 (Macintosh) Chrome/116.0.0.0 Safari/537.36'}
+    for ip, platform in (('198.51.100.1', 'mac-arm'), ('198.51.100.2', 'windows')):
+        client.get(f'/download/{platform}', headers=crawler, environ_base={'REMOTE_ADDR': ip}).close()
+    # Viewing a page after downloading doesn't confirm the download.
+    client.get('/', headers=crawler, environ_base={'REMOTE_ADDR': '198.51.100.1'})
+    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+    client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'}).close()
+
+    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7', '--downloads'])
+    assert result.exit_code == 0, result.output
+    today = utcnow().date().isoformat()
+    assert f'{today:<12}{3:>9}{2:>7}{3:>11}{2:>13}{0:>10}' in result.output
+    assert '     2  mac-arm  (1 unconfirmed)' in result.output
+    assert '     1  windows  (1 unconfirmed)' in result.output
+    listing = result.output.split('Downloads (UTC')[1]
+    assert listing.count('unconfirmed ') == 2 and listing.count('person ') == 1
