@@ -48,9 +48,15 @@ def visitor_hash(ip, user_agent, day):
     return hmac.new(key, message, hashlib.sha256).hexdigest()[:16]
 
 
+def _without_www(host):
+    host = host.lower()
+    return host[4:] if host.startswith('www.') else host
+
+
 def external_referrer():
     host = urlsplit(request.referrer or '').hostname
-    if not host or host == request.host.split(':')[0]:
+    # www and the bare domain are the same site.
+    if not host or _without_www(host) == _without_www(request.host.split(':')[0]):
         return None
     return host[:255]
 
@@ -102,11 +108,15 @@ def init_analytics(app):
 
 @click.command('site-stats')
 @click.option('--days', default=30, show_default=True, help='How many days back to report.')
+@click.option('--downloads', 'list_downloads', is_flag=True,
+              help='Also list every download with its time, visitor, and user agent.')
 @with_appcontext
-def site_stats_command(days):
+def site_stats_command(days, list_downloads):
     """Print daily visitors, page views, and downloads, split into people and bots."""
     since = (utcnow() - timedelta(days=days - 1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    visits = db.session.scalars(db.select(SiteVisit).where(SiteVisit.created_at >= since)).all()
+    visits = db.session.scalars(
+        db.select(SiteVisit).where(SiteVisit.created_at >= since).order_by(SiteVisit.created_at)
+    ).all()
 
     daily = defaultdict(lambda: {'people': set(), 'views': 0, 'downloads': Counter(), 'bot_hits': 0})
     referrers, bot_agents, downloads = Counter(), Counter(), Counter()
@@ -146,3 +156,23 @@ def site_stats_command(days):
             click.echo(f'\n{title}:')
             for name, count in counter.most_common(10):
                 click.echo(f'{count:>6}  {name}')
+
+    if list_downloads:
+        _echo_downloads(visits)
+
+
+def _echo_downloads(visits):
+    """One line per download. `Pages` is how many pages the same visitor viewed that day:
+    a person usually opens the landing page first, so 0 often means a script."""
+    pages = Counter((v.created_at.date(), v.visitor) for v in visits if v.kind == 'page')
+    click.echo('\nDownloads (UTC; visitor IDs match only within a day):')
+    click.echo(f'{"Time":<21}{"Platform":<10}{"Visitor":<10}{"Pages":>5}  {"Who":<7}{"Referrer":<24}User agent')
+    for visit in visits:
+        if visit.kind != 'download':
+            continue
+        click.echo(
+            f'{visit.created_at:%Y-%m-%d %H:%M:%S}  {visit.path.rsplit("/", 1)[-1]:<10}'
+            f'{visit.visitor[:8]:<10}{pages[(visit.created_at.date(), visit.visitor)]:>5}  '
+            f'{"bot" if visit.is_bot else "person":<7}{visit.referrer or "-":<24}'
+            f'{visit.user_agent or "(no user agent)"}'
+        )
