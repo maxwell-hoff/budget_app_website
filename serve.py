@@ -8,6 +8,7 @@ from sqlalchemy import text
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import account
+import analytics
 import api
 import app_auth
 import auth
@@ -30,7 +31,7 @@ PLATFORM_FOLDERS = {
 
 LEGAL_CONTACT_EMAIL = 'max@gardenstudiosoftware.com'
 # Change whenever the wording of a legal page changes.
-LEGAL_UPDATED = 'October 6, 2026'
+LEGAL_UPDATED = 'October 9, 2026'
 
 
 def index():
@@ -157,6 +158,7 @@ def create_app(test_config=None):
     google_auth.init_google(app)
     billing.init_billing(app)
     plaid_api.init_plaid(app)
+    analytics.init_analytics(app)
 
     login_manager.login_view = 'auth.login' if app.config['ACCOUNTS_ENABLED'] else None
     if app.config['ACCOUNTS_ENABLED']:

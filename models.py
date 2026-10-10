@@ -184,6 +184,24 @@ class PlaidItem(db.Model):
     user = db.relationship('User', backref=db.backref('plaid_items', cascade='all, delete-orphan'))
 
 
+class SiteVisit(db.Model):
+    """One marketing page view or installer download (see analytics.py)."""
+
+    __tablename__ = 'site_visits'
+
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow, index=True)
+    # page or download.
+    kind = db.Column(db.String(16), nullable=False)
+    path = db.Column(db.String(255), nullable=False)
+    # Keyed hash of IP + user agent + UTC day; never the IP itself.
+    visitor = db.Column(db.String(16), nullable=False)
+    is_bot = db.Column(db.Boolean, nullable=False, default=False)
+    user_agent = db.Column(db.String(255), nullable=True)
+    # Host name of an outside page that linked here.
+    referrer = db.Column(db.String(255), nullable=True)
+
+
 class StripeEvent(db.Model):
     """Stripe webhook events already processed; Stripe can deliver an event more than once."""
 
