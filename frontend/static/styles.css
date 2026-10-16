@@ -473,7 +473,8 @@ body::before {
   margin: 0;
   width: var(--hero-w);
   max-width: 100%;
-  font-size: clamp(2.5rem, 6.6vw, 4.8rem);
+  /* Height counts too, so short laptop screens keep the whole hero in view */
+  font-size: clamp(2rem, min(4.8vw, 6vh), 3.6rem);
   line-height: 1.06;
   letter-spacing: -0.02em;
   font-weight: 700;

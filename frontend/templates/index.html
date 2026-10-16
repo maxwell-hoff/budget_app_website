@@ -6,7 +6,7 @@
     <title>Workbench Budgeting</title>
     <meta
       name="description"
-      content="Workbench Budgeting turns your real spending into a living forecast, so you can see what today's overspending will cost you years from now — and arrive at a budget that's actually yours. A guided setup walks you in from zero in about 10 minutes, and your data stays local on your device."
+      content="Other apps help you stick to a budget. Workbench Budgeting helps you figure out what it should be, from your real spending and your goals (a house, college, retirement), then tracks how you're doing against it. A guided setup takes about 10 minutes, and your data stays local on your device."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -273,11 +273,11 @@
       <div class="hero__stage">
         <div class="wrap hero__stage-inner">
           <h1 class="hero__title reveal-up d2">
-            A budgeting app built to help you make <em>decisions</em>.
+            Other apps help you stick to a budget. Workbench helps you figure out what it <em>should be</em>.
           </h1>
           <div class="hero__detail">
             <p class="hero__tagline">
-              What starter home can you afford? How much should you save for your kid's college? When will you be able to retire? <br><br>Workbench turns your real spending into a forecast, so you can test those tradeoffs instead of guessing.
+              Your budget is built from your real spending and what you want later: a house, college, retirement. Then it tracks how you're doing against it.
             </p>
             <div class="hero__actions" id="heroActions">
               <a href="#download" class="btn btn--primary btn--lg" data-os="mac">
@@ -474,7 +474,7 @@
         <div class="section__head on-scroll">
           <span class="kicker">How it works</span>
           <h2 class="section__title">
-            Rather than being handed a budget, you build one. Here's how.
+            From your real transactions to a number you trust.
           </h2>
         </div>
 
@@ -851,6 +851,10 @@
               </button>
               <div class="flow-step__content" id="flowPanel5">
                 <div class="payoff payoff--wide">
+                  <p class="payoff__desc">
+                    In the example above, $5,180 a month, with $100 of it set aside for the trip,
+                    keeps you retiring at 62. Workbench works out yours the same way.
+                  </p>
                   <div class="loop__number">
                     <span class="loop__number-label">Your monthly budget</span>
                     <span class="loop__number-value" data-count="5180" data-prefix="$">$0</span>
@@ -1094,6 +1098,14 @@
                   <td colspan="4"></td>
                 </tr>
                 <tr>
+                  <th scope="row">Sets your budget from your long-term plan</th>
+                  <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                  <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
+                </tr>
+                <tr>
                   <th scope="row">Forecasts out to retirement</th>
                   <td class="compare__ours"><span class="ci ci--yes" role="img" aria-label="Yes"></span></td>
                   <td><span class="ci ci--no" role="img" aria-label="No"></span></td>
@@ -1240,7 +1252,7 @@
       <div class="wrap">
         <div class="download__card on-scroll">
           <span class="kicker">Get started</span>
-          <h2 class="download__title">See what your current path is actually costing you</h2>
+          <h2 class="download__title">Find out what your budget should be</h2>
           <p class="download__sub">{% if config.ACCOUNTS_ENABLED %}
             Explore the Sample profile free, no account needed. When you're ready for your own numbers, start your free week.{% else %}
             Free to use. Load the demo data or import your own, and see where your current path actually leads.{% endif %}
