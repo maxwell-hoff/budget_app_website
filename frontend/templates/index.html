@@ -40,7 +40,7 @@
         <div class="nav__links" id="navLinks">
           <a href="#why">Why</a>
           <a href="#how-it-works">How it works</a>
-          <a href="#philosophy">Philosophy</a>
+          <a href="#outcomes">What changes</a>
           <a href="#pricing">Pricing</a>
           <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED %}{% if current_user.is_authenticated %}
           <a href="/account">Account</a>{% else %}
@@ -948,16 +948,33 @@
       </div>
     </section>
 
-    <!-- ── Philosophy / pull-quote ── -->
-    <section class="philosophy" id="philosophy" aria-label="Philosophy">
+    <!-- ── What changes: outcomes of using the app (on the blue band) ── -->
+    <section class="philosophy" id="outcomes" aria-label="What changes">
       <div class="wrap philosophy__inner on-scroll">
-        <span class="kicker">Philosophy</span>
-        <p class="philosophy__quote">
+        <span class="kicker">What changes</span>
+        <h2 class="philosophy__quote">
           A budget you understand is a budget <span>you'll keep.</span>
-        </p>
-        <p class="philosophy__sub">
-          Workbench shows its work. Every number traces back to your real transactions, so you can trust it, and change it when life changes.
-        </p>
+        </h2>
+        <div class="outcomes">
+          <article class="outcome">
+            <h3 class="outcome__title">Know you're on track, not just under budget.</h3>
+            <p class="outcome__body">
+              Your forecast shows where today's spending leads, so "on track" means something.
+            </p>
+          </article>
+          <article class="outcome">
+            <h3 class="outcome__title">Spend without the guilt.</h3>
+            <p class="outcome__body">
+              See which splurges matter and which don't. When the dinner out fits the plan, enjoy it.
+            </p>
+          </article>
+          <article class="outcome">
+            <h3 class="outcome__title">See what any choice costs.</h3>
+            <p class="outcome__body">
+              From a dinner out to a house, see what it does to your plan before you decide.
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 
