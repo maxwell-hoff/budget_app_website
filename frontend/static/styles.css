@@ -192,6 +192,7 @@ body::before {
   font-size: 1.05rem;
   letter-spacing: -0.005em;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 /* Logo mark (_logo_mark.html): the favicon's fork — what's spent vs. the future */
@@ -672,9 +673,8 @@ body::before {
 
 /* ── Demo: the real app in a framed window, in its own section ── */
 .demo__head {
-  max-width: 640px;
-  margin: 0 auto clamp(2rem, 4vw, 3rem);
-  text-align: center;
+  max-width: 680px;
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
 }
 .demo__head .section__title { margin-top: 0.7rem; }
 
@@ -2498,6 +2498,10 @@ body::before {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.philosophy__quote--closing {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+}
+
 /* What changes: three outcome cards on the blue band */
 .outcomes {
   display: grid;

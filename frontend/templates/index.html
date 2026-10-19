@@ -40,7 +40,7 @@
         <div class="nav__links" id="navLinks">
           <a href="#why">Why</a>
           <a href="#how-it-works">How it works</a>
-          <a href="#outcomes">What changes</a>
+          <a href="#outcomes">Outcomes</a>
           <a href="#pricing">Pricing</a>
           <a href="/about">About</a>{% if config.ACCOUNTS_ENABLED %}{% if current_user.is_authenticated %}
           <a href="/account">Account</a>{% else %}
@@ -94,9 +94,9 @@
           #eef0f4;
         opacity: 1;
         transition:
-          opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-          filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+          opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+          filter 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       }
       /* Faint engineering-paper grid, matched to the page and masked to the center */
       .wb-intro::before {
@@ -124,7 +124,7 @@
         width: clamp(104px, 22vw, 156px);
         opacity: 0;
         transform: scale(0.86);
-        animation: wbIntroMark 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: wbIntroMark 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
       @keyframes wbIntroMark { to { opacity: 1; transform: scale(1); } }
       /* Soft glow halo blooms behind the mark as the branches draw */
@@ -136,7 +136,7 @@
         background: radial-gradient(circle, rgba(56, 189, 248, 0.30), rgba(10, 95, 174, 0.12) 45%, transparent 70%);
         opacity: 0;
         transform: scale(0.7);
-        animation: wbIntroHalo 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+        animation: wbIntroHalo 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
         z-index: -1;
       }
       @keyframes wbIntroHalo { to { opacity: 1; transform: scale(1); } }
@@ -149,24 +149,24 @@
         transform: scale(0.2);
         transform-origin: center;
         transform-box: fill-box;
-        animation: wbIntroDot 0.5s cubic-bezier(0.34, 1.32, 0.56, 1) forwards;
+        animation: wbIntroDot 0.25s cubic-bezier(0.34, 1.32, 0.56, 1) forwards;
       }
       .wb-intro__dot--1,
       .wb-intro__dot--3 { filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.55)); }
-      .wb-intro__dot--1 { animation-delay: 0.05s; }
-      .wb-intro__dot--2 { animation-delay: 0.18s; }
-      .wb-intro__dot--3 { animation-delay: 0.31s; }
+      .wb-intro__dot--1 { animation-delay: 0.025s; }
+      .wb-intro__dot--2 { animation-delay: 0.09s; }
+      .wb-intro__dot--3 { animation-delay: 0.155s; }
       @keyframes wbIntroDot { to { opacity: 1; transform: scale(1); } }
 
       /* Branches grow outward via stroke-draw once the dots are set */
       .wb-intro__branch {
         stroke-dasharray: 1;
         stroke-dashoffset: 1;
-        animation: wbIntroDraw 0.95s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: wbIntroDraw 0.475s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
-      .wb-intro__branch--spent  { animation-delay: 0.5s; }
+      .wb-intro__branch--spent  { animation-delay: 0.25s; }
       .wb-intro__branch--future {
-        animation-delay: 0.62s;
+        animation-delay: 0.31s;
         filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.5));
       }
       @keyframes wbIntroDraw { to { stroke-dashoffset: 0; } }
@@ -184,7 +184,7 @@
         letter-spacing: -0.02em;
         line-height: 1.06;
         color: #14142b;
-        animation: wbIntroTitle 0.75s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
+        animation: wbIntroTitle 0.375s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
       }
       .wb-intro__title span {
         display: inline-block;
@@ -193,7 +193,7 @@
         background-repeat: no-repeat;
         background-position: 0 92%;
         background-size: 0% 0.14em;
-        animation: wbIntroUnderline 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.8s forwards;
+        animation: wbIntroUnderline 0.425s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
       }
       @keyframes wbIntroTitle { to { opacity: 1; transform: translateY(0); } }
       @keyframes wbIntroUnderline { to { background-size: 100% 0.14em; } }
@@ -251,7 +251,7 @@
             overlay.remove();
           }, { once: true });
           // Fallback removal in case transitionend never fires.
-          setTimeout(function () { if (overlay.parentNode) overlay.remove(); }, 1000);
+          setTimeout(function () { if (overlay.parentNode) overlay.remove(); }, 500);
         }
 
         // User skip: reveal instantly, no partial state.
@@ -264,8 +264,8 @@
           window.addEventListener(evt, onSkip, { capture: true, passive: true });
         });
 
-        // Begin auto fade-out after the underline settles and holds (~2.9s in).
-        fadeTimer = setTimeout(finish, 2900);
+        // Begin auto fade-out after the underline settles and holds (~1.45s in).
+        fadeTimer = setTimeout(finish, 1450);
       })();
     </script>
 
@@ -474,7 +474,7 @@
         <div class="section__head on-scroll">
           <span class="kicker">How it works</span>
           <h2 class="section__title">
-            From your real transactions to a number you trust.
+            From your real transactions to a budget amount you trust.
           </h2>
         </div>
 
@@ -948,13 +948,10 @@
       </div>
     </section>
 
-    <!-- ── What changes: outcomes of using the app (on the blue band) ── -->
-    <section class="philosophy" id="outcomes" aria-label="What changes">
+    <!-- ── Outcomes of using the app (on the blue band) ── -->
+    <section class="philosophy" id="outcomes" aria-label="Outcomes">
       <div class="wrap philosophy__inner on-scroll">
-        <span class="kicker">What changes</span>
-        <h2 class="philosophy__quote">
-          A budget you understand is a budget <span>you'll keep.</span>
-        </h2>
+        <span class="kicker">Outcomes</span>
         <div class="outcomes">
           <article class="outcome">
             <h3 class="outcome__title">Know you're on track, not just under budget.</h3>
@@ -975,6 +972,9 @@
             </p>
           </article>
         </div>
+        <p class="philosophy__quote philosophy__quote--closing">
+          A budget you understand is a budget <span>you'll keep.</span>
+        </p>
       </div>
     </section>
 
@@ -1204,7 +1204,7 @@
             Free to use. $8.99/month for easy bank account syncing.{% endif %}
           </h2>
           <p class="section__lead">
-            Similarly capable tools I found cost $250 a month.
+            Advisor-grade tools for a fraction of the cost.
           </p>
         </div>
 
@@ -1215,7 +1215,7 @@
               <span class="pricing__tier-tag">free</span>
             </header>
             <p class="pricing__tier-body">
-              Explore the app with example data. No account needed.
+              Take the whole app for a spin with a realistic example household: forecasts, scenarios, budget vs. actual. No account or card needed.
             </p>
           </article>
 
