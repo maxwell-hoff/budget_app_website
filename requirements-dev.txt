@@ -171,7 +171,7 @@ pip-requirements-parser==32.0.1
     # via pip-audit
 pip-tools==7.6.2
     # via -r requirements-dev.in
-plaid-python==45.0.0
+plaid-python==46.0.0
     # via
     #   -c requirements.txt
     #   -r requirements.in
