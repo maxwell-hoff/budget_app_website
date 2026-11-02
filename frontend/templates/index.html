@@ -354,7 +354,7 @@
                   <li class="why-steps__item" data-from="0">
                     Whether you rent or buy a home shapes whether you can afford a new car.
                   </li>
-                  <li class="why-steps__item" data-from="1">
+                  <li class="why-steps__item why-steps__item--back" data-from="1">
                     <span class="why-steps__arrow" aria-hidden="true"></span>
                     And buying a new car shapes your rent vs. buy decision.
                   </li>
@@ -362,7 +362,7 @@
                     <span class="why-steps__arrow" aria-hidden="true"></span>
                     Together, those two decisions set your path to retirement.
                   </li>
-                  <li class="why-steps__item" data-from="3">
+                  <li class="why-steps__item why-steps__item--back" data-from="3">
                     <span class="why-steps__arrow" aria-hidden="true"></span>
                     And your path to retirement shapes your car and home decisions.
                   </li>
@@ -370,7 +370,7 @@
                     <span class="why-steps__arrow" aria-hidden="true"></span>
                     All three decide whether you can go out to dinner this Thursday.
                   </li>
-                  <li class="why-steps__item why-steps__item--small" data-from="5">
+                  <li class="why-steps__item why-steps__item--back why-steps__item--small" data-from="5">
                     <span class="why-steps__arrow" aria-hidden="true"></span>
                     And dinner on Thursday moves the other three too, in a small way.
                   </li>
@@ -1712,9 +1712,9 @@
          or bottom-aligned if it's taller than the screen) for --why-extra of
          scroll, split evenly across the beats, so every step gets its own
          stretch and the section only scrolls on once it's complete. Going
-         forward, beats also arrive at least PACE ms apart (faster while
-         several are waiting), and earlier steps dim (.is-past) so the newest
-         one leads. Narrow screens and reduced motion get the static version. */
+         forward, each beat also stays at least PACE ms before the next one
+         (so a quick scroll can't flash a step past), and earlier steps dim
+         (.is-past) so the newest one leads. Narrow screens and reduced motion get the static version. */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
@@ -1726,7 +1726,7 @@
         }));
         const beats = Math.max(...parts.map((p) => p.from)) + 1;
         const roomy = window.matchMedia("(min-width: 861px)");
-        const PACE = 450;
+        const PACE = 600;
         let beat = -1;
         let target = -1;
         let timer = null;
@@ -1741,7 +1741,6 @@
         }
 
         // Step toward the target: back at once, forward one beat per PACE
-        // (a third of that while more than one beat is waiting)
         function pump() {
           if (target < beat) {
             clearTimeout(timer);
@@ -1753,7 +1752,7 @@
           timer = setTimeout(() => {
             timer = null;
             pump();
-          }, target - beat > 1 ? PACE / 3 : PACE);
+          }, PACE);
         }
 
         function show(n, now) {

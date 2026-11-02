@@ -1776,7 +1776,7 @@ body::before {
 .why {
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --why-gap: 1.6rem;
-  --why-extra: 600px;
+  --why-extra: 840px;
 }
 /* Room for the stage to stay pinned (a sticky box can't use padding) */
 .why.is-scrolly .why__track::after {
@@ -1822,6 +1822,10 @@ body::before {
   border-radius: 50%;
   background: var(--accent);
   box-shadow: var(--shadow-glow);
+}
+/* Matches the diagram's return arrows */
+.why-steps__item--back::before {
+  background: var(--accent-bright);
 }
 .why-steps__item--small {
   font-size: 0.96rem;
