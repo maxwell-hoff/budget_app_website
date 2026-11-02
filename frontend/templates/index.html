@@ -352,65 +352,82 @@
               <li class="why-steps__item" data-from="0">
                 Whether you rent or buy a home shapes whether you can afford a new car.
               </li>
-              <li class="why-steps__item" data-from="1">
+              <li class="why-steps__item why-steps__item--back" data-from="1">
                 <span class="why-steps__arrow" aria-hidden="true"></span>
-                Together, those two decisions set your path to retirement.
+                And buying a new car shapes your rent vs. buy decision.
               </li>
               <li class="why-steps__item" data-from="2">
                 <span class="why-steps__arrow" aria-hidden="true"></span>
-                And all three decide whether you can go out to dinner this Thursday.
+                Together, those two decisions set your path to retirement.
               </li>
               <li class="why-steps__item why-steps__item--back" data-from="3">
                 <span class="why-steps__arrow" aria-hidden="true"></span>
-                Dinner on Thursday moves the other three too, in a small way.
+                And your path to retirement shapes your car and home decisions.
+              </li>
+              <li class="why-steps__item" data-from="4">
+                <span class="why-steps__arrow" aria-hidden="true"></span>
+                All three decide whether you can go out to dinner this Thursday.
+              </li>
+              <li class="why-steps__item why-steps__item--back why-steps__item--small" data-from="5">
+                <span class="why-steps__arrow" aria-hidden="true"></span>
+                And dinner on Thursday moves the other three too, in a small way.
               </li>
             </ol>
           </div>
 
-          <svg class="why-map" viewBox="-24 0 528 350" role="img"
-               aria-label="Four connected decisions: rent vs. buy a home, buy a new car, retire at 65, and dinner on Thursday. Each one affects the others.">
+          <svg class="why-map" viewBox="0 0 480 372" role="img"
+               aria-label="Four connected decisions: rent vs. buy a home, buy a new car, retire at 65, and dinner on Thursday. Each one affects the others, and dinner affects the rest only a little.">
             <defs>
-              <marker id="whyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <marker id="whyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
                 <path d="M0,0 L10,5 L0,10 Z" fill="#003a70"/>
               </marker>
-              <marker id="whyArrowBack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <marker id="whyArrowBack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#0a5fae"/>
+              </marker>
+              <marker id="whyArrowSmall" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
                 <path d="M0,0 L10,5 L0,10 Z" fill="#0a5fae"/>
               </marker>
             </defs>
 
-            <!-- Influence: each line draws from the decision that drives it -->
-            <path class="why-map__edge" data-from="0" pathLength="1" d="M196,56 H282"/>
-            <path class="why-map__edge" data-from="1" pathLength="1" d="M150,80 L332,251"/>
-            <path class="why-map__edge" data-from="1" pathLength="1" d="M380,80 V250"/>
-            <path class="why-map__edge" data-from="2" pathLength="1" d="M100,80 V250"/>
-            <path class="why-map__edge" data-from="2" pathLength="1" d="M330,80 L148,251"/>
-            <path class="why-map__edge" data-from="2" pathLength="1" d="M284,276 H198"/>
-
+            <!-- Each pair of decisions gets two side-by-side arrows, one each
+                 way; every arrow draws from the decision that drives it -->
+            <!-- Home ⇄ car -->
+            <path class="why-map__edge" data-from="0" pathLength="1" d="M196,44 H282"/>
+            <path class="why-map__edge why-map__edge--back" data-from="1" pathLength="1" d="M284,56 H198"/>
+            <!-- Home, car → retirement, and back -->
+            <path class="why-map__edge" data-from="2" pathLength="1" d="M132,76 L358,296"/>
+            <path class="why-map__edge" data-from="2" pathLength="1" d="M374,76 V294"/>
+            <path class="why-map__edge why-map__edge--back" data-from="3" pathLength="1" d="M348,298 L122,78"/>
+            <path class="why-map__edge why-map__edge--back" data-from="3" pathLength="1" d="M386,298 V80"/>
+            <!-- Home, car, retirement → dinner -->
+            <path class="why-map__edge" data-from="4" pathLength="1" d="M94,76 V294"/>
+            <path class="why-map__edge" data-from="4" pathLength="1" d="M348,76 L122,296"/>
+            <path class="why-map__edge" data-from="4" pathLength="1" d="M284,316 H198"/>
             <!-- Dinner's small pull back on the other three -->
-            <path class="why-map__back" data-from="3" d="M20,262 C-8,212 -8,122 18,76"/>
-            <path class="why-map__back" data-from="3" d="M182,262 Q320,226 350,82"/>
-            <path class="why-map__back" data-from="3" d="M124,300 Q240,346 354,302"/>
+            <path class="why-map__small" data-from="5" d="M106,298 V80"/>
+            <path class="why-map__small" data-from="5" d="M132,298 L358,78"/>
+            <path class="why-map__small" data-from="5" d="M196,328 H282"/>
 
             <g class="why-map__pill" data-from="0">
-              <rect x="8" y="34" width="184" height="44" rx="22"/>
-              <text x="100" y="56">Rent vs. buy a home</text>
+              <rect x="8" y="28" width="184" height="44" rx="22"/>
+              <text x="100" y="50">Rent vs. buy a home</text>
             </g>
             <g class="why-map__pill" data-from="0">
-              <rect x="288" y="34" width="184" height="44" rx="22"/>
-              <text x="380" y="56">Buy a new car</text>
-            </g>
-            <g class="why-map__pill" data-from="1">
-              <rect x="288" y="254" width="184" height="44" rx="22"/>
-              <text x="380" y="276">Retire at 65</text>
+              <rect x="288" y="28" width="184" height="44" rx="22"/>
+              <text x="380" y="50">Buy a new car</text>
             </g>
             <g class="why-map__pill" data-from="2">
-              <rect x="8" y="254" width="184" height="44" rx="22"/>
-              <text x="100" y="276">Dinner on Thursday</text>
+              <rect x="288" y="300" width="184" height="44" rx="22"/>
+              <text x="380" y="322">Retire at 65</text>
+            </g>
+            <g class="why-map__pill" data-from="4">
+              <rect x="8" y="300" width="184" height="44" rx="22"/>
+              <text x="100" y="322">Dinner on Thursday</text>
             </g>
           </svg>
         </div>
 
-        <p class="why__payoff" data-from="4">
+        <p class="why__payoff" data-from="6">
           Workbench is one model that connects all of these decisions, big and small,
           so you can make them together.
         </p>
@@ -1688,15 +1705,15 @@
 
       /* ── Why: one more decision per stretch of scroll ──
          [data-from="n"] parts show from beat n on (no pinning). Beat 0 shows
-         until the whole section fits on screen, then each step of scroll
-         (60-110px, shorter when there's less room before the section's top
-         leaves the screen) adds one more, on short and tall screens alike.
+         until the steps and diagram fit on screen, then each step of scroll
+         adds one more, sized so the last beat lands before the diagram
+         leaves the top of the screen (on short and tall screens alike).
          Narrow screens and reduced motion get the static version. */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
         const grid = why.querySelector(".why__grid");
-        const payoff = why.querySelector(".why__payoff");
+        const map = why.querySelector(".why-map");
         const parts = Array.from(why.querySelectorAll("[data-from]")).map((el) => ({
           el,
           from: Number(el.dataset.from),
@@ -1716,12 +1733,14 @@
           ticking = false;
           if (!why.classList.contains("is-scrolly")) return;
           const vh = window.innerHeight;
-          const top = grid.getBoundingClientRect().top;
-          const height = payoff.getBoundingClientRect().bottom - top;
-          // Start once it all fits above the bottom edge, or (if it can't
-          // fit) once its top nears the top of the screen
-          const startTop = Math.max(vh - height - 24, 0.1 * vh);
-          const step = Math.min(Math.max(startTop / (beats - 1), 60), 110);
+          const box = grid.getBoundingClientRect();
+          const top = box.top;
+          // Start once the grid fits above the bottom edge, or (if it can't
+          // fit) once its top nears the top of the screen; finish before the
+          // diagram's top scrolls off
+          const startTop = Math.max(vh - box.height - 24, 0.1 * vh);
+          const endTop = 8 - (map.getBoundingClientRect().top - top);
+          const step = Math.min(Math.max((startTop - endTop) / (beats - 1), 30), 110);
           const scrolled = startTop - top;
           show(Math.min(Math.max(Math.floor(scrolled / step), 0), beats - 1));
         }

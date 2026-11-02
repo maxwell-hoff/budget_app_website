@@ -1775,7 +1775,7 @@ body::before {
    the section scrolls past. */
 .why {
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --why-gap: 1.6rem;
+  --why-gap: 1.35rem;
 }
 .why .section__head {
   margin-bottom: 1.6rem;
@@ -1798,8 +1798,8 @@ body::before {
   position: relative;
   padding-left: 1.6rem;
   color: var(--ink-muted);
-  font-size: 1.05rem;
-  line-height: 1.45;
+  font-size: 1.02rem;
+  line-height: 1.4;
 }
 .why-steps__item::before {
   content: "";
@@ -1812,13 +1812,14 @@ body::before {
   background: var(--accent);
   box-shadow: var(--shadow-glow);
 }
-.why-steps__item--back {
-  font-size: 0.98rem;
-  font-style: italic;
-}
+/* Hollow dot: a decision pulling back on the ones before it */
 .why-steps__item--back::before {
   background: var(--surface-1);
   border: 2px solid var(--accent-bright);
+}
+.why-steps__item--small {
+  font-size: 0.96rem;
+  font-style: italic;
 }
 /* Spans the gap from the step above down to this step's dot */
 .why-steps__arrow {
@@ -1854,7 +1855,7 @@ body::before {
   display: block;
   justify-self: end;
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   height: auto;
   overflow: visible;
 }
@@ -1864,13 +1865,18 @@ body::before {
   stroke-width: 2;
   marker-end: url(#whyArrow);
 }
-.why-map__back {
+.why-map__edge--back {
+  stroke: var(--accent-bright);
+  stroke-width: 1.75;
+  marker-end: url(#whyArrowBack);
+}
+.why-map__small {
   fill: none;
   stroke: var(--accent-bright);
   stroke-width: 1.25;
   stroke-dasharray: 3 4;
   opacity: 0.75;
-  marker-end: url(#whyArrowBack);
+  marker-end: url(#whyArrowSmall);
 }
 .why-map__pill rect {
   fill: var(--surface-1);
@@ -1917,7 +1923,7 @@ body::before {
   opacity: 0;
   transition: stroke-dashoffset 0.7s var(--why-ease) 0.15s, opacity 0.2s ease 0.15s;
 }
-.why.is-scrolly .why-map__back {
+.why.is-scrolly .why-map__small {
   opacity: 0;
   transition: opacity 0.6s var(--why-ease) 0.2s;
 }
@@ -1928,7 +1934,7 @@ body::before {
 .why.is-scrolly .why-map__edge.is-on {
   stroke-dashoffset: 0;
 }
-.why.is-scrolly .why-map__back.is-on {
+.why.is-scrolly .why-map__small.is-on {
   opacity: 0.75;
 }
 
@@ -1944,7 +1950,7 @@ body::before {
 @media (max-width: 520px) {
   /* The map scales down with the screen: keep its labels readable */
   .why-map__pill text {
-    font-size: 20px;
+    font-size: 18.5px;
   }
 }
 
