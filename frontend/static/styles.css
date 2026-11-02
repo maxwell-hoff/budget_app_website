@@ -1771,43 +1771,19 @@ body::before {
 
 /* ── Why: every financial decision is connected ──
    Static by default: every step, pill, and line showing. .is-scrolly (set
-   by JS on roomy screens) pins the stage, and [data-from] parts appear
-   only once they get .is-on. */
+   by JS on wide screens) hides [data-from] parts until they get .is-on as
+   the section scrolls past. */
 .why {
-  --why-beats: 5;
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --why-gap: 1.6rem;
 }
 .why .section__head {
-  margin-bottom: 0;
-}
-.why.is-scrolly {
-  padding-bottom: 0;
-}
-.why.is-scrolly .why__track {
-  height: calc(100vh + var(--why-beats) * 50vh);
-  height: calc(100svh + var(--why-beats) * 50svh);
-}
-.why.is-scrolly .why__stage {
-  position: sticky;
-  top: 52px;
-  display: flex;
-  align-items: center;
-  height: calc(100vh - 52px);
-  height: calc(100svh - 52px);
-}
-.why__inner {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.75rem, 4vh, 2.75rem);
-  padding-top: 2.5rem;
-}
-.why.is-scrolly .why__inner {
-  padding-top: 0;
+  margin-bottom: 1.6rem;
 }
 .why__grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
 }
 
@@ -1816,20 +1792,20 @@ body::before {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
+  gap: var(--why-gap);
 }
 .why-steps__item {
   position: relative;
-  padding-left: 1.75rem;
+  padding-left: 1.6rem;
   color: var(--ink-muted);
-  font-size: 1.15rem;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  line-height: 1.45;
 }
 .why-steps__item::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.55em;
+  top: 0.5em;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -1837,35 +1813,48 @@ body::before {
   box-shadow: var(--shadow-glow);
 }
 .why-steps__item--back {
-  font-size: 1.02rem;
+  font-size: 0.98rem;
   font-style: italic;
 }
 .why-steps__item--back::before {
   background: var(--surface-1);
   border: 2px solid var(--accent-bright);
 }
+/* Spans the gap from the step above down to this step's dot */
 .why-steps__arrow {
   position: absolute;
-  left: 4px;
-  bottom: calc(100% - 0.35em);
-  height: 2rem;
-  border-left: 2px solid var(--accent-bright);
-  opacity: 0.55;
+  left: -2px;
+  top: calc(2px - var(--why-gap));
+  width: 14px;
+  height: calc(var(--why-gap) + 0.5em - 4px);
+  opacity: 0.35;
+}
+.why-steps__arrow::before {
+  content: "";
+  position: absolute;
+  left: 5.5px;
+  top: 0;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent-bright);
 }
 .why-steps__arrow::after {
   content: "";
   position: absolute;
-  left: -6px;
-  bottom: -1px;
-  border: 5px solid transparent;
-  border-top: 6px solid var(--accent-bright);
-  border-bottom: 0;
+  left: 0;
+  bottom: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid var(--accent-bright);
 }
 
 /* The decision map */
 .why-map {
   display: block;
+  justify-self: end;
   width: 100%;
+  max-width: 500px;
   height: auto;
   overflow: visible;
 }
@@ -1900,7 +1889,8 @@ body::before {
 
 .why__payoff {
   max-width: 820px;
-  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(1.25rem, 2.1vw, 1.6rem);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.01em;
@@ -1947,14 +1937,8 @@ body::before {
     grid-template-columns: 1fr;
   }
   .why-map {
-    order: -1;
-    max-width: 520px;
-  }
-  .why-steps {
-    gap: 2rem;
-  }
-  .why-steps__item {
-    font-size: 1.05rem;
+    justify-self: center;
+    max-width: 480px;
   }
 }
 @media (max-width: 520px) {

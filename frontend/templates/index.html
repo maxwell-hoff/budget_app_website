@@ -337,87 +337,83 @@
     </header>
 
     <!-- ── Why: every financial decision is connected ──
-         With JS (and motion allowed, on a screen with room) the stage pins and
-         each stretch of scroll adds one decision and its connections;
-         otherwise the whole diagram shows at once. -->
+         With JS (and motion allowed, on a wide screen) each stretch of scroll
+         past the section adds one decision and its connections; otherwise
+         the whole diagram shows at once. -->
     <section class="section why" id="why" aria-label="Why Workbench">
       <div class="wrap">
-        <div class="section__head on-scroll">
-          <span class="kicker">Why put your budget and your big decisions in one place?</span>
-          <h2 class="section__title">Because every financial decision is connected</h2>
-        </div>
-      </div>
-      <div class="why__track">
-        <div class="why__stage">
-          <div class="wrap why__inner">
-            <div class="why__grid">
-              <ol class="why-steps">
-                <li class="why-steps__item" data-from="0">
-                  Whether you rent or buy a home shapes whether you can afford a new car.
-                </li>
-                <li class="why-steps__item" data-from="1">
-                  <span class="why-steps__arrow" aria-hidden="true"></span>
-                  Together, those two decisions set your path to retirement.
-                </li>
-                <li class="why-steps__item" data-from="2">
-                  <span class="why-steps__arrow" aria-hidden="true"></span>
-                  And all three decide whether you can go out to dinner this Thursday.
-                </li>
-                <li class="why-steps__item why-steps__item--back" data-from="3">
-                  <span class="why-steps__arrow" aria-hidden="true"></span>
-                  Dinner on Thursday moves the other three too, in a small way.
-                </li>
-              </ol>
-
-              <svg class="why-map" viewBox="-24 0 528 350" role="img"
-                   aria-label="Four connected decisions: rent vs. buy a home, buy a new car, retire at 65, and dinner on Thursday. Each one affects the others.">
-                <defs>
-                  <marker id="whyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                    <path d="M0,0 L10,5 L0,10 Z" fill="#003a70"/>
-                  </marker>
-                  <marker id="whyArrowBack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                    <path d="M0,0 L10,5 L0,10 Z" fill="#0a5fae"/>
-                  </marker>
-                </defs>
-
-                <!-- Influence: each line draws from the decision that drives it -->
-                <path class="why-map__edge" data-from="0" pathLength="1" d="M196,56 H282"/>
-                <path class="why-map__edge" data-from="1" pathLength="1" d="M150,80 L332,251"/>
-                <path class="why-map__edge" data-from="1" pathLength="1" d="M380,80 V250"/>
-                <path class="why-map__edge" data-from="2" pathLength="1" d="M100,80 V250"/>
-                <path class="why-map__edge" data-from="2" pathLength="1" d="M330,80 L148,251"/>
-                <path class="why-map__edge" data-from="2" pathLength="1" d="M284,276 H198"/>
-
-                <!-- Dinner's small pull back on the other three -->
-                <path class="why-map__back" data-from="3" d="M20,262 C-8,212 -8,122 18,76"/>
-                <path class="why-map__back" data-from="3" d="M182,262 Q320,226 350,82"/>
-                <path class="why-map__back" data-from="3" d="M124,300 Q240,346 354,302"/>
-
-                <g class="why-map__pill" data-from="0">
-                  <rect x="8" y="34" width="184" height="44" rx="22"/>
-                  <text x="100" y="56">Rent vs. buy a home</text>
-                </g>
-                <g class="why-map__pill" data-from="0">
-                  <rect x="288" y="34" width="184" height="44" rx="22"/>
-                  <text x="380" y="56">Buy a new car</text>
-                </g>
-                <g class="why-map__pill" data-from="1">
-                  <rect x="288" y="254" width="184" height="44" rx="22"/>
-                  <text x="380" y="276">Retire at 65</text>
-                </g>
-                <g class="why-map__pill" data-from="2">
-                  <rect x="8" y="254" width="184" height="44" rx="22"/>
-                  <text x="100" y="276">Dinner on Thursday</text>
-                </g>
-              </svg>
+        <div class="why__grid">
+          <div class="why__text">
+            <div class="section__head on-scroll">
+              <span class="kicker">Why put your budget and your big decisions in one place?</span>
+              <h2 class="section__title">Because every financial decision is connected</h2>
             </div>
-
-            <p class="why__payoff" data-from="4">
-              Workbench is one model that connects all of these decisions, big and small,
-              so you can make them together.
-            </p>
+            <ol class="why-steps">
+              <li class="why-steps__item" data-from="0">
+                Whether you rent or buy a home shapes whether you can afford a new car.
+              </li>
+              <li class="why-steps__item" data-from="1">
+                <span class="why-steps__arrow" aria-hidden="true"></span>
+                Together, those two decisions set your path to retirement.
+              </li>
+              <li class="why-steps__item" data-from="2">
+                <span class="why-steps__arrow" aria-hidden="true"></span>
+                And all three decide whether you can go out to dinner this Thursday.
+              </li>
+              <li class="why-steps__item why-steps__item--back" data-from="3">
+                <span class="why-steps__arrow" aria-hidden="true"></span>
+                Dinner on Thursday moves the other three too, in a small way.
+              </li>
+            </ol>
           </div>
+
+          <svg class="why-map" viewBox="-24 0 528 350" role="img"
+               aria-label="Four connected decisions: rent vs. buy a home, buy a new car, retire at 65, and dinner on Thursday. Each one affects the others.">
+            <defs>
+              <marker id="whyArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#003a70"/>
+              </marker>
+              <marker id="whyArrowBack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#0a5fae"/>
+              </marker>
+            </defs>
+
+            <!-- Influence: each line draws from the decision that drives it -->
+            <path class="why-map__edge" data-from="0" pathLength="1" d="M196,56 H282"/>
+            <path class="why-map__edge" data-from="1" pathLength="1" d="M150,80 L332,251"/>
+            <path class="why-map__edge" data-from="1" pathLength="1" d="M380,80 V250"/>
+            <path class="why-map__edge" data-from="2" pathLength="1" d="M100,80 V250"/>
+            <path class="why-map__edge" data-from="2" pathLength="1" d="M330,80 L148,251"/>
+            <path class="why-map__edge" data-from="2" pathLength="1" d="M284,276 H198"/>
+
+            <!-- Dinner's small pull back on the other three -->
+            <path class="why-map__back" data-from="3" d="M20,262 C-8,212 -8,122 18,76"/>
+            <path class="why-map__back" data-from="3" d="M182,262 Q320,226 350,82"/>
+            <path class="why-map__back" data-from="3" d="M124,300 Q240,346 354,302"/>
+
+            <g class="why-map__pill" data-from="0">
+              <rect x="8" y="34" width="184" height="44" rx="22"/>
+              <text x="100" y="56">Rent vs. buy a home</text>
+            </g>
+            <g class="why-map__pill" data-from="0">
+              <rect x="288" y="34" width="184" height="44" rx="22"/>
+              <text x="380" y="56">Buy a new car</text>
+            </g>
+            <g class="why-map__pill" data-from="1">
+              <rect x="288" y="254" width="184" height="44" rx="22"/>
+              <text x="380" y="276">Retire at 65</text>
+            </g>
+            <g class="why-map__pill" data-from="2">
+              <rect x="8" y="254" width="184" height="44" rx="22"/>
+              <text x="100" y="276">Dinner on Thursday</text>
+            </g>
+          </svg>
         </div>
+
+        <p class="why__payoff" data-from="4">
+          Workbench is one model that connects all of these decisions, big and small,
+          so you can make them together.
+        </p>
       </div>
     </section>
 
@@ -1691,19 +1687,22 @@
       })();
 
       /* ── Why: one more decision per stretch of scroll ──
-         [data-from="n"] parts show from beat n on. Short or narrow screens
-         and reduced motion get the static version (everything at once). */
+         [data-from="n"] parts show from beat n on, paced by the diagram
+         moving up the screen (no pinning). Narrow screens and reduced
+         motion get the static version (everything at once). */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
-        const track = why.querySelector(".why__track");
-        const stage = why.querySelector(".why__stage");
+        const grid = why.querySelector(".why__grid");
         const parts = Array.from(why.querySelectorAll("[data-from]")).map((el) => ({
           el,
           from: Number(el.dataset.from),
         }));
         const beats = Math.max(...parts.map((p) => p.from)) + 1;
-        const roomy = window.matchMedia("(min-width: 861px) and (min-height: 640px)");
+        const roomy = window.matchMedia("(min-width: 861px)");
+        // Beats play while the diagram's top moves from START to END of the viewport
+        const START = 0.8;
+        const END = 0.2;
         let beat = -1;
         let ticking = false;
 
@@ -1716,11 +1715,8 @@
         function sync() {
           ticking = false;
           if (!why.classList.contains("is-scrolly")) return;
-          const pinTop = parseFloat(getComputedStyle(stage).top) || 0;
-          const scrollable = track.offsetHeight - stage.offsetHeight;
-          const progress = scrollable > 0
-            ? (pinTop - track.getBoundingClientRect().top) / scrollable
-            : 0;
+          const vh = window.innerHeight;
+          const progress = (START * vh - grid.getBoundingClientRect().top) / ((START - END) * vh);
           show(Math.floor(Math.min(Math.max(progress, 0), 0.999) * beats));
         }
 
