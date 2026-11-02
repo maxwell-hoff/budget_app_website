@@ -1771,11 +1771,21 @@ body::before {
 
 /* ── Why: every financial decision is connected ──
    Static by default: every step, pill, and line showing. .is-scrolly (set
-   by JS on wide screens) hides [data-from] parts until they get .is-on as
-   the section scrolls past. */
+   by JS on wide screens) pins the stage for --why-extra of scroll and hides
+   [data-from] parts until they get .is-on. */
 .why {
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --why-gap: 1.35rem;
+  --why-extra: 600px;
+}
+/* Room for the stage to stay pinned (a sticky box can't use padding) */
+.why.is-scrolly .why__track::after {
+  content: "";
+  display: block;
+  height: var(--why-extra);
+}
+.why.is-scrolly .why__stage {
+  position: sticky;
 }
 .why .section__head {
   margin-bottom: 1.6rem;
@@ -1936,6 +1946,10 @@ body::before {
 }
 .why.is-scrolly .why-map__small.is-on {
   opacity: 0.75;
+}
+/* Earlier steps step back so the newest one leads */
+.why.is-scrolly .why-steps__item.is-on.is-past {
+  opacity: 0.45;
 }
 
 @media (max-width: 860px) {
