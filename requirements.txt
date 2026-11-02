@@ -82,7 +82,7 @@ ordered-set==4.1.0
     # via flask-limiter
 packaging==26.3
     # via limits
-plaid-python==45.0.0
+plaid-python==46.0.0
     # via -r requirements.in
 psycopg==3.3.6
     # via -r requirements.in
