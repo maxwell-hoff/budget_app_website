@@ -448,7 +448,9 @@ body::before {
 .hero__stage-inner::before {
   content: "";
   position: absolute;
-  top: 48%;
+  /* Behind the headline + tagline, not the middle of the block (the reel
+     below them has its own glow) */
+  top: 12rem;
   left: calc(var(--hero-w) / 2);
   width: min(760px, 92vw);
   height: min(560px, 70vh);
@@ -469,6 +471,11 @@ body::before {
   margin-top: auto;
   margin-bottom: auto;
   transform: translateY(-12vh);
+}
+/* Unpinned (the reel makes the block taller than a screen): plain stacked
+   hero, so the nudge would only push the headline under the nav. */
+.hero:not(.is-pinnable) .hero__stage-inner {
+  transform: none;
 }
 
 .hero__title {
@@ -671,20 +678,28 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Demo: the real app in a framed window, in its own section ── */
-.demo__head {
-  max-width: 680px;
-  margin: 0 0 clamp(2rem, 4vw, 3rem);
-}
-.demo__head .section__title { margin-top: 0.7rem; }
-
-.demo__stage {
+/* ── Hero reel: the real app in a framed window, under the tagline,
+   left-aligned with it ── */
+.hero__reel {
   position: relative;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  width: var(--hero-w);
+  max-width: 100%;
+  margin-top: clamp(1.75rem, 4vh, 2.75rem);
+}
+/* Waits for the first scroll, then rises in (see the reel script) */
+.js-hero-reel .hero__reel {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.js-hero-reel .hero__reel:not(.is-shown) {
+  opacity: 0;
+  transform: translateY(26px);
+  visibility: hidden;
 }
 /* Soft accent glow the window floats on */
-.demo__stage::before {
+.hero__reel::before {
   content: "";
   position: absolute;
   inset: 8% 6% -6%;

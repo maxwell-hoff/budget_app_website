@@ -23,7 +23,6 @@ def test_about_renders(client):
 
 
 PRE_LAUNCH_COPY = [
-    b'<li>Free to use</li>',
     b'privately, and for free.',
     b'Free tier',
     b'Free to use. $8.99/month for easy bank account syncing.',
@@ -31,7 +30,6 @@ PRE_LAUNCH_COPY = [
     b'Free to use. Load the demo data',
 ]
 LAUNCH_COPY = [
-    b'<li>Try it free for a week</li>',
     b'Plan from your real spending, privately.',
     b'One subscription for the whole app. Bank syncing included.',
     b'Sample profile',
