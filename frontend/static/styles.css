@@ -1775,7 +1775,7 @@ body::before {
    [data-from] parts until they get .is-on. */
 .why {
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --why-gap: 1.35rem;
+  --why-gap: 1.6rem;
   --why-extra: 600px;
 }
 /* Room for the stage to stay pinned (a sticky box can't use padding) */
@@ -1815,37 +1815,34 @@ body::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.5em;
+  /* Level with the middle of the first line */
+  top: calc(0.7em - 5px);
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: var(--shadow-glow);
 }
-/* Hollow dot: a decision pulling back on the ones before it */
-.why-steps__item--back::before {
-  background: var(--surface-1);
-  border: 2px solid var(--accent-bright);
-}
 .why-steps__item--small {
   font-size: 0.96rem;
   font-style: italic;
 }
-/* Spans the gap from the step above down to this step's dot */
+/* A short arrow centered in the gap above this step, in line with the dots */
 .why-steps__arrow {
+  --len: 16px;
   position: absolute;
-  left: -2px;
-  top: calc(2px - var(--why-gap));
-  width: 14px;
-  height: calc(var(--why-gap) + 0.5em - 4px);
+  left: 0;
+  top: calc(var(--why-gap) / -2 - var(--len) / 2);
+  width: 10px;
+  height: var(--len);
   opacity: 0.35;
 }
 .why-steps__arrow::before {
   content: "";
   position: absolute;
-  left: 5.5px;
+  left: 3.5px;
   top: 0;
-  bottom: 6px;
+  bottom: 5px;
   width: 3px;
   border-radius: 2px;
   background: var(--accent-bright);
@@ -1855,9 +1852,9 @@ body::before {
   position: absolute;
   left: 0;
   bottom: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 7px solid var(--accent-bright);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--accent-bright);
 }
 
 /* The decision map */
