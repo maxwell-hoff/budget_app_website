@@ -1687,22 +1687,22 @@
       })();
 
       /* ── Why: one more decision per stretch of scroll ──
-         [data-from="n"] parts show from beat n on, paced by the diagram
-         moving up the screen (no pinning). Narrow screens and reduced
-         motion get the static version (everything at once). */
+         [data-from="n"] parts show from beat n on (no pinning). Beat 0 shows
+         until the whole section fits on screen, then each step of scroll
+         (60-110px, shorter when there's less room before the section's top
+         leaves the screen) adds one more, on short and tall screens alike.
+         Narrow screens and reduced motion get the static version. */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
         const grid = why.querySelector(".why__grid");
+        const payoff = why.querySelector(".why__payoff");
         const parts = Array.from(why.querySelectorAll("[data-from]")).map((el) => ({
           el,
           from: Number(el.dataset.from),
         }));
         const beats = Math.max(...parts.map((p) => p.from)) + 1;
         const roomy = window.matchMedia("(min-width: 861px)");
-        // Beats play while the diagram's top moves from START to END of the viewport
-        const START = 0.8;
-        const END = 0.2;
         let beat = -1;
         let ticking = false;
 
@@ -1716,8 +1716,14 @@
           ticking = false;
           if (!why.classList.contains("is-scrolly")) return;
           const vh = window.innerHeight;
-          const progress = (START * vh - grid.getBoundingClientRect().top) / ((START - END) * vh);
-          show(Math.floor(Math.min(Math.max(progress, 0), 0.999) * beats));
+          const top = grid.getBoundingClientRect().top;
+          const height = payoff.getBoundingClientRect().bottom - top;
+          // Start once it all fits above the bottom edge, or (if it can't
+          // fit) once its top nears the top of the screen
+          const startTop = Math.max(vh - height - 24, 0.1 * vh);
+          const step = Math.min(Math.max(startTop / (beats - 1), 60), 110);
+          const scrolled = startTop - top;
+          show(Math.min(Math.max(Math.floor(scrolled / step), 0), beats - 1));
         }
 
         function setMode() {
