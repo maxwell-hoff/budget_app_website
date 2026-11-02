@@ -1701,7 +1701,7 @@
          fit on the pinned screen (short phones). */
       (function () {
         const hero = document.querySelector(".hero");
-        // The reel sits beside / below the text, so the hero no longer pins
+        // The reel sits below the text, so the hero is too tall to pin
         if (!hero || reduceMotion || hero.querySelector(".hero__reel")) return;
         const stage = hero.querySelector(".hero__stage");
         const inner = hero.querySelector(".hero__stage-inner");
