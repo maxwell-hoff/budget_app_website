@@ -206,13 +206,14 @@
 
     <script nonce="{{ csp_nonce() }}">
       /* How-it-works steps start collapsed, but only when we can open them
-         again. Flagged here so the collapsed state is in place on first
-         paint — without JS, or with reduced motion, the steps stay open. */
+         again; the hero reel likewise waits for the first scroll. Flagged here
+         so both are in place on first paint — without JS, or with reduced
+         motion, the steps stay open and the reel shows. */
       (function () {
         var reduceMotion = window.matchMedia &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (!reduceMotion) {
-          document.documentElement.classList.add("js-accordion");
+          document.documentElement.classList.add("js-accordion", "js-hero-reel");
         }
       })();
 
@@ -1681,13 +1682,33 @@
 
         reel.classList.add("is-paused");
         render();
+
+        // Hidden until the visitor first scrolls (flagged by js-hero-reel in <head>)
+        const holder = reel.closest(".hero__reel");
+        let waiting = !!holder && document.documentElement.classList.contains("js-hero-reel");
+        let onScreen = false;
+        const maybePlay = () => {
+          if (onScreen && !userPaused && !waiting) play();
+        };
+        if (waiting) {
+          const reveal = () => {
+            if (window.scrollY < 8) return;
+            window.removeEventListener("scroll", reveal);
+            waiting = false;
+            holder.classList.add("is-shown");
+            maybePlay();
+          };
+          window.addEventListener("scroll", reveal, { passive: true });
+          reveal(); // reloaded partway down the page
+        }
+
         if (reduceMotion || !("IntersectionObserver" in window)) return;
 
         new IntersectionObserver(
           (entries) => {
-            const onScreen = entries[0].isIntersecting;
-            if (onScreen && !userPaused) play();
-            else if (!onScreen && !video.paused) video.pause();
+            onScreen = entries[0].isIntersecting;
+            if (onScreen) maybePlay();
+            else if (!video.paused) video.pause();
           },
           { threshold: 0.5 }
         ).observe(video);

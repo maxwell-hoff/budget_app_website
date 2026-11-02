@@ -448,7 +448,9 @@ body::before {
 .hero__stage-inner::before {
   content: "";
   position: absolute;
-  top: 48%;
+  /* Behind the headline + tagline, not the middle of the block (the reel
+     below them has its own glow) */
+  top: 12rem;
   left: calc(var(--hero-w) / 2);
   width: min(760px, 92vw);
   height: min(560px, 70vh);
@@ -685,6 +687,16 @@ body::before {
   width: var(--hero-w);
   max-width: 100%;
   margin-top: clamp(1.75rem, 4vh, 2.75rem);
+}
+/* Waits for the first scroll, then rises in (see the reel script) */
+.js-hero-reel .hero__reel {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.js-hero-reel .hero__reel:not(.is-shown) {
+  opacity: 0;
+  transform: translateY(26px);
+  visibility: hidden;
 }
 /* Soft accent glow the window floats on */
 .hero__reel::before {
