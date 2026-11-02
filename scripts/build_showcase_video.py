@@ -1,7 +1,7 @@
 """Cut the raw screen recordings into one crossfaded showcase reel.
 
-Each recording is cropped to just the app (the browser tabs and address bar
-at the top are removed), trimmed to its useful moment, sped up a little, and
+Each recording is cropped to just the app (the window's title bar at the top
+is removed), trimmed to its useful moment, sped up a little, and
 crossfaded into the next. Writes:
 
   frontend/static/videos/showcase.mp4   the reel (H.264, no audio, faststart)
@@ -20,22 +20,23 @@ VIDEOS = Path("frontend/static/videos")
 OUT = VIDEOS / "showcase.mp4"
 POSTER = VIDEOS / "showcase.jpg"
 
-# The 1440x1260 recordings: drop the browser chrome (top 90px) and the page
-# scrollbar on the right edge.
-CROP = "crop=1408:1160:6:90"
-WIDTH, HEIGHT = 1200, 988
+# The 2000x1282 recordings (a 1600x1000 page at 125% zoom, OBS window
+# capture): drop the window's title bar (top 32px), leaving exactly 16:10.
+CROP = "crop=2000:1250:0:32"
+WIDTH, HEIGHT = 1920, 1200
 FPS = 30
 FADE = 0.5
 
 # (file, trim start, trim end, speed, chapter title)
 SEGMENTS = [
-    ("step2-accounts.mp4", 0.0, 12.0, 1.5, "All your accounts"),
-    ("step2-categorize.mp4", 0.0, 10.1, 1.4, "Categorize"),
-    ("step2-split-transactions.mp4", 4.0, 30.0, 2.0, "Split shared costs"),
-    ("step2-amortize.mp4", 0.0, 25.0, 2.0, "Spread big purchases"),
+    ("step1-app-overview.mp4", 0.0, 10.1, 1.25, "App overview"),
+    ("step2-accounts.mp4", 0.0, 27.9, 2.0, "All your accounts"),
+    ("step2-categorize.mp4", 0.0, 12.7, 1.4, "Categorize"),
+    ("step2-split-transactions.mp4", 0.0, 24.0, 2.0, "Split shared costs"),
+    ("step2-amortize.mp4", 0.0, 21.1, 2.0, "Spread big purchases"),
     ("step3-forecast.mp4", 0.0, 17.5, 1.6, "Forecast"),
-    ("step4-scenarios.mp4", 0.0, 8.9, 1.25, "Compare scenarios"),
-    ("step4-budget-vs-actual.mp4", 0.0, 5.7, 1.0, "Budget vs. actual"),
+    ("step4-scenarios.mp4", 0.0, 12.1, 1.25, "Compare scenarios"),
+    ("step4-budget-vs-actual.mp4", 0.0, 8.6, 1.0, "Budget vs. actual"),
 ]
 
 
@@ -67,7 +68,8 @@ def main():
             "ffmpeg", "-v", "error", "-y", *inputs,
             "-filter_complex", ";".join(chains),
             "-map", f"[{prev}]", "-an",
-            "-c:v", "libx264", "-preset", "slow", "-crf", "24",
+            # stillimage suits screen footage: mostly static UI, sharp text
+            "-c:v", "libx264", "-preset", "slow", "-crf", "29", "-tune", "stillimage",
             "-pix_fmt", "yuv420p", "-movflags", "+faststart",
             str(OUT),
         ],

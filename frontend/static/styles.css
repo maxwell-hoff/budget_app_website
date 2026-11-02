@@ -685,14 +685,13 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Hero reel: the real app in a framed window, under the tagline,
-   left-aligned with it ── */
+/* ── Hero reel: the real app in a wide framed window under the tagline,
+   breaking out of the text column and centered on the page ── */
 .hero__reel {
   position: relative;
   display: flex;
-  justify-content: flex-start;
-  width: var(--hero-w);
-  max-width: 100%;
+  align-self: center;
+  width: min(1200px, calc(100vw - 32px));
   margin-top: clamp(1.75rem, 4vh, 2.75rem);
 }
 /* Waits for the first scroll, then rises in (see the reel script) */
@@ -719,10 +718,7 @@ body::before {
 .reel {
   --reel-bg: #0c0f14; /* the app's own background, so frame and footage meet seamlessly */
   position: relative;
-  /* Heading + window fit on one screen: footage is 1200x988, plus ~52px of
-     chrome; ~11rem covers the heading and breathing room, 52px the nav */
-  width: min(100%, 860px, calc((100vh - 52px - 11rem - 52px) * 1.2146));
-  width: min(100%, 860px, calc((100svh - 52px - 11rem - 52px) * 1.2146));
+  width: 100%;
   overflow: hidden;
   background: var(--reel-bg);
   border: 1px solid rgba(20, 20, 43, 0.85);
@@ -800,7 +796,7 @@ body::before {
 
 .reel__screen {
   position: relative;
-  aspect-ratio: 1200 / 988;
+  aspect-ratio: 1920 / 1200;
   background: var(--reel-bg);
 }
 .reel__screen video {
@@ -1776,7 +1772,7 @@ body::before {
 .why {
   --why-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --why-gap: 1.6rem;
-  --why-extra: 600px;
+  --why-extra: 840px;
 }
 /* Room for the stage to stay pinned (a sticky box can't use padding) */
 .why.is-scrolly .why__track::after {
@@ -1822,6 +1818,10 @@ body::before {
   border-radius: 50%;
   background: var(--accent);
   box-shadow: var(--shadow-glow);
+}
+/* Matches the diagram's return arrows */
+.why-steps__item--back::before {
+  background: var(--accent-bright);
 }
 .why-steps__item--small {
   font-size: 0.96rem;
