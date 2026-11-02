@@ -345,7 +345,7 @@
         <div class="why__grid">
           <div class="why__text">
             <div class="section__head on-scroll">
-              <span class="kicker">Why put your budget and your big decisions in one place?</span>
+              <span class="kicker">Your budget and your big decisions in one place</span>
               <h2 class="section__title">Because every financial decision is connected</h2>
             </div>
             <ol class="why-steps">
@@ -1705,9 +1705,10 @@
 
       /* ── Why: one more decision per stretch of scroll ──
          [data-from="n"] parts show from beat n on (no pinning). Beat 0 shows
-         until the steps and diagram fit on screen, then each step of scroll
-         adds one more, sized so the last beat lands before the diagram
-         leaves the top of the screen (on short and tall screens alike).
+         until the steps and diagram fit on screen and HOLD of the scroll
+         after that has passed; then each step of scroll adds one more, sized
+         so the last beat lands before the diagram leaves the top of the
+         screen (on short and tall screens alike).
          Narrow screens and reduced motion get the static version. */
       (function () {
         const why = document.getElementById("why");
@@ -1720,6 +1721,7 @@
         }));
         const beats = Math.max(...parts.map((p) => p.from)) + 1;
         const roomy = window.matchMedia("(min-width: 861px)");
+        const HOLD = 0.4;
         let beat = -1;
         let ticking = false;
 
@@ -1740,9 +1742,12 @@
           // diagram's top scrolls off
           const startTop = Math.max(vh - box.height - 24, 0.1 * vh);
           const endTop = 8 - (map.getBoundingClientRect().top - top);
-          const step = Math.min(Math.max((startTop - endTop) / (beats - 1), 30), 110);
-          const scrolled = startTop - top;
-          show(Math.min(Math.max(Math.floor(scrolled / step), 0), beats - 1));
+          const range = startTop - endTop;
+          // Short screens give up some of the hold so steps stay >= 30px
+          const hold = Math.max(Math.min(HOLD * range, range - 30 * (beats - 1)), 0);
+          const step = Math.min(Math.max((range - hold) / (beats - 1), 30), 110);
+          const scrolled = startTop - top - hold;
+          show(scrolled < 0 ? 0 : Math.min(Math.floor(scrolled / step) + 1, beats - 1));
         }
 
         function setMode() {
