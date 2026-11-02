@@ -8,7 +8,7 @@ alembic==1.20.0
     # via
     #   -c requirements.txt
     #   flask-migrate
-authlib==1.8.0
+authlib==1.9.2
     # via
     #   -c requirements.txt
     #   -r requirements.in
@@ -24,7 +24,7 @@ cachecontrol==0.14.4
     # via
     #   cachecontrol
     #   pip-audit
-certifi==2026.7.22
+certifi==2026.10.23
     # via
     #   -c requirements.txt
     #   -r requirements.in
@@ -56,7 +56,7 @@ deprecated==3.0.0
     # via
     #   -c requirements.txt
     #   limits
-dnspython==2.8.0
+dnspython==2.9.1
     # via
     #   -c requirements.txt
     #   email-validator
@@ -116,7 +116,7 @@ jinja2==3.1.6
     # via
     #   -c requirements.txt
     #   flask
-joserfc==1.7.5
+joserfc==1.7.7
     # via
     #   -c requirements.txt
     #   authlib
