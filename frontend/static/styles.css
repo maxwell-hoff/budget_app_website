@@ -470,6 +470,11 @@ body::before {
   margin-bottom: auto;
   transform: translateY(-12vh);
 }
+/* Unpinned (the reel makes the block taller than a screen): plain stacked
+   hero, so the nudge would only push the headline under the nav. */
+.hero:not(.is-pinnable) .hero__stage-inner {
+  transform: none;
+}
 
 .hero__title {
   margin: 0;
@@ -671,20 +676,16 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Demo: the real app in a framed window, in its own section ── */
-.demo__head {
-  max-width: 680px;
-  margin: 0 0 clamp(2rem, 4vw, 3rem);
-}
-.demo__head .section__title { margin-top: 0.7rem; }
-
-.demo__stage {
+/* ── Hero reel: the real app in a framed window, under the tagline ── */
+.hero__reel {
   position: relative;
   display: flex;
   justify-content: center;
+  width: 100%;
+  margin-top: clamp(1.75rem, 4vh, 2.75rem);
 }
 /* Soft accent glow the window floats on */
-.demo__stage::before {
+.hero__reel::before {
   content: "";
   position: absolute;
   inset: 8% 6% -6%;

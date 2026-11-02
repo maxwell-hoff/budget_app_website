@@ -279,6 +279,48 @@
             <p class="hero__tagline">
               With Workbench your budget is built from your real spending and what you want later: a house, college, retirement. <em>Then</em> it tracks how you're doing against it.
             </p>
+            <div class="hero__reel">
+              <figure class="reel" id="reel" data-duration="61.47">
+                <div class="reel__bar">
+                  <span class="reel__lights" aria-hidden="true"><span></span><span></span><span></span></span>
+                  <span class="reel__title">Workbench Budgeting</span>
+                  <button class="reel__toggle" id="reelToggle" type="button" aria-label="Pause video">
+                    <svg class="reel__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
+                    <svg class="reel__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+                  </button>
+                </div>
+                <div class="reel__screen">
+                  <video
+                    id="reelVideo"
+                    src="{{ url_for('static', filename='videos/showcase.mp4') }}"
+                    poster="{{ url_for('static', filename='videos/showcase.jpg') }}"
+                    width="1200"
+                    height="988"
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    aria-label="Screen recording of Workbench Budgeting on sample data: accounts, categorizing, splitting, spreading purchases, forecasting, scenarios, and budget versus actual."
+                  ></video>
+                  <button class="reel__play" id="reelPlay" type="button" aria-label="Play video">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+                  </button>
+                  <span class="reel__caption" aria-hidden="true">
+                    <span class="reel__caption-num" id="reelNum">01</span>
+                    <span id="reelCaption">All your accounts</span>
+                  </span>
+                </div>
+                <div class="reel__chapters" role="group" aria-label="Video chapters">
+                  <button type="button" data-start="0" aria-label="All your accounts"><span></span></button>
+                  <button type="button" data-start="7.5" aria-label="Categorize"><span></span></button>
+                  <button type="button" data-start="14.21" aria-label="Split shared costs"><span></span></button>
+                  <button type="button" data-start="26.71" aria-label="Spread big purchases"><span></span></button>
+                  <button type="button" data-start="38.71" aria-label="Forecast"><span></span></button>
+                  <button type="button" data-start="49.15" aria-label="Compare scenarios"><span></span></button>
+                  <button type="button" data-start="55.77" aria-label="Budget vs. actual"><span></span></button>
+                </div>
+              </figure>
+            </div>
           </div>
         </div>
         <span class="hero__cue" aria-hidden="true">
@@ -961,58 +1003,6 @@
         <p class="philosophy__quote philosophy__quote--closing">
           A budget you understand is a budget <span>you'll keep.</span>
         </p>
-      </div>
-    </section>
-
-    <!-- ── Demo: one crossfaded reel of the real app ── -->
-    <section class="section demo" id="demo" aria-label="Product demo">
-      <div class="wrap">
-        <div class="demo__head on-scroll">
-          <span class="kicker">See it in action</span>
-          <h2 class="section__title">One minute in the real app.</h2>
-        </div>
-        <div class="demo__stage on-scroll">
-          <figure class="reel" id="reel" data-duration="61.47">
-            <div class="reel__bar">
-              <span class="reel__lights" aria-hidden="true"><span></span><span></span><span></span></span>
-              <span class="reel__title">Workbench Budgeting</span>
-              <button class="reel__toggle" id="reelToggle" type="button" aria-label="Pause video">
-                <svg class="reel__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor"/></svg>
-                <svg class="reel__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
-              </button>
-            </div>
-            <div class="reel__screen">
-              <video
-                id="reelVideo"
-                src="{{ url_for('static', filename='videos/showcase.mp4') }}"
-                poster="{{ url_for('static', filename='videos/showcase.jpg') }}"
-                width="1200"
-                height="988"
-                muted
-                loop
-                playsinline
-                preload="metadata"
-                aria-label="Screen recording of Workbench Budgeting on sample data: accounts, categorizing, splitting, spreading purchases, forecasting, scenarios, and budget versus actual."
-              ></video>
-              <button class="reel__play" id="reelPlay" type="button" aria-label="Play video">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
-              </button>
-              <span class="reel__caption" aria-hidden="true">
-                <span class="reel__caption-num" id="reelNum">01</span>
-                <span id="reelCaption">All your accounts</span>
-              </span>
-            </div>
-            <div class="reel__chapters" role="group" aria-label="Video chapters">
-              <button type="button" data-start="0" aria-label="All your accounts"><span></span></button>
-              <button type="button" data-start="7.5" aria-label="Categorize"><span></span></button>
-              <button type="button" data-start="14.21" aria-label="Split shared costs"><span></span></button>
-              <button type="button" data-start="26.71" aria-label="Spread big purchases"><span></span></button>
-              <button type="button" data-start="38.71" aria-label="Forecast"><span></span></button>
-              <button type="button" data-start="49.15" aria-label="Compare scenarios"><span></span></button>
-              <button type="button" data-start="55.77" aria-label="Budget vs. actual"><span></span></button>
-            </div>
-          </figure>
-        </div>
       </div>
     </section>
 
