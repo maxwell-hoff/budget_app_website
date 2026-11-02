@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
@@ -172,13 +172,14 @@
       @keyframes wbIntroDraw { to { stroke-dashoffset: 0; } }
 
       /* Title fades + rises after the branches finish drawing.
-         Formatting matches the hero headline — Source Serif 4, title-case —
+         Formatting matches the hero headline — Cormorant Garamond, title-case —
          with a proportional accent underline that draws itself in. */
       .wb-intro__title {
         margin: 0;
         opacity: 0;
         transform: translateY(18px);
-        font-family: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+        font-family: "Cormorant Garamond", Perpetua, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+        font-size-adjust: 0.47;
         font-weight: 700;
         font-size: clamp(1.9rem, 5.2vw, 3.1rem);
         letter-spacing: -0.02em;
@@ -274,11 +275,13 @@
       <div class="hero__stage">
         <div class="wrap hero__stage-inner">
           <h1 class="hero__title reveal-up d2">
-            Other apps help you stick to a budget. Workbench helps you figure out what your budget <em>should be</em>.
+            The budgeting app for working through big decisions.
+            <!-- Other apps help you stick to a budget. Workbench helps you figure out what your budget <em>should be</em>. -->
           </h1>
           <div class="hero__detail">
             <p class="hero__tagline">
-              With Workbench your budget is built from your real spending and what you want later: a house, college, retirement. <em>Then</em> it tracks how you're doing against it.
+              Rent or buy a home? Can you afford a new car? Are you on track for retirement? Workbench tracks your spending like any budgeting app, then uses it to answer the big questions.
+              <!-- With Workbench your budget is built from your real spending and what you want later: a house, college, retirement. <em>Then</em> it tracks how you're doing against it. -->
             </p>
           </div>
           <div class="hero__reel">
