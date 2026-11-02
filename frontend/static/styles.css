@@ -51,9 +51,11 @@
   --t-normal: 200ms cubic-bezier(0.22, 1, 0.36, 1);
   --t-slow: 420ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
-  --font-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* One typeface everywhere: sans and mono point at the serif too.
+     Cormorant Garamond stands in for Perpetua (not licensed for the web). */
+  --font-serif: "Cormorant Garamond", Perpetua, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-serif);
+  --font-mono: var(--font-serif);
 
   --maxw: 1180px;
 }
@@ -71,6 +73,11 @@ html {
 
 body {
   font-family: var(--font-sans);
+  /* Cormorant's lowercase is small for its size: scale it up to the x-height
+     the layout was sized for */
+  font-size-adjust: 0.47;
+  /* Perpetua-style lining figures, not Cormorant's old-style default */
+  font-variant-numeric: lining-nums;
   color: var(--ink);
   background-color: var(--surface-0);
   background-image:
@@ -127,7 +134,7 @@ body::before {
 
 .mono {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 /* ── Display type: refined serif for headlines & pull-quotes ──
@@ -484,7 +491,7 @@ body::before {
   max-width: 100%;
   /* Height counts too, so short laptop screens keep the whole hero in view */
   font-size: clamp(2rem, min(4.8vw, 6vh), 3.6rem);
-  line-height: 1.06;
+  line-height: 1.12;
   letter-spacing: -0.02em;
   font-weight: 700;
   color: var(--ink);
@@ -1064,7 +1071,7 @@ body::before {
 .kpi__value {
   margin-top: 0.2rem;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--ink);
@@ -1171,7 +1178,7 @@ body::before {
 }
 .ledger__amt {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   text-align: right;
   color: var(--ink);
 }
@@ -1676,7 +1683,7 @@ body::before {
   display: block;
   margin-top: 0.15rem;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 1.7rem;
   font-weight: 600;
   line-height: 1.1;
@@ -1955,7 +1962,7 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .why-cats b > span {
@@ -2164,7 +2171,7 @@ body::before {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .why-chip__alt {
@@ -2658,7 +2665,7 @@ body::before {
 }
 .pricing__price {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--accent);
 }
 .pricing__tier-tag {
@@ -3601,7 +3608,7 @@ body::before {
 .viz-row__amt {
   font-size: 0.86rem;
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .viz-row__amt.is-pos { color: var(--good); }
@@ -3786,7 +3793,7 @@ body::before {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .viz-total__note {
@@ -3861,7 +3868,7 @@ body::before {
 }
 .viz-key b {
   font-size: 0.86rem;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .viz-key--muted span,
@@ -3881,7 +3888,7 @@ body::before {
 }
 .viz-split__total b {
   font-size: 1.15rem;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--viz-navy);
 }
 
@@ -4111,7 +4118,7 @@ body::before {
 }
 .viz-legend b {
   font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .viz-legend--plain li {
@@ -4231,7 +4238,7 @@ body::before {
   border-radius: var(--radius-sm);
   overflow: hidden;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 0.7rem;
 }
 .cfgrid__row {
@@ -4338,7 +4345,7 @@ body::before {
 }
 .txnlist__amt {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   text-align: right;
   color: var(--ink);
 }
@@ -4489,7 +4496,7 @@ body::before {
 .minitable .num {
   text-align: right;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--ink);
 }
 .minitable .pos { color: var(--good); }
@@ -4528,7 +4535,7 @@ body::before {
   justify-content: space-between;
   gap: 0.4rem;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--ink);
@@ -4600,7 +4607,7 @@ body::before {
 .txnrow__desc { font-weight: 600; color: var(--ink); }
 .txnrow__amt {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   color: var(--bad);
 }
 .txnrow__ctl-label {
@@ -4833,7 +4840,7 @@ body::before {
 }
 .accounts-txn__amt {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-weight: 500;
   justify-self: end;
 }
@@ -5047,7 +5054,7 @@ body::before {
 }
 .txn-demo__amt {
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   font-weight: 500;
   justify-self: end;
 }
