@@ -462,7 +462,9 @@ body::before {
   text-align: left;
   min-height: calc(100vh - 52px);
   min-height: calc(100svh - 52px);
-  padding: clamp(1.5rem, 5vh, 3.5rem) 0 clamp(4rem, 10vh, 6rem);
+  /* --hero-pad-top is set by a script under the hero to center the headline
+     + tagline in the first screen; without JS it's the plain default */
+  padding: var(--hero-pad-top, clamp(1.5rem, 5vh, 3.5rem)) 0 clamp(4rem, 10vh, 6rem);
 }
 .hero__stage-inner::before {
   content: "";
