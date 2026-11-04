@@ -196,7 +196,7 @@ body::before {
   font-family: var(--font-serif);
   font-optical-sizing: auto;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.81rem;
   letter-spacing: -0.005em;
   text-transform: uppercase;
   text-decoration: none;
@@ -2587,7 +2587,7 @@ body::before {
   font-optical-sizing: auto;
   font-weight: 700;
   letter-spacing: -0.005em;
-  font-size: 1.05rem;
+  font-size: 0.81rem;
   text-transform: uppercase;
 }
 .footer__end {
@@ -4947,7 +4947,7 @@ body::before {
 
 @media (max-width: 480px) {
   .nav__brand {
-    font-size: 0.95rem;
+    font-size: 0.76rem;
     letter-spacing: -0.005em;
     gap: 0.5rem;
   }
