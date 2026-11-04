@@ -1989,6 +1989,67 @@ body::before {
   opacity: 0.45;
 }
 
+/* Progress dots: only used by the compact version below */
+.why-progress {
+  display: none;
+}
+
+/* Compact (narrow screens, set by JS): the steps share one spot above the
+   map and each new step replaces the last, so the text and the diagram fit
+   on screen together while the stage is pinned */
+.why.is-compact {
+  --why-extra: 980px;
+}
+.why.is-compact .section__head {
+  margin-bottom: 1rem;
+}
+.why.is-compact .why__grid {
+  gap: 1.1rem;
+}
+.why.is-compact .why-steps {
+  display: grid;
+  gap: 0;
+}
+.why.is-compact .why-steps__item {
+  grid-area: 1 / 1;
+  font-size: 1.08rem;
+  color: var(--ink);
+}
+.why.is-compact .why-steps__item--small {
+  font-size: 1rem;
+}
+.why.is-compact .why-steps__arrow {
+  display: none;
+}
+/* Shown steps leave upward as the next one rises in */
+.why.is-compact .why-steps .why-steps__item.is-on {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+.why.is-compact .why-steps .why-steps__item.is-current {
+  opacity: 1;
+  transform: none;
+}
+.why.is-compact .why-progress {
+  display: flex;
+  gap: 6px;
+  margin-top: 0.85rem;
+  padding-left: 1.6rem;
+}
+.why-progress span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-line);
+  transition: background 0.3s ease;
+}
+.why-progress span.is-on {
+  background: var(--accent);
+}
+.why.is-compact .why__payoff {
+  margin-top: 1.1rem;
+}
+
 @media (max-width: 860px) {
   .why__grid {
     grid-template-columns: 1fr;

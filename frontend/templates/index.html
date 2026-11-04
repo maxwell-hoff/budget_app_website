@@ -417,6 +417,10 @@
                     And dinner on Thursday moves the other three too, in a small way.
                   </li>
                 </ol>
+                <!-- Phones show one step at a time: these dots fill in as they go -->
+                <div class="why-progress" aria-hidden="true">
+                  <span data-from="0"></span><span data-from="1"></span><span data-from="2"></span><span data-from="3"></span><span data-from="4"></span><span data-from="5"></span>
+                </div>
               </div>
 
               <svg class="why-map" viewBox="0 0 480 372" role="img"
@@ -1751,7 +1755,10 @@
          stretch and the section only scrolls on once it's complete. Going
          forward, each beat also stays at least PACE ms before the next one
          (so a quick scroll can't flash a step past), and earlier steps dim
-         (.is-past) so the newest one leads. Narrow screens and reduced motion get the static version. */
+         (.is-past) so the newest one leads. On narrow screens (.is-compact)
+         the steps stack in one spot above the map and only the newest
+         (.is-current) shows, so the text and the diagram fit on screen
+         together. Reduced motion gets the static version. */
       (function () {
         const why = document.getElementById("why");
         if (!why || reduceMotion) return;
@@ -1760,8 +1767,10 @@
         const parts = Array.from(why.querySelectorAll("[data-from]")).map((el) => ({
           el,
           from: Number(el.dataset.from),
+          step: el.classList.contains("why-steps__item"),
         }));
         const beats = Math.max(...parts.map((p) => p.from)) + 1;
+        const lastStep = Math.max(...parts.filter((p) => p.step).map((p) => p.from));
         const roomy = window.matchMedia("(min-width: 861px)");
         const PACE = 600;
         let beat = -1;
@@ -1774,6 +1783,8 @@
           parts.forEach((p) => {
             p.el.classList.toggle("is-on", n >= p.from);
             p.el.classList.toggle("is-past", p.from < n && n < beats - 1);
+            // The last step stays up once the payoff line joins it
+            p.el.classList.toggle("is-current", p.step && p.from === Math.min(n, lastStep));
           });
         }
 
@@ -1822,16 +1833,15 @@
         }
 
         function setMode() {
-          why.classList.toggle("is-scrolly", roomy.matches);
+          why.classList.add("is-scrolly");
+          why.classList.toggle("is-compact", !roomy.matches);
           clearTimeout(timer);
           timer = null;
           beat = target = -1;
+          parts.forEach((p) => p.el.classList.remove("is-on", "is-past", "is-current"));
           stage.style.top = "";
-          if (roomy.matches) {
-            place();
-            sync();
-          }
-          else parts.forEach((p) => p.el.classList.remove("is-on", "is-past"));
+          place();
+          sync();
         }
 
         window.addEventListener("scroll", () => {
@@ -1840,8 +1850,13 @@
             requestAnimationFrame(sync);
           }
         }, { passive: true });
+        // Ignore height-only resizes (mobile toolbars showing/hiding) so the
+        // pinned stage doesn't jump mid-scroll
+        let width = window.innerWidth;
         window.addEventListener("resize", () => {
-          if (!why.classList.contains("is-scrolly")) return;
+          const sameWidth = window.innerWidth === width;
+          width = window.innerWidth;
+          if (sameWidth && why.classList.contains("is-compact")) return;
           place();
           sync();
         }, { passive: true });
