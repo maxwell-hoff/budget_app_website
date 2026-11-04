@@ -22,10 +22,36 @@ POSTER = VIDEOS / "showcase.jpg"
 
 # The 2000x1282 recordings (a 1600x1000 page at 125% zoom, OBS window
 # capture): drop the window's title bar (top 32px), leaving exactly 16:10.
-CROP = "crop=2000:1250:0:32"
+CROP_W, CROP_H, CROP_X, CROP_Y = 2000, 1250, 0, 32
 WIDTH, HEIGHT = 1920, 1200
 FPS = 30
 FADE = 0.5
+
+# Spotlights: blur and dim everything outside a box while the action is in
+# it. Per recording: (from, to, x, y, w, h), times in the recording's own
+# seconds and the box in its pixels, title bar included (what you see pausing
+# the raw clip). Each spotlight fades in and out over SPOT_FADE seconds, and
+# its edge is feathered over about SPOT_SOFT output pixels.
+LEFT_COLUMN = (20, 32, 965, 1250)
+RIGHT_COLUMN = (990, 32, 1000, 1250)
+SPOTLIGHTS = {
+    # Actuals cash flow table and the transactions below it
+    "step2-accounts.mp4": [(1.8, 27.9, 20, 230, 965, 1052)],
+    "step2-categorize.mp4": [(0.0, 12.7, 40, 480, 940, 802)],
+    # Cash flow table, transactions, then the shadow transactions it scrolls to
+    "step2-split-transactions.mp4": [(0.8, 24.0, *LEFT_COLUMN)],
+    # Transactions, then the variance table it scrolls to
+    "step2-amortize.mp4": [(0.0, 21.1, *LEFT_COLUMN)],
+    # Forecast cash flow table, then the forecast parameters it scrolls to
+    "step3-forecast.mp4": [(0.0, 15.8, *RIGHT_COLUMN)],
+    # Scenario comparison table
+    "step4-scenarios.mp4": [(3.4, 10.5, 1000, 410, 990, 610)],
+    # Variance analysis
+    "step4-budget-vs-actual.mp4": [(1.2, 8.6, 20, 540, 965, 680)],
+}
+SPOT_FADE = 0.3
+SPOT_SOFT = 24
+SPOT_BLUR = "boxblur=8:2,eq=brightness=-0.08:saturation=0.5"
 
 # (file, trim start, trim end, speed, chapter title)
 SEGMENTS = [
@@ -40,6 +66,41 @@ SEGMENTS = [
 ]
 
 
+def spotlight_chains(i, name, start, end, speed):
+    """Filters that take [r{i}] to [s{i}], blurring around each spotlight box."""
+    spots = SPOTLIGHTS.get(name, [])
+    if not spots:
+        return [f"[r{i}]null[s{i}]"]
+    length = (end - start) / speed
+    scale = WIDTH / CROP_W
+    chains = [f"[r{i}]split={len(spots) + 1}[r{i}b]" + "".join(f"[r{i}m{j}]" for j in range(len(spots)))]
+    prev = f"r{i}b"
+    for j, (t0, t1, x, y, w, h) in enumerate(spots):
+        # Recording time -> time in the sped-up segment
+        a = max(0.0, (t0 - start) / speed)
+        b = min(length, (t1 - start) / speed)
+        fades = ""
+        if a > 0:
+            fades += f",fade=t=in:st={a:.3f}:d={SPOT_FADE}:alpha=1"
+        if b < length:
+            fades += f",fade=t=out:st={b - SPOT_FADE:.3f}:d={SPOT_FADE}:alpha=1"
+        # The blurred layer with the box punched out (transparent), grown by
+        # SPOT_SOFT so the feathered edge falls outside what's highlighted
+        box = (f"x={round((x - CROP_X) * scale) - SPOT_SOFT}:"
+               f"y={round((y - CROP_Y) * scale) - SPOT_SOFT}:"
+               f"w={round(w * scale) + 2 * SPOT_SOFT}:h={round(h * scale) + 2 * SPOT_SOFT}")
+        chains.append(
+            f"[r{i}m{j}]{SPOT_BLUR},format=yuva420p,"
+            f"drawbox={box}:color=black@0:t=fill:replace=1,"
+            f"gblur=sigma={SPOT_SOFT / 2}:planes=8{fades}[r{i}l{j}]"
+        )
+        label = f"s{i}" if j == len(spots) - 1 else f"r{i}o{j}"
+        out = ",format=yuv420p" if j == len(spots) - 1 else ""
+        chains.append(f"[{prev}][r{i}l{j}]overlay{out}[{label}]")
+        prev = label
+    return chains
+
+
 def main():
     inputs, chains = [], []
     durations = []
@@ -48,9 +109,11 @@ def main():
         durations.append((end - start) / speed)
         chains.append(
             f"[{i}:v]trim={start}:{end},setpts=(PTS-STARTPTS)/{speed},"
-            f"{CROP},scale={WIDTH}:{HEIGHT}:flags=lanczos,fps={FPS},"
-            f"format=yuv420p,settb=AVTB[s{i}]"
+            f"crop={CROP_W}:{CROP_H}:{CROP_X}:{CROP_Y},"
+            f"scale={WIDTH}:{HEIGHT}:flags=lanczos,fps={FPS},"
+            f"format=yuv420p,settb=AVTB[r{i}]"
         )
+        chains += spotlight_chains(i, name, start, end, speed)
 
     starts, prev, elapsed = [0.0], "s0", durations[0]
     for i in range(1, len(SEGMENTS)):
