@@ -36,7 +36,7 @@ LAUNCH_COPY = [
     b'first week free',
     b'automatic bank account syncing included',
     b'opens again when you resubscribe',
-    b'Explore the Sample profile free, no account needed.',
+    b'Explore a demo profile free, no account needed.',
 ]
 
 

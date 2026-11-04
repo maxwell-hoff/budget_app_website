@@ -326,6 +326,7 @@
                 <button type="button" data-start="70.77" aria-label="Budget vs. actual"><span></span></button>
               </div>
             </figure>
+            <a href="#download" class="btn btn--sm hero__demo-cta">Try it out with a demo profile</a>
           </div>
         </div>
         <span class="hero__cue" aria-hidden="true">
@@ -336,6 +337,46 @@
         </span>
       </div>
     </header>
+
+    <script nonce="{{ csp_nonce() }}">
+      /* Center the headline + tagline in the first screen (a touch above the
+         middle reads as centered). Runs right after the hero so it's in place
+         on first paint. Never pads less than the CSS default, so on a short
+         screen the text stays at the top rather than getting cut off. */
+      (function () {
+        var hero = document.querySelector(".hero");
+        var stage = hero && hero.querySelector(".hero__stage");
+        var title = hero && hero.querySelector(".hero__title");
+        var detail = hero && hero.querySelector(".hero__detail");
+        var nav = document.querySelector(".nav");
+        if (!stage || !title || !detail) return;
+
+        var MIN_PAD = 24;   // px; matches the smallest the CSS padding gets
+        var LIFT = 0.45;    // share of the leftover space that goes above the text
+
+        function place() {
+          var navH = nav ? nav.offsetHeight : 0;
+          var screenH = window.innerHeight - navH;
+          var r1 = title.getBoundingClientRect();
+          var r2 = detail.getBoundingClientRect();
+          var textH = r2.bottom - r1.top;
+          // Space between the padding and the headline (margins on phones)
+          var curPad = parseFloat(getComputedStyle(stage).paddingTop) || 0;
+          var gap = r1.top - stage.getBoundingClientRect().top - curPad;
+          var textTop = Math.max(MIN_PAD + gap, (screenH - textH) * LIFT);
+          stage.style.setProperty("--hero-pad-top", Math.round(textTop - gap) + "px");
+        }
+        place();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+
+        var width = window.innerWidth;
+        window.addEventListener("resize", function () {
+          if (window.innerWidth === width) return; // mobile toolbars showing/hiding
+          width = window.innerWidth;
+          place();
+        });
+      })();
+    </script>
 
     <!-- ── Why: every financial decision is connected ──
          With JS (and motion allowed, on a wide screen) the stage pins for a
@@ -496,7 +537,7 @@
                     </div>
                   </div>
                   <ul class="feature__list">
-                    <li>Completely private. The data never leaves your machine.</li>
+                    <li>Completely private. The answers never leave your machine.</li>
                     <li>Takes about 10 minutes to complete.</li>
                   </ul>
                 </article>
@@ -1190,7 +1231,7 @@
           <span class="kicker">Get started</span>
           <h2 class="download__title">Find out what your budget should be</h2>
           <p class="download__sub">{% if config.ACCOUNTS_ENABLED %}
-            Explore the Sample profile free, no account needed. When you're ready for your own numbers, start your free week.{% else %}
+            Explore a demo profile free, no account needed. When you're ready for your own numbers, start your free week.{% else %}
             Free to use. Load the demo data or import your own, and see where your current path actually leads.{% endif %}
           </p>
           <div class="download__actions">
@@ -1254,7 +1295,7 @@
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      /* ── Mobile nav toggle (hamburger → expanding menu) ── */
+      /* ── Nav menu (ellipsis → dropdown of page links) ── */
       (function () {
         const nav = document.querySelector(".nav");
         const toggle = document.getElementById("navToggle");
@@ -1283,11 +1324,6 @@
           if (e.key === "Escape") setOpen(false);
         });
 
-        // Reset when the viewport grows back to the full-width nav.
-        const wide = window.matchMedia("(min-width: 821px)");
-        const onChange = () => { if (wide.matches) setOpen(false); };
-        if (wide.addEventListener) wide.addEventListener("change", onChange);
-        else if (wide.addListener) wide.addListener(onChange);
       })();
 
       /* ── Scroll reveal ──
