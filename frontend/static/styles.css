@@ -519,7 +519,8 @@ body::before {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  width: var(--hero-w);
+  /* As wide as the reel below it, so the tagline runs its full width */
+  width: min(1200px, calc(100vw - 32px));
   max-width: 100%;
 }
 
@@ -528,7 +529,8 @@ body::before {
   color: var(--ink-muted);
   font-size: clamp(1.05rem, 2vw, 1.4rem);
   line-height: 1.5;
-  text-wrap: balance;
+  /* Fill each line (balance would even them out and stop short of the edge) */
+  text-wrap: pretty;
 }
 .hero__tagline strong {
   color: var(--ink);
