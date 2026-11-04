@@ -1255,7 +1255,7 @@
 
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      /* ── Mobile nav toggle (hamburger → expanding menu) ── */
+      /* ── Nav menu (ellipsis → dropdown of page links) ── */
       (function () {
         const nav = document.querySelector(".nav");
         const toggle = document.getElementById("navToggle");
@@ -1284,11 +1284,6 @@
           if (e.key === "Escape") setOpen(false);
         });
 
-        // Reset when the viewport grows back to the full-width nav.
-        const wide = window.matchMedia("(min-width: 821px)");
-        const onChange = () => { if (wide.matches) setOpen(false); };
-        if (wide.addEventListener) wide.addEventListener("change", onChange);
-        else if (wide.addListener) wide.addListener(onChange);
       })();
 
       /* ── Scroll reveal ──
