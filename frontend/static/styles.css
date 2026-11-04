@@ -690,6 +690,8 @@ body::before {
 .hero__reel {
   position: relative;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   align-self: center;
   width: min(1200px, calc(100vw - 32px));
   margin-top: clamp(1.75rem, 4vh, 2.75rem);
@@ -713,6 +715,28 @@ body::before {
   background: radial-gradient(closest-side, rgba(10, 95, 174, 0.16), transparent);
   filter: blur(24px);
   pointer-events: none;
+}
+
+/* Under the reel: jumps to the download section */
+.hero__demo-cta {
+  align-self: flex-start;
+  margin-top: 1rem;
+  /* A light blue tint over a solid base, so the reel's glow can't show through */
+  background: linear-gradient(rgba(10, 95, 174, 0.16), rgba(10, 95, 174, 0.16)), var(--surface-1);
+  border-color: rgba(0, 58, 112, 0.3);
+  color: var(--accent);
+  box-shadow: none;
+  padding-top: 0.32rem;
+  padding-bottom: 0.32rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.hero__demo-cta:hover {
+  background: linear-gradient(rgba(10, 95, 174, 0.22), rgba(10, 95, 174, 0.22)), var(--surface-1);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .reel {
