@@ -104,7 +104,7 @@ sqlalchemy==2.1.4
     # via
     #   alembic
     #   flask-sqlalchemy
-stripe==16.0.0
+stripe==16.1.0
     # via -r requirements.in
 typing-extensions==4.16.0
     # via
