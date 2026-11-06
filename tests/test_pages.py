@@ -22,6 +22,18 @@ def test_about_renders(client):
     assert b'Workbench' in resp.data
 
 
+@pytest.mark.parametrize('path', ['/', '/about'])
+def test_pages_have_link_preview_card(app, client, path):
+    app.config['PUBLIC_BASE_URL'] = 'https://workbenchbudgeting.com'
+    html = client.get(path).get_data(as_text=True)
+    assert '<meta name="twitter:card" content="summary_large_image" />' in html
+    image = 'https://workbenchbudgeting.com/static/og-image.png'
+    assert f'<meta property="og:image" content="{image}" />' in html
+    assert f'<meta name="twitter:image" content="{image}" />' in html
+    assert f'<meta property="og:url" content="https://workbenchbudgeting.com{path}" />' in html
+    assert client.get('/static/og-image.png').status_code == 200
+
+
 PRE_LAUNCH_COPY = [
     b'privately, and for free.',
     b'Free tier',

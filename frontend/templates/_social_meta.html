@@ -1,0 +1,19 @@
+{#- Link preview card (Twitter/X, Slack, iMessage, LinkedIn, Facebook). Crawlers need
+    absolute URLs; PUBLIC_BASE_URL is the real domain on Render. Set og_title and
+    og_description before including to override the defaults. -#}
+{%- set base = config.PUBLIC_BASE_URL or request.host_url.rstrip('/') -%}
+{%- set title = og_title | default('Workbench Budgeting') -%}
+{%- set desc = og_description | default('The budgeting app for working through big decisions. Rent or buy a home? Can you afford a new car? Are you on track for retirement? Workbench tracks your spending, then uses it to answer the big questions.') -%}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Workbench Budgeting" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:description" content="{{ desc }}" />
+    <meta property="og:url" content="{{ base }}{{ request.path }}" />
+    <meta property="og:image" content="{{ base }}{{ url_for('static', filename='og-image.png') }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Workbench Budgeting: the budgeting app for working through big decisions, next to a screenshot of the app's spending chart." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ title }}" />
+    <meta name="twitter:description" content="{{ desc }}" />
+    <meta name="twitter:image" content="{{ base }}{{ url_for('static', filename='og-image.png') }}" />
