@@ -1,0 +1,24 @@
+{# Tells analytics.py the visitor touched the page, once per page load: the signal that
+   separates people from bots that wear a browser user agent. Only real input counts
+   (isTrusted), and not plain scroll events, which scripts can trigger by scrolling. #}
+<script nonce="{{ csp_nonce() }}">
+  (function () {
+    var events = ["pointerdown", "pointermove", "touchstart", "wheel", "keydown"];
+    var url = "{{ url_for('engaged') }}";
+    function send(event) {
+      if (!event.isTrusted) return;
+      events.forEach(function (name) { window.removeEventListener(name, send, true); });
+      var body = JSON.stringify({ path: location.pathname });
+      try {
+        if (navigator.sendBeacon && navigator.sendBeacon(url, body)) return;
+      } catch (e) {}
+      if (window.fetch) {
+        fetch(url, { method: "POST", body: body, keepalive: true, credentials: "same-origin" })
+          .catch(function () {});
+      }
+    }
+    events.forEach(function (name) {
+      window.addEventListener(name, send, { capture: true, passive: true });
+    });
+  })();
+</script>

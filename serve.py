@@ -31,7 +31,7 @@ PLATFORM_FOLDERS = {
 
 LEGAL_CONTACT_EMAIL = 'max@gardenstudiosoftware.com'
 # Change whenever the wording of a legal page changes.
-LEGAL_UPDATED = 'October 9, 2026'
+LEGAL_UPDATED = 'November 6, 2026'
 
 
 def index():

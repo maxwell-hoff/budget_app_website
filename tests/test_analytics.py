@@ -103,53 +103,144 @@ def test_old_visits_are_pruned(app, client, monkeypatch):
     assert visit.visitor != 'old'
 
 
-def test_site_stats_command(app, client):
-    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
-    client.get('/about', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
-    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.8'})
-    client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.8'}).close()
-    client.get('/', headers={'User-Agent': 'AhrefsBot/7.0'})
+def engage(client, ip, path='/', headers=BROWSER):
+    return client.post('/visit/engaged', data='{"path": "%s"}' % path, content_type='text/plain',
+                       headers=headers, environ_base={'REMOTE_ADDR': ip})
 
-    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7'])
+
+def site_stats(app, *args):
+    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7', *args])
     assert result.exit_code == 0, result.output
-    today = utcnow().date().isoformat()
-    # 2 people, 3 page views, 1 download (after a page view), 1 bot hit.
-    assert f'{today:<12}{2:>9}{3:>7}{1:>11}{0:>13}{1:>10}' in result.output
-    assert '     1  mac-arm\n' in result.output
-    assert '1  AhrefsBot/7.0' in result.output
-    assert 'Downloads (UTC' not in result.output
+    return result.output
 
 
-def test_site_stats_lists_downloads(app, client):
-    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+def section(output, title):
+    return output.split(title, 1)[1].split('\n\n', 1)[0]
+
+
+def test_engagement_is_recorded(app, client):
+    assert engage(client, '203.0.113.7', '/about').status_code == 204
+    [visit] = visits(app)
+    assert (visit.kind, visit.path, visit.is_bot, visit.referrer) == ('engaged', '/about', False, None)
+
+
+@pytest.mark.parametrize('body', ['{"path": "/nope"}', '{"path": 3}', 'not json', '[1]', ''])
+def test_engagement_ignores_unknown_pages_and_junk(app, client, body):
+    assert client.post('/visit/engaged', data=body, headers=BROWSER).status_code == 204
+    assert visits(app) == []
+
+
+def test_pages_include_the_engagement_script(client):
+    for path in ('/', '/about', '/privacy'):
+        page = client.get(path, headers=BROWSER).get_data(as_text=True)
+        assert '/visit/engaged' in page and 'isTrusted' in page
+
+
+@pytest.mark.parametrize('user_agent', [
+    'WhatsApp/2.23.20.0',
+    'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+    'Chrome/79.0.3945.88 Safari/537.36',
+    'Mastodon/4.3.0 (http.rb/5.2.0; +https://mastodon.social/)',
+    'Mozilla/5.0 (compatible; Google-InspectionTool/1.0)',
+    'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ChatGPT-User/1.0)',
+])
+def test_more_bots_are_recognized(user_agent):
+    assert analytics.is_bot_agent(user_agent)
+
+
+@pytest.mark.parametrize('user_agent', [
+    BROWSER['User-Agent'],
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+    'Chrome/142.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+    'Mobile/15E148 Twitter for iPhone/11.30',
+])
+def test_browsers_are_not_bots(user_agent):
+    assert not analytics.is_bot_agent(user_agent)
+
+
+@pytest.mark.parametrize('host, group', [
+    (None, 'Direct'), ('t.co', 'X/Twitter'), ('mobile.twitter.com', 'X/Twitter'), ('x.com', 'X/Twitter'),
+    ('news.ycombinator.com', 'Hacker News'), ('old.reddit.com', 'Reddit'), ('www.google.co.uk', 'Search'),
+    ('notgoogle.com', 'Other sites'), ('xt.co', 'Other sites'), ('example.com', 'Other sites'),
+])
+def test_source_group(host, group):
+    assert analytics.source_group(host) == group
+
+
+def test_site_stats_splits_humans_unverified_and_bots(app, client):
+    # A person from X who views two pages, interacts, and downloads.
+    client.get('/', headers={**BROWSER, 'Referer': 'https://t.co/abc'}, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+    client.get('/about', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+    engage(client, '203.0.113.7')
     client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'}).close()
+    # A browser-looking visitor from Hacker News that never interacts, then downloads.
+    client.get('/', headers={**BROWSER, 'Referer': 'https://news.ycombinator.com/item?id=1'},
+               environ_base={'REMOTE_ADDR': '203.0.113.8'})
+    client.get('/download/windows', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.8'}).close()
+    # Bots: a declared crawler following the X link, and a script downloading.
+    client.get('/', headers={'User-Agent': 'AhrefsBot/7.0', 'Referer': 'https://t.co/abc'})
     client.get('/download/windows', headers={'User-Agent': 'python-requests/2.32'},
                environ_base={'REMOTE_ADDR': '203.0.113.9'}).close()
 
-    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7', '--downloads'])
-    assert result.exit_code == 0, result.output
-    lines = result.output.split('Downloads (UTC')[1].splitlines()
-    [person] = [line for line in lines if 'mac-arm' in line]
-    [bot] = [line for line in lines if 'windows' in line]
-    assert '    1  person       -' in person and person.endswith(BROWSER['User-Agent'])
-    assert '    0  bot          -' in bot and bot.endswith('python-requests/2.32')
-    assert '203.0.113' not in result.output
-
-
-def test_downloads_without_an_earlier_page_view_are_unconfirmed(app, client):
-    crawler = {**BROWSER, 'User-Agent': 'Mozilla/5.0 (Macintosh) Chrome/116.0.0.0 Safari/537.36'}
-    for ip, platform in (('198.51.100.1', 'mac-arm'), ('198.51.100.2', 'windows')):
-        client.get(f'/download/{platform}', headers=crawler, environ_base={'REMOTE_ADDR': ip}).close()
-    # Viewing a page after downloading doesn't confirm the download.
-    client.get('/', headers=crawler, environ_base={'REMOTE_ADDR': '198.51.100.1'})
-    client.get('/', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'})
-    client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'}).close()
-
-    result = app.test_cli_runner().invoke(args=['site-stats', '--days', '7', '--downloads'])
-    assert result.exit_code == 0, result.output
+    output = site_stats(app)
     today = utcnow().date().isoformat()
-    assert f'{today:<12}{3:>9}{2:>7}{3:>11}{2:>13}{0:>10}' in result.output
-    assert '     2  mac-arm  (1 unconfirmed)' in result.output
-    assert '     1  windows  (1 unconfirmed)' in result.output
-    listing = result.output.split('Downloads (UTC')[1]
-    assert listing.count('unconfirmed ') == 2 and listing.count('person ') == 1
+    daily = section(output, 'Visitors and downloads by day:')
+    # 1 human, 1 unverified, 2 bots; 2 human views; downloads 1 human, 1 unverified, 1 bot.
+    assert f'{today:<12}{1:>7}{1:>11}{2:>6}{2:>12}{1:>10}{1:>11}{1:>8}' in daily
+    sources = section(output, 'Visitors by source')
+    assert f'{"X/Twitter":<14}{1:>7}{0:>11}{1:>6}{1:>10}' in sources
+    assert f'{"Hacker News":<14}{0:>7}{1:>11}{0:>6}{0:>10}' in sources
+    assert f'{"Direct":<14}{0:>7}{0:>11}{1:>6}{0:>10}' in sources
+    by_day = section(output, 'by source and day')
+    assert today in by_day and '1/0' in by_day and '0/1' in by_day
+    platforms = section(output, 'Downloads by platform:')
+    assert f'{"windows":<12}{0:>6}{1:>11}{1:>5}' in platforms
+    assert f'{"mac-arm":<12}{1:>6}{0:>11}{0:>5}' in platforms
+    assert '1  AhrefsBot/7.0' in output
+    assert 'Downloads (UTC' not in output and 'Non-bot visitors (UTC' not in output
+    assert '203.0.113' not in output
+
+
+def test_site_stats_notes_when_nothing_has_interacted(app, client):
+    client.get('/', headers=BROWSER)
+    output = site_stats(app)
+    assert 'No interactions recorded yet' in output
+    assert f'{utcnow().date().isoformat():<12}{0:>7}{1:>11}' in output
+
+
+def test_site_stats_reclassifies_old_rows_with_current_bot_patterns(app):
+    with app.app_context():
+        db.session.add(SiteVisit(kind='page', path='/', visitor='v1', is_bot=False,
+                                 user_agent='WhatsApp/2.23.20.0'))
+        db.session.commit()
+    output = site_stats(app)
+    assert f'{utcnow().date().isoformat():<12}{0:>7}{0:>11}{1:>6}' in output
+
+
+def test_site_stats_lists_visitors_and_downloads(app, client):
+    client.get('/', headers={**BROWSER, 'Referer': 'https://t.co/abc'}, environ_base={'REMOTE_ADDR': '203.0.113.7'})
+    engage(client, '203.0.113.7')
+    client.get('/download/mac-arm', headers=BROWSER, environ_base={'REMOTE_ADDR': '203.0.113.7'}).close()
+    crawler = {**BROWSER, 'User-Agent': 'Mozilla/5.0 (Macintosh) Chrome/142.0.0.0 Safari/537.36'}
+    client.get('/download/windows', headers=crawler, environ_base={'REMOTE_ADDR': '198.51.100.1'}).close()
+    client.get('/download/windows', headers={'User-Agent': 'python-requests/2.32'},
+               environ_base={'REMOTE_ADDR': '203.0.113.9'}).close()
+
+    output = site_stats(app, '--downloads', '--visitors')
+    people = section(output, 'Non-bot visitors (UTC').splitlines()[2:]
+    assert len(people) == 2
+    [human] = [line for line in people if 'human' in line]
+    assert '    1    1  t.co' in human and human.endswith(BROWSER['User-Agent'])
+    [unverified] = [line for line in people if 'unverified' in line]
+    assert '    0    1  -' in unverified
+
+    lines = output.split('Downloads (UTC')[1].splitlines()
+    [person] = [line for line in lines if 'mac-arm' in line]
+    [crawled, script] = [line for line in lines if 'windows' in line]
+    assert '    1  human       t.co' in person and person.endswith(BROWSER['User-Agent'])
+    assert '    0  unverified  -' in crawled
+    assert '    0  bot         -' in script and script.endswith('python-requests/2.32')
+    assert '203.0.113' not in output and '198.51.100' not in output
