@@ -233,7 +233,7 @@ sqlalchemy==2.1.4
     #   -c requirements.txt
     #   alembic
     #   flask-sqlalchemy
-stripe==16.0.0
+stripe==16.1.0
     # via
     #   -c requirements.txt
     #   -r requirements.in
