@@ -118,6 +118,11 @@ def section(output, title):
     return output.split(title, 1)[1].split('\n\n', 1)[0]
 
 
+def daily_row(date, *counts):
+    """A by-day row: total/human/bot/unverified views, then total/human/bot/unverified downloads."""
+    return f'{date:<12}' + ''.join(f'{c:>{w}}' for c, w in zip(counts, (13, 13, 11, 18, 10, 10, 8, 15)))
+
+
 def test_engagement_is_recorded(app, client):
     assert engage(client, '203.0.113.7', '/about').status_code == 204
     [visit] = visits(app)
@@ -187,9 +192,10 @@ def test_site_stats_splits_humans_unverified_and_bots(app, client):
 
     output = site_stats(app)
     today = utcnow().date().isoformat()
-    daily = section(output, 'Visitors and downloads by day:')
-    # 1 human, 1 unverified, 2 bots; 2 human views; downloads 1 human, 1 unverified, 1 bot.
-    assert f'{today:<12}{1:>7}{1:>11}{2:>6}{2:>12}{1:>10}{1:>11}{1:>8}' in daily
+    daily = section(output, 'Page views and downloads by day:')
+    # Views: 2 human, 1 bot (the crawler), 1 unverified. Downloads: 1 of each.
+    assert daily_row(today, 4, 2, 1, 1, 3, 1, 1, 1) in daily
+    assert daily_row('Total', 4, 2, 1, 1, 3, 1, 1, 1) in daily
     sources = section(output, 'Visitors by source')
     assert f'{"X/Twitter":<14}{1:>7}{0:>11}{1:>6}{1:>10}' in sources
     assert f'{"Hacker News":<14}{0:>7}{1:>11}{0:>6}{0:>10}' in sources
@@ -208,7 +214,7 @@ def test_site_stats_notes_when_nothing_has_interacted(app, client):
     client.get('/', headers=BROWSER)
     output = site_stats(app)
     assert 'No interactions recorded yet' in output
-    assert f'{utcnow().date().isoformat():<12}{0:>7}{1:>11}' in output
+    assert daily_row(utcnow().date().isoformat(), 1, 0, 0, 1, 0, 0, 0, 0) in output
 
 
 def test_site_stats_reclassifies_old_rows_with_current_bot_patterns(app):
@@ -217,7 +223,7 @@ def test_site_stats_reclassifies_old_rows_with_current_bot_patterns(app):
                                  user_agent='WhatsApp/2.23.20.0'))
         db.session.commit()
     output = site_stats(app)
-    assert f'{utcnow().date().isoformat():<12}{0:>7}{0:>11}{1:>6}' in output
+    assert daily_row(utcnow().date().isoformat(), 1, 0, 1, 0, 0, 0, 0, 0) in output
 
 
 def test_site_stats_lists_visitors_and_downloads(app, client):

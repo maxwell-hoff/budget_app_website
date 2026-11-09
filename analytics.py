@@ -241,20 +241,22 @@ def site_stats_command(days, list_downloads, list_visitors):
         click.echo(f'Interaction tracking started {tracking_start.date().isoformat()}; '
                    'earlier days show every non-bot visitor as unverified.')
 
+    # Every visitor-day has exactly one class, so the class columns always add up to the totals.
     daily = defaultdict(Counter)
     for (date, _), entry in visitor_days.items():
         row = daily[date]
-        row[entry['class']] += 1
+        row['views'] += entry['pages']
+        row[f'views_{entry["class"]}'] += entry['pages']
+        row['dl'] += len(entry['downloads'])
         row[f'dl_{entry["class"]}'] += len(entry['downloads'])
-        if entry['class'] == 'human':
-            row['views'] += entry['pages']
-    keys = ('human', 'unverified', 'bot', 'views', 'dl_human', 'dl_unverified', 'dl_bot')
+    keys = ('views', 'views_human', 'views_bot', 'views_unverified', 'dl', 'dl_human', 'dl_bot', 'dl_unverified')
     totals = sum(daily.values(), Counter())
-    click.echo('\nVisitors and downloads by day:')
-    _table(('Date', 'Humans', 'Unverified', 'Bots', 'Human views', 'DL human', 'DL unverif', 'DL bot'),
+    click.echo('\nPage views and downloads by day:')
+    _table(('Date', 'Total views', 'Human views', 'Bot views', 'Unverified views',
+            'Total DL', 'Human DL', 'Bot DL', 'Unverified DL'),
            [(d.isoformat(), *(daily[d][k] for k in keys)) for d in dates]
            + [('Total', *(totals[k] for k in keys))],
-           (12, 7, 11, 6, 12, 10, 11, 8))
+           (12, 13, 13, 11, 18, 10, 10, 8, 15))
 
     by_source = defaultdict(Counter)
     per_day = defaultdict(Counter)
