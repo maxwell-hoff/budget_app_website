@@ -179,11 +179,11 @@ platformdirs==4.12.4
     # via pip-audit
 pluggy==1.6.0
     # via pytest
-psycopg==3.3.6
+psycopg==3.3.8
     # via
     #   -c requirements.txt
     #   -r requirements.in
-psycopg-binary==3.3.6
+psycopg-binary==3.3.8
     # via
     #   -c requirements.txt
     #   psycopg

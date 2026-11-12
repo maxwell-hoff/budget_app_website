@@ -84,9 +84,9 @@ packaging==26.3
     # via limits
 plaid-python==45.0.0
     # via -r requirements.in
-psycopg==3.3.6
+psycopg==3.3.8
     # via -r requirements.in
-psycopg-binary==3.3.6
+psycopg-binary==3.3.8
     # via psycopg
 pycparser==3.0
     # via cffi
