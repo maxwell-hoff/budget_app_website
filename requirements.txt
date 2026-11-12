@@ -6,7 +6,7 @@
 #
 alembic==1.20.0
     # via flask-migrate
-authlib==1.9.2
+authlib==1.9.5
     # via -r requirements.in
 blinker==1.9.0
     # via flask
