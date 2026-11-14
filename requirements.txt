@@ -27,7 +27,7 @@ cryptography==50.0.2
     #   joserfc
 deprecated==3.0.0
     # via limits
-dnspython==2.9.1
+dnspython==2.9.2
     # via email-validator
 email-validator==2.3.0
     # via -r requirements.in
