@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 PLAID_ENVIRONMENTS = {'sandbox': plaid.Environment.Sandbox, 'production': plaid.Environment.Production}
 # Plaid bills per connected Item per month, so cap how many one subscription can hold.
-MAX_ITEMS_PER_USER = 10
+MAX_ITEMS_PER_USER = 30
 # Plaid only fetches 90 days of history unless asked; the desktop's first pull is 24 months.
 TRANSACTIONS_DAYS_REQUESTED = 730
 # /item/remove errors that mean the Item is already gone at Plaid.
