@@ -52,7 +52,7 @@ production there. Everything below happens in the chosen team.
      only (that's all the server's link token asks for).
    - **Pricing plan:** Pay as you go is enough to start (no minimum). Transactions are
      billed per connected bank (Item) per month, which is why the server caps each user
-     at 10 banks and removes them when a subscription ends.
+     at 30 banks and removes them when a subscription ends.
    - **Security questionnaire:** paste the answers from
      [`docs/security/plaid_questionnaire.md`](../security/plaid_questionnaire.md)
      (step 18c), after doing its "Before submitting" list. The cheat sheet below

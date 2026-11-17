@@ -767,6 +767,7 @@ Newest last. One line each: date — decision — reason.
 - 2026-10-09 — The launch release is 0.2.0, not 0.1.9 (`v0.1.9` was already tagged), and the release workflow now publishes `docs/release_notes/<tag>.md` as the GitHub release's body when that file exists (generated notes otherwise).
 - 2026-10-09 — The launch order in practice: tag `v0.2.0` first (the workflow publishes a GitHub release right away, but the app has no update check, so nobody is pointed at it), then set `ACCOUNTS_ENABLED=true`, then merge the installers PR built from that release. Users only get 0.2.0 from the website, so they never reach sign-up pages that 404, which is what the planned order protected.
 - 2026-10-09 — On a fresh install the welcome tour waits until the lock screen is gone (it no longer opens on top of it); it starts after "Open the Sample profile" or after subscribing. The setup wizard's privacy and bank steps mention the account and that bank syncing comes with the subscription when cloud is on. Both are cloud-only, so the flag-off desktop page is byte-identical to before.
+- 2026-11-16 — `MAX_ITEMS_PER_USER` raised from 10 to 30 (terms page and API contract updated to match). Supersedes the 2026-10-04 cap of 10.
 
 ## Handoff notes
 

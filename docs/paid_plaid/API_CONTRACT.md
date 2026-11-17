@@ -103,7 +103,7 @@ Every non-2xx response has this body:
 | 400 | `bad_request` | Invalid input | Show message |
 | 401 | `unauthorized` | Missing, invalid, expired, or revoked session token | Clear token, prompt sign-in |
 | 402 | `subscription_required` | Signed in but no active subscription (see `paid_access` in `/v1/me`) | Refresh `/v1/me` and show the lock screen (step 14a) with a link to `/account` |
-| 400 | `item_limit_reached` | Already 10 bank connections (Plaid bills per connection) | Show message; suggest removing one |
+| 400 | `item_limit_reached` | Already 30 bank connections (Plaid bills per connection) | Show message; suggest removing one |
 | 404 | `not_found` | Resource does not exist or is not the caller's | Show message |
 | 409 | `plaid_relink_required` | Plaid item needs re-authentication (e.g. `ITEM_LOGIN_REQUIRED`) | Start update-mode Link for that item |
 | 429 | `rate_limited` | Too many requests | Retry after `Retry-After` seconds |
@@ -213,7 +213,7 @@ requested, US, English). No request body. Rate limited (30/hour per IP).
 
 Response 200: `{ "link_token": "link-sandbox-…", "expiration": "2026-10-05T02:00:00Z" }`
 
-Errors: 400 `item_limit_reached` if the user already has 10 items; 401; 402; 502.
+Errors: 400 `item_limit_reached` if the user already has 30 items; 401; 402; 502.
 
 Since step 13 the token also registers the server's webhook (`<PUBLIC_BASE_URL>/plaid/webhook`)
 on the new Item, so Plaid reports login problems to the server. Without `PUBLIC_BASE_URL`
