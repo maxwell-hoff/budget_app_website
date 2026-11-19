@@ -60,7 +60,7 @@ dnspython==2.9.2
     # via
     #   -c requirements.txt
     #   email-validator
-email-validator==2.3.0
+email-validator==2.4.0
     # via
     #   -c requirements.txt
     #   -r requirements.in
