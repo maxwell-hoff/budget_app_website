@@ -24,7 +24,7 @@ cachecontrol==0.14.4
     # via
     #   cachecontrol
     #   pip-audit
-certifi==2026.10.23
+certifi==2026.11.20
     # via
     #   -c requirements.txt
     #   -r requirements.in
